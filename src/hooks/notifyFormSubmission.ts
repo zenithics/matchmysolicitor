@@ -52,7 +52,7 @@ export const notifyFormSubmission: CollectionAfterChangeHook = async ({
       const form = await payload.findByID({ collection: 'forms', id: formId, depth: 0 })
       formTitle = form?.title || formTitle
       recipients = (Array.isArray(form?.emails) ? form.emails : [])
-        .map((e: { emailTo?: string }) => e?.emailTo)
+        .map((e: { emailTo?: string | null }) => e?.emailTo)
         .filter((to): to is string => Boolean(to))
         .flatMap((to) => to.split(',').map((s) => s.trim()))
         .filter(Boolean)

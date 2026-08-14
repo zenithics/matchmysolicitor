@@ -28,6 +28,7 @@ import { PermalinkSettings } from './globals/PermalinkSettings'
 import { Popups } from './collections/Popups'
 import { ActivityLog } from './collections/ActivityLog'
 import { PageTemplates } from './collections/PageTemplates'
+import { Enquiries } from './collections/Enquiries'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -95,6 +96,8 @@ export default buildConfig({
     PageTemplates,
     // Marketing
     Popups,
+    // Leads
+    Enquiries,
     // System
     Users,
     ActivityLog,
