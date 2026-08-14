@@ -1,0 +1,14 @@
+// Fix breadcrumb nav icon clipping — prevent the nav header from hiding the icon
+.nav__header,
+.step-nav,
+.step-nav__list,
+.step-nav__item:first-child,
+[class*="nav-header"] {
+  overflow: visible !important;
+}
+
+// Ensure the breadcrumb bar has enough height for the icon
+.step-nav {
+  min-height: 40px;
+  align-items: center;
+}

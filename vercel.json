@@ -1,0 +1,10 @@
+{
+  "buildCommand": "pnpm run deploy",
+  "crons": [
+    {
+      "path": "/api/payload-jobs/run",
+      "schedule": "0 0 * * *"
+    }
+  ],
+  "installCommand": "pnpm install --no-frozen-lockfile"
+}

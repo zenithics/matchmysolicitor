@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+
+# Payload
+src/app/(payload)/admin/importMap.js
+
+# Types (auto-generated)
+src/payload-types.ts
+
+# Migrations (auto-generated, but keep tracked)
+# src/migrations/
+
+# Logs
+*.log
+npm-debug.log*

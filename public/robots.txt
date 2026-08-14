@@ -1,0 +1,18 @@
+# *
+User-agent: *
+Disallow: /admin/*
+
+# *
+User-agent: *
+Disallow: /api/*
+
+# Host
+Host: https://example.com
+
+# Sitemaps
+Sitemap: https://example.com/sitemap.xml
+Sitemap: https://example.com/pages-sitemap.xml
+Sitemap: https://example.com/posts-sitemap.xml
+Sitemap: https://example.com/products-sitemap.xml
+Sitemap: https://example.com/events-sitemap.xml
+Sitemap: https://example.com/products.xml
