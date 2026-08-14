@@ -5,9 +5,13 @@ async function getSEOGlobals() {
     const { getPayload } = await import('payload')
     const config = (await import('@payload-config')).default
     const payload = await getPayload({ config })
+    // shop-settings only exists when the ecommerce add-on is installed, so it is
+    // fetched defensively: a content site must still get its organisation schema.
     const [seo, shop] = await Promise.all([
       payload.findGlobal({ slug: 'seo-settings' }),
-      payload.findGlobal({ slug: 'shop-settings' }),
+      payload
+        .findGlobal({ slug: 'shop-settings' as 'seo-settings' })
+        .catch(() => ({}) as Record<string, unknown>),
     ])
     return { seo: seo as any, shop: shop as any }
   } catch {

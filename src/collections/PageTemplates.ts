@@ -26,6 +26,8 @@ import { VideoEmbed } from '../blocks/VideoEmbed/config'
 import { MapEmbed } from '../blocks/MapEmbed/config'
 import { Embed } from '../blocks/Embed/config'
 import { Timeline } from '../blocks/Timeline/config'
+import { TextMedia } from '../blocks/TextMedia/config'
+import { EnquiryWizard } from '../blocks/EnquiryWizard/config'
 import { hero } from '../heros/config'
 
 export const PageTemplates: CollectionConfig = {
@@ -127,6 +129,8 @@ export const PageTemplates: CollectionConfig = {
                 MapEmbed,
                 Embed,
                 Timeline,
+                TextMedia,
+                EnquiryWizard,
                 Banner,
                 Code,
               ],

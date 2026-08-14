@@ -25,6 +25,8 @@ import { VideoEmbedBlock } from '@/blocks/VideoEmbed/Component'
 import { MapEmbedBlock } from '@/blocks/MapEmbed/Component'
 import { EmbedBlock } from '@/blocks/Embed/Component'
 import { TimelineBlock } from '@/blocks/Timeline/Component'
+import { TextMediaBlock } from '@/blocks/TextMedia/Component'
+import { EnquiryWizardBlock } from '@/blocks/EnquiryWizard/Component'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -50,6 +52,8 @@ const blockComponents = {
   mapEmbed: MapEmbedBlock,
   embed: EmbedBlock,
   timeline: TimelineBlock,
+  textMedia: TextMediaBlock,
+  enquiryWizard: EnquiryWizardBlock,
 }
 
 export const RenderBlocks: React.FC<{
