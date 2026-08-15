@@ -109,7 +109,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   return (
-    <article className="pt-16 pb-24">
+    <article className="pb-24">
       {faqJsonLd && (
         <script
           type="application/ld+json"
