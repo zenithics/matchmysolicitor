@@ -2,7 +2,8 @@
 /**
  * Import a Claude Design export into the CMS.
  *
- *   node --env-file=.env scripts/import-design.mjs ./design-export [./images]
+ *   pnpm import:design           (reads .env automatically)
+ *   node scripts/import-design.mjs ./design-export ./design-images
  *
  * Idempotent: pages, posts, categories and media are matched on slug/filename
  * and updated in place, so it is safe to re-run after a fresh design export.
@@ -16,6 +17,20 @@
 import { readFileSync, existsSync, readdirSync } from 'fs'
 import { basename, join, resolve } from 'path'
 import { parseExport } from './lib/parse-design-export.mjs'
+
+// Load .env ourselves so this runs as `node scripts/import-design.mjs` without
+// needing --env-file (which hard-fails if the file is absent). Real environment
+// variables always win, so Codespace/Vercel secrets are never overwritten.
+for (const file of ['.env', '.env.local']) {
+  if (!existsSync(file)) continue
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    const m = line.match(/^\s*(?:export\s+)?([A-Z0-9_]+)\s*=\s*(.*)$/i)
+    if (!m) continue
+    const key = m[1]
+    if (process.env[key] !== undefined) continue
+    process.env[key] = m[2].trim().replace(/^["']|["']$/g, '')
+  }
+}
 
 const BASE = process.env.CMS_URL || 'http://localhost:3000'
 const EMAIL = process.env.CMS_EMAIL
@@ -117,6 +132,20 @@ async function api(path, options = {}) {
     throw new Error(`${res.status} ${path} — ${msg}`)
   }
   return json
+}
+
+// The most common failure is simply that the CMS is not running, which
+// otherwise surfaces as an opaque fetch error.
+async function assertServerUp() {
+  try {
+    await fetch(`${BASE}/api/access`, { method: 'GET' })
+  } catch {
+    throw new Error(
+      `Cannot reach the CMS at ${BASE}.\n` +
+      `  Start it in a SECOND terminal with:  pnpm dev\n` +
+      `  (leave it running \u2014 it blocks that terminal), then re-run this import.`,
+    )
+  }
 }
 
 async function login() {
@@ -493,7 +522,10 @@ async function main() {
   const sitePages = pages.filter((p) => p.collection !== 'posts')
   console.log(`  parsed ${sitePages.length} pages, ${posts.length} posts\n`)
 
-  if (!DRY) await login()
+  if (!DRY) {
+    await assertServerUp()
+    await login()
+  }
 
   const images = await loadImages()
   if (Object.keys(images.map).length) console.log(`  media ready for ${Object.keys(images.map).length} slugs\n`)

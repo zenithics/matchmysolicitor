@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Free Employment Law Enquiry | MatchMySolicitor</title>
+<meta name="description" content="Start your free employment law enquiry in about two minutes. Confidential, no obligation, and matched with one SRA-regulated specialist solicitor in 24 hours.">
+<link rel="canonical" href="https://matchmysolicitor.co.uk/enquiry">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:#3A414C; background:#F7F8FA; -webkit-font-smoothing:antialiased; }
+  a { color:#1E4FD8; text-decoration:none; }
+  a:hover { color:#1A1F26; }
+  * { box-sizing:border-box; }
+  input, select, textarea, button { font-family:'Plus Jakarta Sans',system-ui,sans-serif; }
+</style>
+</helmet>
+
+<dc-import name="SiteHeader" hint-size="100%,72px"></dc-import>
+
+<!-- @page slug="enquiry" title="Start Your Free Enquiry"
+     metaTitle="Free Employment Law Enquiry | Matched in 24 Hours"
+     description="Start your free employment law enquiry in about two minutes. Confidential, no obligation, and matched with one SRA-regulated specialist solicitor in 24 hours."
+     collection="pages" template="enquiry" -->
+
+<!-- @block: enquiryWizard variant="page"
+     fields="variant,heading,subheading,steps[title,fields[]],consentText,successMessage"
+     reason="4-step qualification form with conditional branching on employer/employee, case type
+     routing, and query-string pre-fill (?type=&case=). No library block covers multi-step forms:
+     formBlock is a single flat form. This is the one bespoke component in the build." -->
+<section style="max-width:720px; margin:0 auto; padding:56px 24px 96px;">
+  <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
+    <div style="text-align:center; display:flex; flex-direction:column; gap:12px; margin-bottom:36px;">
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(26px, 5vw, 38px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.015em;">Start your free enquiry</h1>
+      <p style="margin:0; font-size:17px; line-height:1.6; color:#5B6472;">A few quick questions so we can match you with the right specialist. Takes about 2 minutes. Free, confidential, no obligation.</p>
+    </div>
+
+    <!-- progress -->
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:32px;">
+      <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:600; color:#5B6472;">
+        <span>{{ stepLabel }}</span><span>Step {{ stepNum }} of 4</span>
+      </div>
+      <div style="height:6px; background:#E4E7EC; border-radius:3px; overflow:hidden;">
+        <div style="height:100%; background:#1E4FD8; border-radius:3px; transition:width 0.3s ease; width: {{ progressPct }};"></div>
+      </div>
+    </div>
+
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:12px; padding:40px; display:flex; flex-direction:column; gap:28px;">
+
+      <!-- STEP 1 -->
+      <sc-if value="{{ onStep1 }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">First things first, which side are you on?</h2>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+            <button onClick="{{ pickEmployer }}" class="card-link-ink" style="cursor:pointer; text-align:left; border:2px solid {{ employerBorder }}; background:#FFFFFF; border-radius:10px; padding:24px; display:flex; flex-direction:column; gap:6px;">
+              <span style="font-size:18px; font-weight:700; color:#1A1F26;">I'm an employer</span>
+              <span style="font-size:14px; color:#5B6472; line-height:1.5;">Facing a claim, negotiating a settlement, or need urgent representation</span>
+            </button>
+            <button onClick="{{ pickEmployee }}" class="card-link-ink" style="cursor:pointer; text-align:left; border:2px solid {{ employeeBorder }}; background:#FFFFFF; border-radius:10px; padding:24px; display:flex; flex-direction:column; gap:6px;">
+              <span style="font-size:18px; font-weight:700; color:#1A1F26;">I'm an employee</span>
+              <span style="font-size:14px; color:#5B6472; line-height:1.5;">Dismissed, discriminated against, or negotiating an exit or settlement</span>
+            </button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- STEP 2 -->
+      <sc-if value="{{ onStep2 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">{{ step2Heading }}</h2>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">What's your situation?
+            <select value="{{ situation }}" onChange="{{ setSituation }}" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+              <sc-for list="{{ situationOptions }}" as="opt" hint-placeholder-count="5">
+                <option value="{{ opt }}">{{ opt }}</option>
+              </sc-for>
+            </select>
+          </label>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">{{ tenureLabel }}
+            <select value="{{ tenure }}" onChange="{{ setTenure }}" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+              <option value="">Please select…</option>
+              <option value="Under 6 months">Under 6 months</option>
+              <option value="6 months to two years">6 months to two years</option>
+              <option value="two years to 5 years">two years to 5 years</option>
+              <option value="5+ years">5+ years</option>
+            </select>
+          </label>
+          <sc-if value="{{ isEmployee }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">What is your approximate salary?
+              <select value="{{ salary }}" onChange="{{ setSalary }}" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+                <option value="">Please select…</option>
+                <option value="Under £30k">Under £30k</option>
+                <option value="£30k to £60k">£30k to £60k</option>
+                <option value="£60k to £95k">£60k to £95k</option>
+                <option value="£95k+">£95k+</option>
+              </select>
+            </label>
+          </sc-if>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <span style="font-size:15px; font-weight:600; color:#1A1F26;">Do you have legal expenses insurance?</span>
+            <div style="display:flex; gap:10px;">
+              <button onClick="{{ insYes }}" style="cursor:pointer; padding:11px 22px; border-radius:8px; font-size:15px; font-weight:600; border:1.5px solid {{ insYesBorder }}; background:{{ insYesBg }}; color:#1A1F26;">Yes</button>
+              <button onClick="{{ insNo }}" style="cursor:pointer; padding:11px 22px; border-radius:8px; font-size:15px; font-weight:600; border:1.5px solid {{ insNoBorder }}; background:{{ insNoBg }}; color:#1A1F26;">No</button>
+              <button onClick="{{ insUnsure }}" style="cursor:pointer; padding:11px 22px; border-radius:8px; font-size:15px; font-weight:600; border:1.5px solid {{ insUnsureBorder }}; background:{{ insUnsureBg }}; color:#1A1F26;">Not sure</button>
+            </div>
+            <span style="font-size:13px; color:#6B7482; line-height:1.5;">Often included with home or car insurance, "not sure" is a perfectly good answer.</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- STEP 3 -->
+      <sc-if value="{{ onStep3 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">Tell us what's happened</h2>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Brief description of your situation
+            <textarea value="{{ description }}" onChange="{{ setDescription }}" rows="6" maxLength="500" placeholder="What happened, roughly when, and where things stand now…" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; line-height:1.6; color:#3A414C; resize:vertical; background:#FFFFFF;"></textarea>
+            <div style="display:flex; justify-content:space-between; font-weight:400; font-size:13px; color:#6B7482;">
+              <span>Please describe in your own words. Two paragraphs is fine, we don't need lengthy documents at this stage.</span>
+              <span style="flex-shrink:0; margin-left:16px;">{{ charCount }}/500</span>
+            </div>
+          </label>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Where are you based?
+            <select value="{{ region }}" onChange="{{ setRegion }}" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+              <option value="">Please select…</option>
+              <option value="London">London</option>
+              <option value="South East">South East</option>
+              <option value="South West">South West</option>
+              <option value="East of England">East of England</option>
+              <option value="East Midlands">East Midlands</option>
+              <option value="West Midlands">West Midlands</option>
+              <option value="Yorkshire &amp; the Humber">Yorkshire &amp; the Humber</option>
+              <option value="North West">North West</option>
+              <option value="North East">North East</option>
+              <option value="Scotland">Scotland</option>
+              <option value="Wales">Wales</option>
+              <option value="Northern Ireland">Northern Ireland</option>
+            </select>
+          </label>
+        </div>
+      </sc-if>
+
+      <!-- STEP 4 -->
+      <sc-if value="{{ onStep4 }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:22px;">
+          <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">Where should your specialist reach you?</h2>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Your name
+            <input type="text" value="{{ name }}" onChange="{{ setName }}" placeholder="Full name" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+          </label>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Phone number
+            <input type="tel" value="{{ phone }}" onChange="{{ setPhone }}" placeholder="Best number to call" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+          </label>
+          <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Email address
+            <input type="email" value="{{ email }}" onChange="{{ setEmail }}" placeholder="you@example.com" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+          </label>
+          <label class="wiz-consent" style="display:flex; gap:12px; align-items:flex-start; background:#F7F8FA; border:1.5px solid #D3D8DF; border-radius:8px; padding:16px 18px; font-size:14px; line-height:1.6; color:#3A414C; cursor:pointer;">
+            <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="width:20px; height:20px; flex-shrink:0; margin:1px 0 0; accent-color:#1E4FD8;">
+            <span>I agree to be contacted by MatchMySolicitor and one matched partner solicitor about my enquiry. My details will not be sold to multiple firms.</span>
+          </label>
+          <p style="margin:0; font-size:13px; color:#6B7482; line-height:1.6;">See our <a href="legal-privacy-policy.dc.html" style="font-weight:700;">privacy policy</a> for how we handle your details.</p>
+        </div>
+      </sc-if>
+
+      <!-- NAV BUTTONS -->
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; border-top:1px solid #EEF1F4; padding-top:24px;">
+        <sc-if value="{{ canGoBack }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goBack }}" class="nav-link" style="cursor:pointer; background:none; border:none; font-size:15px; font-weight:600; color:#5B6472; padding:12px 8px;">← Back</button>
+        </sc-if>
+        <sc-if value="{{ showNext }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ goNext }}" disabled="{{ nextDisabled }}" style="cursor:pointer; margin-left:auto; background:{{ nextBg }}; color:#FFFFFF; border:none; padding:14px 28px; border-radius:8px; font-size:16px; font-weight:700;">Continue →</button>
+        </sc-if>
+        <sc-if value="{{ onStep4 }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ submit }}" disabled="{{ submitDisabled }}" style="cursor:pointer; margin-left:auto; background:{{ submitBg }}; color:#FFFFFF; border:none; padding:14px 28px; border-radius:8px; font-size:16px; font-weight:700;">Submit my enquiry</button>
+        </sc-if>
+      </div>
+    </div>
+
+    <p style="text-align:center; font-size:14px; color:#6B7482; margin:24px 0 0; line-height:1.6;">Your enquiry goes straight to our matching team, you'll hear from a specialist solicitor, not a call centre.</p>
+  </sc-if>
+
+  <!-- CONFIRMATION -->
+  <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:12px; padding:48px; text-align:center; display:flex; flex-direction:column; gap:20px; align-items:center;">
+      <div style="width:64px; height:64px; border-radius:50%; background:#E6F5F2; color:#0D9488; display:flex; align-items:center; justify-content:center; font-size:clamp(23px, 3.8vw, 30px);">✓</div>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4vw, 32px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.01em;">Thank you, {{ firstName }}. Your enquiry is on its way.</h1>
+      <p style="margin:0; font-size:17px; line-height:1.7; color:#5B6472; max-width:52ch;">We're reviewing your situation now and matching you with a specialist solicitor.</p>
+      <div style="text-align:left; background:#F7F8FA; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:16px; width:100%; max-width:480px;">
+        <div style="font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#1A1F26;">What happens next</div>
+        <div style="display:flex; gap:12px; font-size:15px; line-height:1.6; color:#3A414C;"><strong style="color:#1E4FD8;">1.</strong><span>We match your enquiry with the right partner solicitor, usually within a few hours.</span></div>
+        <div style="display:flex; gap:12px; font-size:15px; line-height:1.6; color:#3A414C;"><strong style="color:#1E4FD8;">2.</strong><span>Your solicitor calls or emails you directly within 24 hours for a free initial conversation.</span></div>
+        <div style="display:flex; gap:12px; font-size:15px; line-height:1.6; color:#3A414C;"><strong style="color:#1E4FD8;">3.</strong><span>You decide whether to go ahead. No obligation at any point.</span></div>
+      </div>
+      <p style="margin:0; font-size:14px; color:#6B7482;">Urgent, a hearing in the next few days? Mention it in your enquiry and we prioritise same-day matching.</p>
+      <a href="index.dc.html" style="font-weight:700; font-size:15px;">← Back to homepage</a>
+    </div>
+  </sc-if>
+</section>
+<!-- /@block -->
+
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+<x-import component-from-global-scope="cookie-banner" from="./cookie-banner.js" hint-size="0,0"></x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1200, &quot;height&quot;: 900}}">
+class Component extends DCLogic {
+  state = {
+    step: 1, submitted: false,
+    role: null, situation: '', tenure: '', salary: '', insurance: null,
+    description: '', region: '', name: '', phone: '', email: '', consent: false, qp: 'two years'
+  };
+  async componentDidMount() {
+    try { const cfg = await import('./site-config.js'); this.setState({ qp: cfg.QUALIFYING_PERIOD }); } catch (e) {}
+    // Pre-fill from query string, e.g. ?type=employee&case=unfair-dismissal
+    const p = new URLSearchParams(window.location.search);
+    const type = p.get('type'), c = p.get('case');
+    if (type !== 'employee' && type !== 'employer') return;
+    const maps = {
+      employee: { 'unfair-dismissal': 'Unfair dismissal', 'constructive-dismissal': 'Constructive dismissal', 'discrimination': 'Discrimination', 'settlement-agreements': 'Settlement dispute/negotiation', 'senior-exits': 'Senior exit', 'merits-assessments': 'Merits assessment' },
+      employer: { 'tribunal-defence': 'Facing a tribunal claim', 'settlement-agreements': 'Settlement negotiation', 'interim-relief': 'Interim relief hearing' }
+    };
+    this.setState({ role: type, situation: (maps[type] && maps[type][c]) || '', step: 2 });
+  }
+  renderVals() {
+    const s = this.state;
+    const set = (k) => (e) => this.setState({ [k]: e.target.value });
+    const employerOpts = ['Facing a tribunal claim', 'Settlement negotiation', 'Constructive dismissal defence', 'Interim relief hearing', 'Other'];
+    const employeeOpts = ['Unfair dismissal', 'Constructive dismissal', 'Discrimination', 'Settlement dispute/negotiation', 'Senior exit', 'Merits assessment', 'Other'];
+    const labels = { 1: 'About you', 2: 'Your situation', 3: 'The details', 4: 'Contact details' };
+    const isEmployee = s.role === 'employee';
+    const step2Done = s.situation && s.tenure && s.insurance && (!isEmployee || s.salary);
+    const step3Done = s.description.trim().length > 0 && s.region;
+    const step4Done = s.name.trim() && s.phone.trim() && /.+@.+\..+/.test(s.email) && s.consent;
+    const nextOk = s.step === 2 ? step2Done : s.step === 3 ? step3Done : true;
+    const insBtn = (v) => ({
+      border: s.insurance === v ? '#1A1F26' : '#D3D8DF',
+      bg: s.insurance === v ? '#EEF1FB' : '#FFFFFF'
+    });
+    const yes = insBtn('Yes'), no = insBtn('No'), unsure = insBtn('Not sure');
+    return {
+      notSubmitted: !s.submitted, submitted: s.submitted,
+      stepNum: s.step, stepLabel: labels[s.step], progressPct: (s.step * 25) + '%',
+      onStep1: s.step === 1, onStep2: s.step === 2, onStep3: s.step === 3, onStep4: s.step === 4,
+      isEmployee,
+      step2Heading: isEmployee ? 'Tell us about your dispute' : 'Tell us about the claim your business is facing',
+      tenureLabel: isEmployee ? 'How long have you been employed there?' : 'How long has the employee been employed?',
+      situationOptions: ['Please select…'].concat(isEmployee ? employeeOpts : employerOpts),
+      employerBorder: s.role === 'employer' ? '#1A1F26' : '#D3D8DF',
+      employeeBorder: s.role === 'employee' ? '#1A1F26' : '#D3D8DF',
+      pickEmployer: () => this.setState({ role: 'employer', situation: '', salary: '', step: 2 }),
+      pickEmployee: () => this.setState({ role: 'employee', situation: '', step: 2 }),
+      situation: s.situation, setSituation: (e) => this.setState({ situation: e.target.value === 'Please select…' ? '' : e.target.value }),
+      tenure: s.tenure, setTenure: set('tenure'),
+      salary: s.salary, setSalary: set('salary'),
+      insYes: () => this.setState({ insurance: 'Yes' }), insNo: () => this.setState({ insurance: 'No' }), insUnsure: () => this.setState({ insurance: 'Not sure' }),
+      insYesBorder: yes.border, insYesBg: yes.bg, insNoBorder: no.border, insNoBg: no.bg, insUnsureBorder: unsure.border, insUnsureBg: unsure.bg,
+      description: s.description, setDescription: (e) => this.setState({ description: e.target.value.slice(0, 500) }),
+      charCount: s.description.length,
+      region: s.region, setRegion: set('region'),
+      consent: s.consent, toggleConsent: (e) => this.setState({ consent: e.target.checked }),
+      name: s.name, setName: set('name'), phone: s.phone, setPhone: set('phone'), email: s.email, setEmail: set('email'),
+      canGoBack: s.step > 1, goBack: () => this.setState({ step: s.step - 1 }),
+      showNext: s.step === 2 || s.step === 3,
+      nextDisabled: !nextOk, nextBg: nextOk ? '#1E4FD8' : '#AFC0EE',
+      goNext: () => { if (nextOk) this.setState({ step: s.step + 1 }); },
+      submitDisabled: !step4Done, submitBg: step4Done ? '#1E4FD8' : '#AFC0EE',
+      submit: () => { if (step4Done) { this.setState({ submitted: true }); window.scrollTo(0, 0); } },
+      firstName: (s.name.trim().split(' ')[0]) || 'you'
+    };
+  }
+}
+</script>
+</body>
+</html>

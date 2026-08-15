@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Employment Law Solicitors, Matched Free | MatchMySolicitor</title>
+<meta name="description" content="Dismissed, facing a tribunal claim or negotiating an exit? Get matched with an SRA-regulated employment solicitor in 24 hours. Free initial consultation.">
+<link rel="canonical" href="https://matchmysolicitor.co.uk/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:#3A414C; background:#F7F8FA; -webkit-font-smoothing:antialiased; }
+  a { color:#1E4FD8; text-decoration:none; }
+  a:hover { color:#1A1F26; }
+  * { box-sizing:border-box; }
+</style>
+</helmet>
+
+<!-- ===== HEADER ===== -->
+<dc-import name="SiteHeader" hint-size="100%,72px"></dc-import>
+
+<!-- @page slug="home" title="Match with a Specialist Employment Law Solicitor"
+     metaTitle="Employment Law Solicitors, Matched in 24 Hours | MatchMySolicitor"
+     description="Dismissed, facing a tribunal claim or negotiating an exit? Get matched with an SRA-regulated employment solicitor in 24 hours. Free initial consultation."
+     collection="pages" template="home" -->
+
+<!-- @block: enquiryWizard variant="inline-hero" -->
+<!-- NOTE: the homepage hero IS the wizard's step 1: copy left, form card right, stacked under
+     640px. Choosing an answer opens steps 2-4 as a modal on desktop / full-screen sheet on mobile
+     (the enquiryWizard variant="modal" block lower down). Wizard logic already exists in code. -->
+<section style="background:#1A1F26; color:#FFFFFF;">
+  <div style="max-width:1180px; margin:0 auto; padding:80px 24px 72px; display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); gap:56px; align-items:center;">
+    <div style="display:flex; flex-direction:column; gap:22px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#2CC5B6;">Specialist employment law referrals · UK-wide</div>
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(30px, 5.5vw, 48px); line-height:1.12; font-weight:700; margin:0; letter-spacing:-0.015em; text-wrap:pretty;">The right employment solicitor. Matched to your dispute in 24 hours.</h1>
+      <p style="font-size:18px; line-height:1.65; color:#B9C1CC; margin:0; max-width:52ch;">Whether you're defending a tribunal claim or negotiating your exit, we connect you with a vetted specialist, free, with no obligation. Speak to a specialist, not a call centre.</p>
+      <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:15px; color:#FFFFFF;">
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>SRA-regulated panel</li>
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>One firm, not ten</li>
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>Free, no-obligation first conversation</li>
+      </ul>
+    </div>
+    <div id="enquiry-form" style="background:#FFFFFF; border-radius:12px; padding:28px; display:flex; flex-direction:column; gap:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <span style="font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6B7482;">Step 1 of 4</span>
+        <span style="font-size:13px; color:#6B7482;">Takes about 2 minutes</span>
+      </div>
+      <div style="height:4px; border-radius:2px; background:#EEF1F4; overflow:hidden;">
+        <div style="width:25%; height:100%; background:#1E4FD8;"></div>
+      </div>
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:21px; font-weight:700; color:#1A1F26; margin:0;">Are you an employee or an employer?</h2>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <button type="button" onClick="{{ openEmployee }}" class="wiz-choice" style="cursor:pointer; font-family:inherit; text-align:left; background:#FFFFFF; border:2px solid #D3D8DF; border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:5px; color:inherit;">
+          <span style="font-size:17px; font-weight:700; color:#1A1F26;">I'm an employee</span>
+          <span style="font-size:14px; line-height:1.5; color:#5B6472;">Dismissed, facing an exit, or treated unfairly at work</span>
+        </button>
+        <button type="button" onClick="{{ openEmployer }}" class="wiz-choice" style="cursor:pointer; font-family:inherit; text-align:left; background:#FFFFFF; border:2px solid #D3D8DF; border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:5px; color:inherit;">
+          <span style="font-size:17px; font-weight:700; color:#1A1F26;">I'm an employer</span>
+          <span style="font-size:14px; line-height:1.5; color:#5B6472;">Defending a claim or planning a departure</span>
+        </button>
+      </div>
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#6B7482;"><span aria-hidden="true">🔒</span> Secure · Your details are only shared with the firm we match you to</p>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: banner style="info" -->
+<!-- NOTE: Employment Rights Act 2025 s.25, commencing 1 January 2027. Facts are fixed: qualifying
+     period two years -> six months (NOT a day-one right), compensatory award cap removed. Body copy
+     elsewhere still says "two years", correct until 1 Jan 2027. -->
+<section style="background:#E9F6F4; border-bottom:1px solid #C6E7E2;">
+  <div style="max-width:1180px; margin:0 auto; padding:22px 24px; display:flex; gap:16px; align-items:flex-start;">
+    <span style="background:#0D9488; color:#FFFFFF; font-size:12px; font-weight:700; padding:5px 10px; border-radius:4px; letter-spacing:0.06em; flex-shrink:0; margin-top:2px;">1 JAN 2027</span>
+    <div style="font-size:16px; line-height:1.65; color:#0F5D55;">
+      <strong style="color:#0A4740;">The two-year rule is changing.</strong> From 1 January 2027 you will be protected from unfair dismissal after six months' service. Different rules may apply to your situation. <a href="enquiry.dc.html?type=employee" style="font-weight:700; color:#0B7268;">Check where you stand →</a>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: stats -->
+<section style="background:#FFFFFF; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:28px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:24px;">
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">SRA</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Regulated solicitors only</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">24h</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Typical time to first contact</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">Free</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Initial consultation — your solicitor quotes before any work begins</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">UK</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Nationwide panel coverage</div>
+    </div>
+    <!-- /@item -->
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: features columns="2" -->
+<!-- NOTE: was the employer/employee choice. That choice is now step 1 of the wizard in the hero,
+     so this section is service signposting only. -->
+<section style="max-width:1180px; margin:0 auto; padding:80px 24px;">
+  <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(25px, 4.5vw, 36px); font-weight:700; color:#1A1F26; margin:0 0 12px; text-align:center; letter-spacing:-0.01em;">Two sides of every dispute. One place to find the right specialist.</h2>
+  <p style="text-align:center; color:#5B6472; font-size:17px; margin:0 auto 48px; max-width:62ch; line-height:1.6;">We work exclusively with solicitors who specialise in contested employment matters, tribunal defence, negotiated exits, discrimination claims and more.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:28px;">
+    <!-- @item -->
+    <div style="background:#1A1F26; color:#FFFFFF; border-radius:10px; padding:40px; display:flex; flex-direction:column; gap:18px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#2CC5B6;">For employers</div>
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(21px, 3.2vw, 26px); font-weight:700; margin:0;">Protect your business. Expert defence when you need it most.</h3>
+      <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:16px; color:#B9C1CC; line-height:1.5;">
+        <li>· Tribunal claim defence (unfair dismissal, discrimination)</li>
+        <li>· Settlement agreement negotiations</li>
+        <li>· Constructive dismissal defence</li>
+        <li>· Urgent interim relief hearings</li>
+      </ul>
+      <a href="for-employers.dc.html" class="btn-primary" style="margin-top:auto; background:#1E4FD8; color:#FFFFFF; padding:14px 22px; border-radius:6px; font-weight:700; font-size:16px; align-self:flex-start;">Employer services →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:40px; display:flex; flex-direction:column; gap:18px;">
+      <div style="font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#1E4FD8;">For employees</div>
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(21px, 3.2vw, 26px); font-weight:700; margin:0; color:#1A1F26;">Know your rights. Fight for the outcome you deserve.</h3>
+      <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:16px; color:#5B6472; line-height:1.5;">
+        <li>· Unfair &amp; constructive dismissal claims</li>
+        <li>· Workplace discrimination</li>
+        <li>· Senior exit negotiations</li>
+        <li>· Settlement disputes &amp; merits assessments</li>
+      </ul>
+      <a href="for-employees.dc.html" class="btn-ink" style="margin-top:auto; background:#1A1F26; color:#FFFFFF; padding:14px 22px; border-radius:6px; font-weight:700; font-size:16px; align-self:flex-start;">Employee services →</a>
+    </div>
+    <!-- /@item -->
+  </div>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: howItWorks -->
+<section style="background:#FFFFFF; border-top:1px solid #E4E7EC; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:80px 24px;">
+    <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(25px, 4.5vw, 36px); font-weight:700; color:#1A1F26; margin:0 0 48px; text-align:center; letter-spacing:-0.01em;">Getting expert help is simple</h2>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:32px;">
+      <!-- @item -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(28px, 5.5vw, 44px); font-weight:700; color:#2CC5B6;">1</div>
+        <h3 style="font-size:20px; font-weight:700; color:#1A1F26; margin:0;">Tell us your situation</h3>
+        <p style="margin:0; color:#5B6472; line-height:1.6;">A short, plain-English enquiry form. Two paragraphs is plenty, no documents needed at this stage.</p>
+      </div>
+      <!-- /@item -->
+      <!-- @item -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(28px, 5.5vw, 44px); font-weight:700; color:#2CC5B6;">2</div>
+        <h3 style="font-size:20px; font-weight:700; color:#1A1F26; margin:0;">We match you with a specialist</h3>
+        <p style="margin:0; color:#5B6472; line-height:1.6;">Every partner solicitor is vetted, SRA-regulated, and specialises in your type of dispute.</p>
+      </div>
+      <!-- /@item -->
+      <!-- @item -->
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(28px, 5.5vw, 44px); font-weight:700; color:#2CC5B6;">3</div>
+        <h3 style="font-size:20px; font-weight:700; color:#1A1F26; margin:0;">Get expert advice within 24 hours</h3>
+        <p style="margin:0; color:#5B6472; line-height:1.6;">Your solicitor contacts you directly to discuss your options. Free initial conversation, no obligation.</p>
+      </div>
+      <!-- /@item -->
+    </div>
+    <div style="text-align:center; margin-top:48px;">
+      <a href="how-it-works.dc.html" style="font-weight:700; font-size:16px;">More about how it works →</a>
+    </div>
+  </div>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: textMedia fields="heading,richText,links,image,imagePosition,theme"
+     reason="see for-employers.dc.html: prose beside an image with a CTA link." -->
+<section style="max-width:1180px; margin:0 auto; padding:80px 24px; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;">
+  <!-- @field: image file="home-professional-on-phone-workplace.jpg" alt="Professional on phone, workplace" -->
+  <div style="width:100%; max-width:100%; min-width:0; aspect-ratio:4/3; border-radius:10px; background:repeating-linear-gradient(45deg, #E8ECEF 0 14px, #F4F6F8 14px 28px); display:flex; align-items:center; justify-content:center;">
+    <span style="font-family:monospace; font-size:13px; color:#6B7482; background:#FFFFFF; padding:8px 14px; border-radius:4px;">photo: professional on phone, workplace</span>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:18px;">
+    <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4vw, 34px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.01em;">A specialist, not a call centre</h2>
+    <p style="margin:0; font-size:17px; line-height:1.7; color:#3A414C;">We're not a law firm, and we're not a claims factory. We're a referral service that does one thing well: matching serious employment disputes with solicitors who handle them every day.</p>
+    <p style="margin:0; font-size:17px; line-height:1.7; color:#3A414C;">We connect you with solicitors for serious employment disputes. If you're looking for free advice or a simple document review, we may not be the right fit, and we'll tell you so.</p>
+    <div style="display:flex; gap:12px; margin-top:8px;">
+      <a href="enquiry.dc.html" class="btn-primary" style="background:#1E4FD8; color:#FFFFFF; padding:14px 24px; border-radius:6px; font-weight:700; font-size:16px;">Start your free enquiry →</a>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: features columns="4" -->
+<section style="background:#FFFFFF; border-top:1px solid #E4E7EC; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:72px 24px;">
+    <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4vw, 32px); font-weight:700; color:#1A1F26; margin:0 0 40px; letter-spacing:-0.01em; text-align:center;">Why people use MatchMySolicitor</h2>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:24px;">
+      <!-- @item -->
+      <div style="background:#F7F8FA; border:1px solid #E4E7EC; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:10px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:700; color:#1A1F26; margin:0;">SRA-regulated solicitors only</h3>
+        <p style="margin:0; font-size:15px; line-height:1.65; color:#5B6472;">Every firm on our panel is regulated by the Solicitors Regulation Authority.</p>
+      </div>
+      <!-- /@item -->
+      <!-- @item -->
+      <div style="background:#F7F8FA; border:1px solid #E4E7EC; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:10px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:700; color:#1A1F26; margin:0;">One firm, not ten</h3>
+        <p style="margin:0; font-size:15px; line-height:1.65; color:#5B6472;">Your details go to a single matched solicitor. We never sell enquiries to multiple firms.</p>
+      </div>
+      <!-- /@item -->
+      <!-- @item -->
+      <div style="background:#F7F8FA; border:1px solid #E4E7EC; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:10px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:700; color:#1A1F26; margin:0;">No obligation</h3>
+        <p style="margin:0; font-size:15px; line-height:1.65; color:#5B6472;">A free initial conversation. You decide whether to go further.</p>
+      </div>
+      <!-- /@item -->
+      <!-- @item -->
+      <div style="background:#F7F8FA; border:1px solid #E4E7EC; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:10px;">
+        <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:18px; font-weight:700; color:#1A1F26; margin:0;">Employment law specialists</h3>
+        <p style="margin:0; font-size:15px; line-height:1.65; color:#5B6472;">We match on your situation, not just your postcode.</p>
+      </div>
+      <!-- /@item -->
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: cta -->
+<section style="background:#1A1F26; color:#FFFFFF;">
+  <div style="max-width:1180px; margin:0 auto; padding:64px 24px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(23px, 3.8vw, 30px); font-weight:700; margin:0; letter-spacing:-0.01em;">Speak to a specialist today</h2>
+      <p style="margin:0; color:#B9C1CC; font-size:16px;">Free initial enquiry · No obligation · Matched within 24 hours</p>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+      <a href="enquiry.dc.html" class="btn-primary" style="background:#1E4FD8; color:#FFFFFF; padding:15px 26px; border-radius:6px; font-weight:700; font-size:16px;">Start your enquiry →</a>
+    </div>
+  </div>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: enquiryWizard variant="modal" -->
+<!-- NOTE: steps 2-4 of the inline-hero wizard. Modal on desktop, full-screen sheet under 640px
+     (.wiz-overlay / .wiz-panel in styles.css). Visual states only: the wizard's step logic,
+     validation and submit already exist in code. -->
+<sc-if value="{{ wizardOpen }}" hint-placeholder-val="{{ false }}">
+<div class="wiz-overlay" role="dialog" aria-modal="true" aria-label="Enquiry">
+  <div class="wiz-panel">
+    <div style="display:flex; flex-direction:column; gap:22px; padding:28px;">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:10px; flex:1;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+            <span style="font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6B7482;">Step {{ stepNum }} of 4</span>
+            <span style="font-size:13px; color:#6B7482;">{{ stepLabel }}</span>
+          </div>
+          <div style="height:4px; border-radius:2px; background:#EEF1F4; overflow:hidden;">
+            <div style="width:{{ progressPct }}; height:100%; background:#1E4FD8;"></div>
+          </div>
+        </div>
+        <button type="button" onClick="{{ closeWizard }}" class="nav-link" aria-label="Close" style="cursor:pointer; background:none; border:none; font-size:24px; line-height:1; color:#98A1AE; padding:0 0 0 8px;">×</button>
+      </div>
+
+      <sc-if value="{{ onStep2 }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">{{ step2Heading }}</h2>
+        <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">What best describes the situation?
+          <select style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+            <option>Please select…</option>
+          </select>
+        </label>
+        <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">{{ tenureLabel }}
+          <select style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+            <option>Please select…</option>
+          </select>
+        </label>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ onStep4 }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Where should your specialist reach you?</h2>
+        <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Your name
+          <input type="text" placeholder="Full name" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+        </label>
+        <label style="display:flex; flex-direction:column; gap:8px; font-size:15px; font-weight:600; color:#1A1F26;">Phone number
+          <input type="tel" placeholder="Best number to call" style="padding:13px 14px; border:1.5px solid #D3D8DF; border-radius:8px; font-size:16px; color:#3A414C; background:#FFFFFF;">
+        </label>
+        <label class="wiz-consent" style="display:flex; gap:12px; align-items:flex-start; background:#F7F8FA; border:1.5px solid #D3D8DF; border-radius:8px; padding:16px 18px; font-size:14px; line-height:1.6; color:#3A414C; cursor:pointer;">
+          <input type="checkbox" checked="{{ consent }}" onChange="{{ toggleConsent }}" style="width:20px; height:20px; flex-shrink:0; margin:1px 0 0; accent-color:#1E4FD8;">
+          <span>I agree to be contacted by MatchMySolicitor and one matched partner solicitor about my enquiry. My details will not be sold to multiple firms.</span>
+        </label>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ onSuccess }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:16px; align-items:center; text-align:center; padding:12px 0 8px;">
+        <div style="width:56px; height:56px; border-radius:50%; background:#E6F5F2; color:#0D9488; display:flex; align-items:center; justify-content:center; font-size:26px;">✓</div>
+        <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Your enquiry is on its way</h2>
+        <p style="margin:0; font-size:16px; line-height:1.65; color:#5B6472;">We're matching you with a specialist now. They'll contact you directly within 24 hours for a free initial conversation.</p>
+        <div style="text-align:left; background:#F7F8FA; border-radius:10px; padding:20px 22px; display:flex; flex-direction:column; gap:12px; width:100%; font-size:15px; line-height:1.6; color:#3A414C;">
+          <div style="display:flex; gap:12px;"><strong style="color:#1E4FD8;">1.</strong><span>We match your enquiry with the right partner solicitor.</span></div>
+          <div style="display:flex; gap:12px;"><strong style="color:#1E4FD8;">2.</strong><span>Your solicitor calls or emails you within 24 hours.</span></div>
+          <div style="display:flex; gap:12px;"><strong style="color:#1E4FD8;">3.</strong><span>You decide whether to go ahead. No obligation.</span></div>
+        </div>
+      </div>
+      </sc-if>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; border-top:1px solid #EEF1F4; padding-top:20px;">
+        <sc-if value="{{ showBack }}" hint-placeholder-val="{{ true }}">
+          <button type="button" onClick="{{ wizardBack }}" class="nav-link" style="cursor:pointer; background:none; border:none; font-size:15px; font-weight:600; color:#5B6472; padding:12px 8px;">← Back</button>
+        </sc-if>
+        <button type="button" onClick="{{ wizardNext }}" disabled="{{ nextDisabled }}" class="btn-primary" style="cursor:pointer; margin-left:auto; background:{{ nextBg }}; color:#FFFFFF; border:none; padding:14px 28px; border-radius:8px; font-size:16px; font-weight:700;">{{ nextLabel }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+<!-- /@block -->
+
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+<x-import component-from-global-scope="cookie-banner" from="./cookie-banner.js" hint-size="0,0"></x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;wizardPreview&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;closed&quot;, &quot;step2&quot;, &quot;step4&quot;, &quot;success&quot;], &quot;default&quot;: &quot;closed&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Homepage&quot;, &quot;label&quot;: &quot;Wizard state (design review)&quot;}}">
+class Component extends DCLogic {
+  // wizard: visual states only (closed / step2 / step4 / success). The real wizard logic,
+  // validation and submit live in the app code, not here.
+  state = { qp: 'two years', wiz: null, role: null, consent: false };
+  async componentDidMount() {
+    try { const cfg = await import('./site-config.js'); this.setState({ qp: cfg.QUALIFYING_PERIOD }); } catch (e) {}
+  }
+  renderVals() {
+    const s = this.state;
+    const preview = this.props.wizardPreview ?? 'closed';
+    const stage = s.wiz ?? (preview === 'closed' ? null : preview);
+    const isEmployee = s.role !== 'employer';
+    const labels = { step2: 'Your situation', step4: 'Contact details', success: 'Done' };
+    const nums = { step2: 2, step4: 4, success: 4 };
+    return {
+      openEmployee: () => this.setState({ role: 'employee', wiz: 'step2' }),
+      openEmployer: () => this.setState({ role: 'employer', wiz: 'step2' }),
+      closeWizard: () => this.setState({ wiz: 'closed' }),
+      wizardOpen: !!stage && stage !== 'closed',
+      onStep2: stage === 'step2', onStep4: stage === 'step4', onSuccess: stage === 'success',
+      stepNum: nums[stage] || 2, stepLabel: labels[stage] || 'Your situation',
+      progressPct: stage === 'step2' ? '50%' : '100%',
+      step2Heading: isEmployee ? 'Tell us about your dispute' : 'Tell us about the claim your business is facing',
+      tenureLabel: isEmployee ? 'How long have you been employed there?' : 'How long has the employee been employed?',
+      consent: s.consent, toggleConsent: (e) => this.setState({ consent: e.target.checked }),
+      showBack: stage !== 'success',
+      nextLabel: stage === 'step2' ? 'Continue →' : stage === 'step4' ? 'Submit my enquiry' : 'Close',
+      nextBg: stage === 'step4' && !s.consent ? '#AFC0EE' : '#1E4FD8',
+      nextDisabled: stage === 'step4' && !s.consent,
+      wizardBack: () => this.setState((st) => ({ wiz: (st.wiz ?? stage) === 'step4' ? 'step2' : 'closed' })),
+      wizardNext: () => this.setState((st) => {
+        const at = st.wiz ?? stage;
+        if (at === 'step2') return { wiz: 'step4' };
+        if (at === 'step4') return { wiz: st.consent ? 'success' : 'step4' };
+        return { wiz: 'closed' };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

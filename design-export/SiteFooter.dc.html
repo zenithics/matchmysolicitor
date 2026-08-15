@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<footer style="background:#1A1F26; border-top:1px solid #2A313B; color:#98A1AE; font-size:14px; font-family:'Plus Jakarta Sans',system-ui,sans-serif;">
+  <div class="footer-grid" style="max-width:1180px; margin:0 auto; padding:56px 24px 32px;">
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <img src="uploads/matchmysolicitor-reversed.svg" alt="MatchMySolicitor" style="height:42px; width:auto; align-self:flex-start;">
+      <p style="margin:0; line-height:1.6; max-width:38ch;">A referral service connecting employers and employees with vetted specialist employment solicitors across the UK. We are not a law firm and do not provide legal advice.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="color:#FFFFFF; font-weight:700;">Services</div>
+      <a href="for-employers.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">For Employers</a>
+      <a href="for-employees.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">For Employees</a>
+      <a href="how-it-works.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">How It Works</a>
+      <a href="employment-solicitors.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Employment solicitors near you</a>
+      <a href="enquiry.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Free enquiry</a>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="color:#FFFFFF; font-weight:700;">Guides</div>
+      <a href="guides.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">All guides</a>
+      <a href="guides-category-dismissal.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Dismissal</a>
+      <a href="guides-category-exit-negotiations.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Exit negotiations</a>
+      <a href="guides-category-tribunal-process.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Tribunal process</a>
+      <a href="guides-category-discrimination.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Discrimination</a>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="color:#FFFFFF; font-weight:700;">Company</div>
+      <a href="about.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">About us</a>
+      <a href="contact.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Contact</a>
+      <a href="how-it-works.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">How we vet our panel</a>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="color:#FFFFFF; font-weight:700;">Legal</div>
+      <a href="legal-privacy-policy.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Privacy policy</a>
+      <a href="legal-terms-of-use.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Terms of use</a>
+      <a href="legal-cookie-policy.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Cookie policy</a>
+      <a href="legal-complaints.dc.html" class="footer-link" style="color:#98A1AE; text-decoration:none;">Complaints</a>
+      <button onClick="{{ openCookieSettings }}" class="footer-link" style="background:none; border:none; padding:0; text-align:left; cursor:pointer; font:500 14px 'Plus Jakarta Sans',sans-serif; color:#98A1AE;">Cookie settings</button>
+    </div>
+  </div>
+  <div style="max-width:1180px; margin:0 auto; padding:0 24px 32px;">
+    <div style="border-top:1px solid #2A313B; padding-top:24px; display:flex; flex-direction:column; gap:12px; font-size:13px; color:#6B7482; line-height:1.6;">
+      <p style="margin:0; color:#98A1AE; max-width:96ch;">MatchMySolicitor is a matching service and is not a firm of solicitors. We do not provide legal advice. All firms on our panel are regulated by the Solicitors Regulation Authority.</p>
+      <div>© 2026 MatchMySolicitor. All rights reserved.</div>
+      <div>Website designed by <a href="https://zenithics.com" style="color:#98A1AE;">Zenithics</a></div>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1200, &quot;height&quot;: 420}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { openCookieSettings: () => { if (window.__openCookieSettings) window.__openCookieSettings(); } };
+  }
+}
+</script>
+</body>
+</html>
