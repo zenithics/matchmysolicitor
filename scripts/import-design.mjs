@@ -532,11 +532,14 @@ async function seedSiteChrome(brand) {
       column3Links: [
         navLink('About us', '/about'),
         navLink('Contact', '/contact'),
-        navLink('Privacy policy', '/legal-privacy-policy'),
-        navLink('Terms of use', '/legal-terms-of-use'),
-        navLink('Cookie policy', '/legal-cookie-policy'),
-        navLink('Complaints', '/legal-complaints'),
+        navLink('How we vet our panel', '/how-it-works'),
       ],
+      // Legal links are rendered by the Footer component's own Legal column,
+      // alongside the cookie settings control, so they are deliberately not
+      // seeded here. The design export names these files legal-*.dc.html but
+      // the pages declare bare slugs (privacy-policy, terms-of-use,
+      // cookie-policy, complaints) — seeding the filename form 404s.
+
       copyrightText: `\u00a9 {year} ${brand.name}. All rights reserved. Website designed by Zenithics.`,
     }),
   })
