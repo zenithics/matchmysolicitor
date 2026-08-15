@@ -185,6 +185,21 @@ async function upsert(collection, field, value, data) {
 
 const mediaCache = new Map()
 
+const MIME_TYPES = {
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.avif': 'image/avif',
+}
+
+function mimeTypeFor(name) {
+  const ext = name.slice(name.lastIndexOf('.')).toLowerCase()
+  return MIME_TYPES[ext] || 'application/octet-stream'
+}
+
 const mediaFailures = []
 
 async function uploadMedia(filePath, alt) {
@@ -198,7 +213,11 @@ async function uploadMedia(filePath, alt) {
 
   const buf = readFileSync(filePath)
   const form = new FormData()
-  form.append('file', new Blob([buf]), name)
+  // The Blob MUST carry a MIME type. Without one the browser-style FormData
+  // sends application/octet-stream, Payload can't identify the image, and
+  // sharp throws while generating the resize set — surfacing as a bare
+  // 500 "Something went wrong" with nothing useful in the response body.
+  form.append('file', new Blob([buf], { type: mimeTypeFor(name) }), name)
   form.append('_payload', JSON.stringify({ alt: alt || name }))
   const res = await fetch(`${BASE}/api/media`, {
     method: 'POST',

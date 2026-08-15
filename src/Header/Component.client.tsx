@@ -75,7 +75,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
           <div className="flex items-center justify-between h-16">
 
             {/* Left nav — desktop */}
-            <nav className="hidden md:flex items-center gap-6" aria-label="Primary navigation left">
+            <nav className="hidden md:flex items-center gap-6 order-2" aria-label="Primary navigation left">
               {navLeft.map(({ href, label, newTab }) => (
                 <Link
                   key={href}
@@ -93,10 +93,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
               ))}
             </nav>
 
-            {/* Logo — centered */}
+            {/* Logo — left aligned, matching the design's logo-left / nav-right header */}
             <Link
               href="/"
-              className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0"
+              className="order-first mr-auto"
               aria-label="Home"
             >
               {logo?.url ? (
@@ -116,7 +116,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
             </Link>
 
             {/* Right nav — desktop */}
-            <div className="flex items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-4 md:gap-6 order-3">
               <nav className="hidden md:flex items-center gap-6" aria-label="Primary navigation right">
                 {navRight.map(({ href, label, newTab }) => (
                   <Link
