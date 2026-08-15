@@ -63,6 +63,20 @@ export const Features: Block = {
           relationTo: 'media',
           label: 'Feature Image (optional)',
         },
+        {
+          name: 'linkUrl',
+          type: 'text',
+          label: 'Link URL (optional)',
+          admin: {
+            description: 'Makes the whole card a link, e.g. /for-employers-tribunal-defence',
+          },
+        },
+        {
+          name: 'linkLabel',
+          type: 'text',
+          label: 'Link Label (optional)',
+          admin: { condition: (_, siblingData) => Boolean(siblingData?.linkUrl) },
+        },
       ],
     },
   ],
