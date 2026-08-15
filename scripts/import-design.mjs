@@ -454,10 +454,12 @@ async function seedSiteChrome(brand) {
       textColour: brand.colours.ink,
       headerBgColour: '#FFFFFF',
       footerBgColour: brand.colours.ink,
-      // The design ships no custom font-family, so pin both to the starter's
-      // sans. Leaving these unset lets the global default to DM Serif.
-      headingFont: 'Inter',
-      bodyFont: 'Inter',
+      // The export sets font-family:'Plus Jakarta Sans' on 255 elements; that is
+      // the design's typeface for both headings and body. Must be set
+      // explicitly: once a site-appearance record exists, leaving headingFont
+      // empty applies the global's own default of DM Serif Display.
+      headingFont: 'Plus Jakarta Sans',
+      bodyFont: 'Plus Jakarta Sans',
     }),
   })
 
