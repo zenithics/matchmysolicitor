@@ -20,8 +20,36 @@ export const EnquiryWizard: Block = {
           'Inline-hero shows step 1 in place; choosing an answer opens the rest as a modal on desktop and a full-screen sheet on mobile.',
       },
     },
+    {
+      name: 'eyebrow',
+      type: 'text',
+      admin: {
+        description: 'Small label above the heading. Inline-hero variant only.',
+        condition: (_, siblingData) => siblingData?.variant === 'inline-hero',
+      },
+    },
     { name: 'heading', type: 'text', defaultValue: 'Find the right employment solicitor' },
     { name: 'subheading', type: 'textarea' },
+    {
+      name: 'bullets',
+      type: 'array',
+      label: 'Hero trust points',
+      maxRows: 4,
+      fields: [{ name: 'text', type: 'text', required: true }],
+      admin: {
+        description: 'Shown beside the form in the hero. Inline-hero variant only.',
+        condition: (_, siblingData) => siblingData?.variant === 'inline-hero',
+      },
+    },
+    {
+      name: 'presetSituation',
+      type: 'text',
+      label: 'Pre-select situation',
+      admin: {
+        description:
+          'On a service landing page, pre-fills the "what is your situation?" answer (e.g. "Unfair dismissal"). Must match one of the wizard options exactly, or it is ignored.',
+      },
+    },
     {
       name: 'consentText',
       type: 'textarea',
