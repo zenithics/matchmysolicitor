@@ -24,7 +24,8 @@
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "seed": "node --env-file=.env scripts/seed-products.mjs",
     "import:design": "node scripts/import-design.mjs ./design-export ./design-images",
-    "import:design:dry": "node scripts/import-design.mjs ./design-export ./design-images --dry"
+    "import:design:dry": "node scripts/import-design.mjs ./design-export ./design-images --dry",
+    "import:design:nomedia": "node scripts/import-design.mjs ./design-export ./design-images --skip-media"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.106.0",
