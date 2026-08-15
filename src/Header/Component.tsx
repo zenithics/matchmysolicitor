@@ -30,7 +30,45 @@ export async function Header() {
     // No DB at build time — logo stays null, text fallback renders
   }
 
+  /*
+   * The design's header opens a dropdown of service pages under "For Employers"
+   * and "For Employees". The Header global has no children field and adding one
+   * means a schema change plus a migration, so instead derive the children from
+   * the published service pages themselves — they follow a strict slug
+   * convention (for-employers-*, for-employees-*) set by the importer.
+   */
+  const dropdowns: Record<string, { href: string; label: string }[]> = {}
+  try {
+    const payload = await getPayload({ config: configPromise })
+    for (const parent of ['for-employers', 'for-employees']) {
+      const children = await payload.find({
+        collection: 'pages',
+        depth: 0,
+        limit: 12,
+        pagination: false,
+        where: {
+          and: [
+            { slug: { like: `${parent}-` } },
+            { _status: { equals: 'published' } },
+          ],
+        },
+        sort: 'title',
+      })
+      const items = (children?.docs ?? [])
+        .filter((d: { slug?: string | null }) => typeof d.slug === 'string')
+        .map((d: { slug?: string | null; title?: string | null }) => ({
+          href: `/${d.slug}`,
+          label: (d.title ?? '').replace(/^For (employers|employees):?\s*/i, ''),
+        }))
+      if (items.length) dropdowns[`/${parent}`] = items
+    }
+  } catch {
+    // No DB at build time — header renders as flat links.
+  }
+
   if (!headerData) return null
 
-  return <HeaderClient data={headerData} logo={logo} brandName={brandName} />
+  return (
+    <HeaderClient data={headerData} logo={logo} brandName={brandName} dropdowns={dropdowns} />
+  )
 }

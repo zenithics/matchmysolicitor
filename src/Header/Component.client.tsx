@@ -12,6 +12,8 @@ interface HeaderClientProps {
   data: Header
   logo?: Media | null
   brandName?: string
+  /** Service pages grouped under a parent nav href, e.g. '/for-employers'. */
+  dropdowns?: Record<string, { href: string; label: string }[]>
 }
 
 function resolveLinkHref(link: any): string {
@@ -25,16 +27,23 @@ function resolveLinkHref(link: any): string {
   return '#'
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandName = 'Your Brand' }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({
+  data,
+  logo,
+  brandName = 'Your Brand',
+  dropdowns = {},
+}) => {
   const [theme, setTheme] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [openMenu, setOpenMenu] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
 
   useEffect(() => {
     setHeaderTheme(null)
     setMobileOpen(false)
+    setOpenMenu(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname])
 
@@ -75,28 +84,79 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
           <div className="flex items-center justify-between h-16">
 
             {/* Left nav — desktop */}
-            <nav className="hidden md:flex items-center gap-6 order-2" aria-label="Primary navigation left">
-              {navLeft.map(({ href, label, newTab }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  target={newTab ? '_blank' : undefined}
-                  rel={newTab ? 'noopener noreferrer' : undefined}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    pathname === href || (href !== '/' && pathname.startsWith(href.split('?')[0]))
-                      ? 'text-primary'
-                      : 'text-foreground/80'
-                  }`}
-                >
-                  {label}
-                </Link>
-              ))}
+            <nav className="hidden md:flex items-center gap-7 order-2 ml-10 mr-auto" aria-label="Primary navigation left">
+              {navLeft.map(({ href, label, newTab }) => {
+                const children = dropdowns[href]
+                const isActive =
+                  pathname === href || (href !== '/' && pathname.startsWith(href.split('?')[0]))
+                const linkClass = `text-sm font-medium transition-colors hover:text-primary ${
+                  isActive ? 'text-primary' : 'text-foreground/80'
+                }`
+
+                if (!children?.length) {
+                  return (
+                    <Link
+                      key={href}
+                      href={href}
+                      target={newTab ? '_blank' : undefined}
+                      rel={newTab ? 'noopener noreferrer' : undefined}
+                      className={linkClass}
+                    >
+                      {label}
+                    </Link>
+                  )
+                }
+
+                /*
+                 * Hover opens the menu (matching the design) but the trigger is a
+                 * real link, so keyboard and touch users still reach the overview
+                 * page instead of being trapped by a hover-only control.
+                 */
+                return (
+                  <div
+                    key={href}
+                    className="relative"
+                    onMouseEnter={() => setOpenMenu(href)}
+                    onMouseLeave={() => setOpenMenu(null)}
+                  >
+                    <Link
+                      href={href}
+                      className={`${linkClass} inline-flex items-center gap-1.5 py-2`}
+                      aria-expanded={openMenu === href}
+                      aria-haspopup="true"
+                      onFocus={() => setOpenMenu(href)}
+                    >
+                      {label}
+                      <span aria-hidden="true" className="text-[10px] leading-none">
+                        ▾
+                      </span>
+                    </Link>
+                    {openMenu === href && (
+                      <div
+                        role="menu"
+                        className="absolute left-[-16px] top-full z-50 min-w-[260px] rounded-lg border border-border bg-white p-2 shadow-[0_8px_24px_rgba(26,31,38,0.10)]"
+                      >
+                        {children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            role="menuitem"
+                            className="block rounded-md px-3 py-2.5 text-sm text-foreground/90 transition-colors hover:bg-muted hover:text-primary"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </nav>
 
             {/* Logo — left aligned, matching the design's logo-left / nav-right header */}
             <Link
               href="/"
-              className="order-first mr-auto"
+              className="order-first"
               aria-label="Home"
             >
               {logo?.url ? (
