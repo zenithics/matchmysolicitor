@@ -141,6 +141,18 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
                 ))}
               </nav>
 
+              {/* Persistent CTA (.nav-cta in the design's stylesheet): visible at
+                  every width and deliberately OUTSIDE the burger, so paid traffic
+                  always has a one-tap route into the wizard. Not a CMS field yet
+                  — that needs a schema change, which isn't worth the migration
+                  risk tonight. */}
+              <Link
+                href="/enquiry"
+                className="inline-flex items-center justify-center gap-2 shrink-0 min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[18px] py-[11px] text-[15px] font-bold text-primary-foreground transition-colors hover:bg-[var(--mms-primary-hover)] max-[480px]:px-[14px] max-[480px]:text-[14px]"
+              >
+                Check your claim
+              </Link>
+
               {/* Mobile hamburger */}
               <button
                 className="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
