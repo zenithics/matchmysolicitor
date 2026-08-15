@@ -78,9 +78,28 @@ if (tablesExist) {
     run('echo y | npx payload migrate')
   } else {
     // DB already set up but no committed migration files.
-    // Nothing to do — skip migration to preserve existing data.
-    console.log('\n✓  Database is already set up. Skipping migration to preserve data.')
-    console.log('   To apply schema changes, commit migration files to src/migrations/')
+    //
+    // Skipping here is what silently breaks production: if a collection gained
+    // a new block or field since the DB was created, its tables were never
+    // made, and every query against that collection 500s while untouched
+    // collections keep working. So instead of skipping, diff the live schema
+    // and apply whatever is missing. No diff means this is a no-op.
+    console.log('\n▸ Existing database, no committed migrations — checking for schema drift…')
+    try {
+      run('echo y | npx payload migrate:create --name sync-schema')
+    } catch (err) {
+      console.warn('migrate:create exited non-zero (fine if there was no diff):', err.message)
+    }
+
+    try {
+      run('echo y | npx payload migrate')
+      console.log('\n✓  Schema is in sync.')
+    } catch (err) {
+      console.error('\n✖  Could not apply schema changes:', err.message)
+      throw err
+    }
+
+    console.log('   Commit src/migrations/ so this is deterministic next deploy.')
   }
 } else {
   // Fresh database — generate migration and apply it.
