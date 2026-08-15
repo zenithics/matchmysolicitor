@@ -446,12 +446,18 @@ async function seedSiteChrome(brand) {
     body: JSON.stringify({
       // Tabs in this global are label-only, so these fields are flat, not nested.
       primaryColour: brand.colours.primary,
-      secondaryColour: brand.colours.ink,
+      // Light, NOT ink: this drives --secondary, whose paired foreground stays
+      // dark. Setting it to ink gives dark-on-dark cards across the site.
+      secondaryColour: brand.colours.surface,
       accentColour: brand.colours.accent,
       backgroundColour: '#FFFFFF',
       textColour: brand.colours.ink,
       headerBgColour: '#FFFFFF',
       footerBgColour: brand.colours.ink,
+      // The design ships no custom font-family, so pin both to the starter's
+      // sans. Leaving these unset lets the global default to DM Serif.
+      headingFont: 'Inter',
+      bodyFont: 'Inter',
     }),
   })
 
@@ -646,7 +652,7 @@ async function main() {
     await seedSiteChrome({
       name: 'MatchMySolicitor',
       // From design-export/styles.css — the design's own interactive states.
-      colours: { primary: '#1E4FD8', accent: '#2CC5B6', ink: '#1A1F26' },
+      colours: { primary: '#1E4FD8', accent: '#2CC5B6', ink: '#1A1F26', surface: '#F7F8FA' },
       tagline: 'Matched with an SRA-regulated employment solicitor, usually within 24 hours.',
       email: 'hello@matchmysolicitor.co.uk',
       description:
