@@ -251,33 +251,43 @@ html[data-theme='light'] {
 /*
  * MatchMySolicitor design-fidelity layer.
  *
- * The Claude Design export carries its look in inline styles: 16,471
- * declarations, but only 328 distinct ones. The importer discards inline
- * styling to keep pages CMS-editable, so the gap between the mockup and the
- * build is really this small set of repeated values, not per-element CSS.
+ * Values are now taken from the design's own token block (styles.css ":root",
+ * the 15 Aug styling export) rather than counted from inline styles, so this
+ * is authoritative rather than inferred. Two earlier guesses were wrong and
+ * are corrected here: --border was #E4E7EC (really #D3D8DF) and the design
+ * distinguishes body copy (#3A414C) from secondary copy (#5B6472).
  *
- * These are the tokens the CMS cannot reach (SiteAppearance only exposes
- * primary/secondary/accent/bg/text/header/footer). Values are measured from
- * the export, with the occurrence count kept so they can be re-derived.
- * Declared after the runtime overrides so ThemeProvider still wins on --color-*.
+ * These are the tokens SiteAppearance cannot reach. Declared after the runtime
+ * overrides so ThemeProvider still wins on --color-*.
  */
 :root {
-  --card: #FFFFFF;                 /* background:#FFFFFF x471 */
-  --card-foreground: #1A1F26;      /* color:#1A1F26 x674 */
+  --card: #FFFFFF;                 /* --white */
+  --card-foreground: #1A1F26;      /* --ink: headings, dark sections */
   --secondary-foreground: #1A1F26; /* keeps text dark on light secondary surfaces */
-  --muted: #F7F8FA;                /* background:#F7F8FA x27 */
-  --muted-foreground: #5B6472;     /* color:#5B6472 x507 — the design's body grey */
-  --border: #E4E7EC;               /* border:1px solid #E4E7EC x333 */
-  --input: #E4E7EC;
-  --ring: #1E4FD8;                 /* focus ring, matches styles.css outline */
-  --primary-foreground: #FFFFFF;   /* color:#FFFFFF x247 on primary fills */
-  --radius: 10px;                  /* border-radius:10px x370 */
+  --muted: #F7F8FA;                /* --surface: page background */
+  --muted-foreground: #5B6472;     /* --muted: secondary copy */
+  --border: #D3D8DF;               /* --border: inputs, cards */
+  --input: #D3D8DF;
+  --ring: #1E4FD8;                 /* --primary, matches the focus outline */
+  --primary-foreground: #FFFFFF;
+  --radius: 10px;
+
+  /* Design tokens with no shadcn equivalent, exposed for block components. */
+  --mms-body: #3A414C;             /* --body: body copy */
+  --mms-muted-light: #6B7482;      /* --muted-light: labels, meta */
+  --mms-on-dark-muted: #B9C1CC;    /* --on-dark-muted: copy on ink */
+  --mms-primary-hover: #1740B8;
+  --mms-rule: #EEF1F4;             /* hairlines, progress track */
+  --mms-container: 1180px;
 }
 
-/* Heading element sizing from CMS */
-h1 { font-size: var(--size-h1, 3.5rem); font-weight: var(--weight-heading, 700); }
-h2 { font-size: var(--size-h2, 2.5rem); font-weight: var(--weight-heading, 700); }
-h3 { font-size: var(--size-h3, 2rem); font-weight: var(--weight-heading, 700); }
+/* Heading element sizing from CMS.
+ * Fallbacks are the design's fluid clamps, so headings scale on phones unless
+ * the CMS explicitly sets a fixed size. This rule comes after the fidelity
+ * layer, so the clamps have to live here to survive the cascade. */
+h1 { font-size: var(--size-h1, clamp(28px, 6vw, 46px)); font-weight: var(--weight-heading, 700); line-height: 1.12; letter-spacing: -0.02em; }
+h2 { font-size: var(--size-h2, clamp(23px, 4vw, 34px)); font-weight: var(--weight-heading, 700); line-height: 1.2; letter-spacing: -0.015em; }
+h3 { font-size: var(--size-h3, clamp(18px, 2.6vw, 22px)); font-weight: var(--weight-heading, 700); line-height: 1.35; }
 h4 { font-size: var(--size-h4, 1.5rem); font-weight: var(--weight-heading, 700); }
 h5 { font-size: var(--size-h5, 1.25rem); font-weight: var(--weight-heading, 700); }
 body { font-size: var(--size-body, 1rem); font-weight: var(--weight-body, 400); }

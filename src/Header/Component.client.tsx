@@ -109,9 +109,17 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandNam
                   priority
                 />
               ) : (
-                <span className="font-sans text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
-                  {brandName}
-                </span>
+                /* Design ships the real wordmark as SVG; use it before falling
+                   back to a text brand name. Static asset, so it does not
+                   depend on the media upload path. */
+                <Image
+                  src="/logo.svg"
+                  alt={brandName}
+                  width={200}
+                  height={37}
+                  className="h-8 w-auto object-contain"
+                  priority
+                />
               )}
             </Link>
 

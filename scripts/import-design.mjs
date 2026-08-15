@@ -479,6 +479,14 @@ async function seedSiteChrome(brand) {
       // empty applies the global's own default of DM Serif Display.
       headingFont: 'Plus Jakarta Sans',
       bodyFont: 'Plus Jakarta Sans',
+      // The design uses fluid type (styles.css §2). SiteAppearance defaults
+      // these to fixed rem values, and those defaults are injected as CSS vars,
+      // so a CSS-level clamp fallback would never apply. Seeding the clamps
+      // here is the only place they survive the cascade.
+      h1Size: 'clamp(28px, 6vw, 46px)',
+      h2Size: 'clamp(23px, 4vw, 34px)',
+      h3Size: 'clamp(18px, 2.6vw, 22px)',
+      bodySize: 'clamp(15px, 1.5vw, 16.5px)',
     }),
   })
 

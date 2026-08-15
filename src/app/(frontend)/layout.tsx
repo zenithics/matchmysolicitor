@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
-import { Inter } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -35,6 +35,18 @@ const inter = Inter({
   display: 'swap',
 })
 
+// The Claude Design export sets font-family:'Plus Jakarta Sans' on 255
+// elements, and ThemeProvider's FONT_STACK maps that name to var(--font-jakarta).
+// Nothing defined that variable, so selecting the design's typeface in the CMS
+// silently fell back to system-ui. next/font self-hosts the files and handles
+// font-display: swap, so no Google <link> is needed.
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-jakarta',
+  display: 'swap',
+})
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const { getPayload } = await import('payload')
@@ -54,6 +66,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={cn(
         GeistMono.variable,
         inter.variable,
+        jakarta.variable,
       )}
       lang={locale.language}
       suppressHydrationWarning

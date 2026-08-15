@@ -35,7 +35,7 @@
      reason="4-step qualification form with conditional branching on employer/employee, case type
      routing, and query-string pre-fill (?type=&case=). No library block covers multi-step forms:
      formBlock is a single flat form. This is the one bespoke component in the build." -->
-<section style="max-width:720px; margin:0 auto; padding:56px 24px 96px;">
+<section class="sp-56-96" style="max-width:720px; margin:0 auto">
   <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
     <div style="text-align:center; display:flex; flex-direction:column; gap:12px; margin-bottom:36px;">
       <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(26px, 5vw, 38px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.015em;">Start your free enquiry</h1>
@@ -58,7 +58,7 @@
       <sc-if value="{{ onStep1 }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex; flex-direction:column; gap:20px;">
           <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">First things first, which side are you on?</h2>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="grid-2" style="display:grid; gap:16px">
             <button onClick="{{ pickEmployer }}" class="card-link-ink" style="cursor:pointer; text-align:left; border:2px solid {{ employerBorder }}; background:#FFFFFF; border-radius:10px; padding:24px; display:flex; flex-direction:column; gap:6px;">
               <span style="font-size:18px; font-weight:700; color:#1A1F26;">I'm an employer</span>
               <span style="font-size:14px; color:#5B6472; line-height:1.5;">Facing a claim, negotiating a settlement, or need urgent representation</span>
