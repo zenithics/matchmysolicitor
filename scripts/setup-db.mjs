@@ -70,36 +70,47 @@ const idx = readFileSync('src/migrations/index.ts', 'utf8')
 const hasMigrationFiles = !idx.includes('migrations = []')
 const tablesExist = await dbHasTables()
 
-if (tablesExist) {
+if (process.env.DB_RESET === '1') {
+  // Escape hatch for the one case the logic below cannot solve safely:
+  // the database has tables but no migration history, so there is nothing to
+  // diff against. `migrate:create` then emits a full create-everything
+  // migration, which collides with the tables that already exist
+  // ("index already exists") and the deploy dies.
+  //
+  // This drops every Payload table and rebuilds the schema from the current
+  // config. DESTRUCTIVE — all content and users are lost. Only set DB_RESET=1
+  // deliberately, on a database whose contents you are willing to lose, and
+  // remove it immediately afterwards.
+  console.log('\n⚠  DB_RESET=1 — rebuilding the schema from scratch. All data will be lost.')
+  try {
+    run('echo y | npx payload migrate:create --name initial')
+  } catch (err) {
+    console.warn('migrate:create exited non-zero (fine if one already exists):', err.message)
+  }
+  run('echo y | npx payload migrate:fresh')
+  console.log('\n✓  Schema rebuilt. Remove DB_RESET now, and commit src/migrations/.')
+} else if (tablesExist) {
   if (hasMigrationFiles) {
     // Committed migration files + existing DB → run incremental migrate
     // to apply any new migrations added since last deploy.
     console.log('\n▸ Running incremental migrate…')
     run('echo y | npx payload migrate')
   } else {
-    // DB already set up but no committed migration files.
-    //
-    // Skipping here is what silently breaks production: if a collection gained
-    // a new block or field since the DB was created, its tables were never
-    // made, and every query against that collection 500s while untouched
-    // collections keep working. So instead of skipping, diff the live schema
-    // and apply whatever is missing. No diff means this is a no-op.
-    console.log('\n▸ Existing database, no committed migrations — checking for schema drift…')
-    try {
-      run('echo y | npx payload migrate:create --name sync-schema')
-    } catch (err) {
-      console.warn('migrate:create exited non-zero (fine if there was no diff):', err.message)
-    }
-
-    try {
-      run('echo y | npx payload migrate')
-      console.log('\n✓  Schema is in sync.')
-    } catch (err) {
-      console.error('\n✖  Could not apply schema changes:', err.message)
-      throw err
-    }
-
-    console.log('   Commit src/migrations/ so this is deterministic next deploy.')
+    // Tables exist but no migration history. We cannot generate a diff:
+    // migrate:create would emit a full create-everything migration and fail
+    // against the existing tables. Auto-running it here is what broke the
+    // previous deploy, so refuse and explain instead of guessing.
+    console.warn('\n⚠  Database has tables but no committed migrations.')
+    console.warn('   Schema changes CANNOT be applied automatically in this state.')
+    console.warn('   If a collection gained blocks or fields, its tables are missing')
+    console.warn('   and queries against it will fail at runtime.')
+    console.warn('')
+    console.warn('   Fix by either:')
+    console.warn('     • committing migration files to src/migrations/, or')
+    console.warn('     • redeploying once with DB_RESET=1 to rebuild the schema')
+    console.warn('       (destructive — drops all content).')
+    console.warn('')
+    console.warn('   Continuing the build with the existing schema.')
   }
 } else {
   // Fresh database — generate migration and apply it.
