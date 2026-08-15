@@ -333,11 +333,14 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 p-0 sm:p-6"
+      /* Matches .wiz-overlay / .wiz-panel in the design's styles.css: centred
+         560px panel on desktop, full-screen sheet on phones (dvh so mobile
+         browser chrome doesn't crop it). */
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[rgba(16,20,26,0.62)] p-0 sm:p-6"
       onClick={() => setOpen(false)}
     >
       <div
-        className="bg-background w-full sm:max-w-2xl h-full sm:h-auto sm:rounded-2xl overflow-y-auto p-6 sm:p-10"
+        className="bg-card w-full sm:w-[min(560px,100%)] min-h-[100dvh] sm:min-h-0 sm:max-h-[calc(100vh-64px)] sm:rounded-[14px] overflow-y-auto p-6 sm:p-10"
         onClick={(e) => e.stopPropagation()}
       >
         <button type="button" onClick={() => setOpen(false)} className="mb-4 text-sm underline" aria-label="Close">
