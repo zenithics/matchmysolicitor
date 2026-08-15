@@ -16,16 +16,11 @@ type Props = {
  * others) is a rounded, bordered card nested in a narrow article, so those keep
  * the card treatment rather than being forced into the band pattern.
  */
-export const BannerBlock: React.FC<Props> = ({ className, badge, content, style }) => {
+export const BannerBlock: React.FC<Props> = ({ className, content, style }) => {
   if (style === 'info') {
     return (
       <section className={cn('bg-[#E9F6F4] border-b border-[#C6E7E2]', className)}>
         <div className="container flex items-start gap-4 py-[22px] max-[640px]:flex-col max-[640px]:gap-2.5">
-          {badge && (
-            <span className="mt-0.5 shrink-0 self-start rounded-[4px] bg-[#0D9488] px-2.5 py-[5px] text-xs font-bold tracking-[0.06em] text-white">
-              {badge}
-            </span>
-          )}
           <RichText
             className="text-base leading-[1.65] text-[#0F5D55] [&_strong]:text-[#0A4740] [&_a]:font-bold [&_a]:text-[#0B7268]"
             data={content}

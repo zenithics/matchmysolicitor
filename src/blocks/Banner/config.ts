@@ -22,14 +22,6 @@ export const Banner: Block = {
       required: true,
     },
     {
-      name: 'badge',
-      type: 'text',
-      label: 'Badge (optional)',
-      admin: {
-        description: 'Short pill, e.g. "1 JAN 2027"',
-      },
-    },
-    {
       name: 'content',
       type: 'richText',
       editor: lexicalEditor({
