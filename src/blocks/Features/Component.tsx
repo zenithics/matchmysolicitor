@@ -26,8 +26,16 @@ export const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
         </div>
       )}
       <div className={`grid grid-cols-1 ${columnClasses[columns ?? '3'] || columnClasses['3']} gap-8`}>
-        {features?.map((feature, i) => (
-          <div key={i} className="flex flex-col gap-4 p-6 rounded-lg border border-border bg-card">
+        {features?.map((feature, i) => {
+          const Card = feature.linkUrl ? 'a' : 'div'
+          return (
+          <Card
+            key={i}
+            {...(feature.linkUrl ? { href: feature.linkUrl } : {})}
+            className={`flex flex-col gap-4 p-6 rounded-lg border border-border bg-card${
+              feature.linkUrl ? ' transition-colors hover:border-primary no-underline' : ''
+            }`}
+          >
             {feature.image && typeof feature.image === 'object' ? (
               <div className="w-full aspect-video rounded-md overflow-hidden mb-2">
                 <Media resource={feature.image} imgClassName="w-full h-full object-cover" />
@@ -39,8 +47,14 @@ export const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
             {feature.description && (
               <RichText className="mb-0 text-muted-foreground text-sm" data={feature.description} enableGutter={false} />
             )}
-          </div>
-        ))}
+            {feature.linkUrl && feature.linkLabel && (
+              <span className="mt-auto pt-2 text-sm font-semibold text-primary">
+                {feature.linkLabel}
+              </span>
+            )}
+          </Card>
+          )
+        })}
       </div>
     </div>
   )
