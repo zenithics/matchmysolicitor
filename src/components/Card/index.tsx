@@ -2,13 +2,11 @@
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
-import React, { Fragment } from 'react'
+import React from 'react'
 
 import type { Post } from '@/payload-types'
 
-import { Media } from '@/components/Media'
-
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'publishedAt'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -22,60 +20,46 @@ export const Card: React.FC<{
   const { card, link } = useClickableCard({})
   const { className, doc, href: hrefProp, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, title, publishedAt } = doc || {}
+  const { description } = meta || {}
 
-  const hasCategories = categories && Array.isArray(categories) && categories.length > 0
+  const category =
+    showCategories && Array.isArray(categories) && categories.length > 0 ? categories[0] : undefined
+  const categoryTitle = category && typeof category === 'object' ? category.title : undefined
+
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = hrefProp ?? `/${relationTo}/${slug}`
+  const reviewed = publishedAt
+    ? new Intl.DateTimeFormat('en-GB', { month: 'long', year: 'numeric' }).format(
+        new Date(publishedAt),
+      )
+    : undefined
 
   return (
     <article
       className={cn(
-        'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
+        'flex flex-col gap-2.5 rounded-[10px] border border-[#E4E7EC] bg-card p-6 hover:cursor-pointer hover:border-primary hover:shadow-[0_4px_16px_rgba(30,79,216,0.10)]',
         className,
       )}
       ref={card.ref}
     >
-      <div className="relative w-full ">
-        {!metaImage && <div className="">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
-      </div>
-      <div className="p-4">
-        {showCategories && hasCategories && (
-          <div className="uppercase text-sm mb-4">
-            {categories?.map((category, index) => {
-              if (typeof category === 'object') {
-                const { title: titleFromCategory } = category
-
-                const categoryTitle = titleFromCategory || 'Untitled category'
-
-                const isLast = index === categories.length - 1
-
-                return (
-                  <Fragment key={index}>
-                    {categoryTitle}
-                    {!isLast && <Fragment>, &nbsp;</Fragment>}
-                  </Fragment>
-                )
-              }
-
-              return null
-            })}
-          </div>
-        )}
-        {titleToUse && (
-          <div className="prose">
-            <h3>
-              <Link className="not-prose" href={href} ref={link.ref}>
-                {titleToUse}
-              </Link>
-            </h3>
-          </div>
-        )}
-        {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
-      </div>
+      {categoryTitle && (
+        <span className="text-xs font-bold uppercase tracking-wider text-primary">
+          {categoryTitle}
+        </span>
+      )}
+      {titleToUse && (
+        <h3 className="text-[18px] font-bold leading-[1.35]">
+          <Link className="no-underline" href={href} ref={link.ref}>
+            {titleToUse}
+          </Link>
+        </h3>
+      )}
+      {sanitizedDescription && (
+        <p className="text-sm leading-relaxed text-muted-foreground">{sanitizedDescription}</p>
+      )}
+      {reviewed && <span className="mt-auto text-[13px] text-[#98A1AE]">Last reviewed {reviewed}</span>}
     </article>
   )
 }

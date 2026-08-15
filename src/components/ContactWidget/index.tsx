@@ -63,7 +63,7 @@ export function ContactWidget({ data }: { data: ContactWidgetType }) {
     faqItems = [],
   } = data
 
-  const color = primaryColor || 'var(--color-primary, #E8177A)'
+  const color = primaryColor || 'var(--primary, #E8177A)'
   const posClass = position === 'bottom-left' ? 'left-6' : 'right-6'
 
   // Close on Escape / click outside

@@ -5,21 +5,21 @@ import type { NewsletterBlock as NewsletterBlockProps } from '@/payload-types'
 
 const THEMES = {
   dark: {
-    wrapper: 'bg-[var(--brand-deep-plum)]',
+    wrapper: 'bg-card-foreground',
     heading: 'text-white',
-    sub: 'text-white/60',
+    sub: 'text-(--mms-on-dark-muted)',
     input: 'bg-white/10 border-white/20 text-white placeholder:text-white/40 focus:border-primary',
-    button: 'bg-primary text-white hover:bg-primary/90',
+    button: 'bg-primary text-white hover:bg-(--mms-primary-hover)',
   },
   light: {
-    wrapper: 'bg-[var(--brand-blush)]',
-    heading: 'text-foreground',
+    wrapper: 'bg-muted',
+    heading: undefined,
     sub: 'text-muted-foreground',
-    input: 'bg-white border-[var(--border-subtle)] text-foreground placeholder:text-muted-foreground focus:border-primary',
-    button: 'bg-primary text-white hover:bg-primary/90',
+    input: 'bg-white border-border text-foreground placeholder:text-muted-foreground focus:border-primary',
+    button: 'bg-primary text-white hover:bg-(--mms-primary-hover)',
   },
   pink: {
-    wrapper: 'bg-gradient-to-r from-primary to-rose-400',
+    wrapper: 'bg-gradient-to-r from-primary to-accent',
     heading: 'text-white',
     sub: 'text-white/75',
     input: 'bg-white/20 border-white/30 text-white placeholder:text-white/50 focus:border-white',
@@ -67,48 +67,50 @@ export const NewsletterBlock: React.FC<NewsletterBlockProps & { disableInnerCont
   }
 
   return (
-    <section className={`py-16 px-6 ${t.wrapper}`}>
-      <div className="max-w-2xl mx-auto text-center">
-        <h2 className={`font-serif text-3xl md:text-4xl mb-2 ${t.heading}`}>
-          {heading || 'Get 10% off your first order'}
-        </h2>
-        {subheading && (
-          <p className={`text-sm mb-8 leading-relaxed ${t.sub}`}>{subheading}</p>
-        )}
+    <section className={`sp-64 ${t.wrapper}`}>
+      <div className="container-inner">
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className={`mb-2 ${t.heading ?? ''}`}>
+            {heading || 'Stay informed'}
+          </h2>
+          {subheading && (
+            <p className={`text-sm mb-8 leading-relaxed ${t.sub}`}>{subheading}</p>
+          )}
 
-        {submitted ? (
-          <div className="flex items-center justify-center gap-2 text-white font-semibold text-sm">
-            <span className="text-2xl">✓</span>
-            You're on the list! Check your inbox for your discount code.
-          </div>
-        ) : (
-          <>
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row gap-0 max-w-md mx-auto"
-            >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => { setEmail(e.target.value); setErrorMsg('') }}
-                required
-                placeholder="your@email.com"
-                disabled={loading}
-                className={`flex-1 px-5 py-3.5 rounded-l-full border text-sm focus:outline-none transition-colors disabled:opacity-70 ${t.input}`}
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className={`px-7 py-3.5 rounded-r-full text-sm font-bold transition-colors whitespace-nowrap disabled:opacity-70 ${t.button}`}
+          {submitted ? (
+            <div className={`flex items-center justify-center gap-2 font-semibold text-sm ${t.heading ?? 'text-card-foreground'}`}>
+              <span className="text-2xl">✓</span>
+              You're subscribed. Watch your inbox for updates.
+            </div>
+          ) : (
+            <>
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col sm:flex-row gap-0 max-w-md mx-auto"
               >
-                {loading ? '…' : (buttonLabel || 'Subscribe')}
-              </button>
-            </form>
-            {errorMsg && (
-              <p className="text-sm text-red-300 mt-3">{errorMsg}</p>
-            )}
-          </>
-        )}
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => { setEmail(e.target.value); setErrorMsg('') }}
+                  required
+                  placeholder="your@email.com"
+                  disabled={loading}
+                  className={`flex-1 px-5 py-3.5 rounded-l-full border text-sm focus:outline-none transition-colors disabled:opacity-70 ${t.input}`}
+                />
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`px-7 py-3.5 rounded-r-full text-sm font-bold transition-colors whitespace-nowrap disabled:opacity-70 ${t.button}`}
+                >
+                  {loading ? '…' : (buttonLabel || 'Subscribe')}
+                </button>
+              </form>
+              {errorMsg && (
+                <p className="text-sm text-red-300 mt-3">{errorMsg}</p>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </section>
   )

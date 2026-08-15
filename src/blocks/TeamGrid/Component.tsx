@@ -17,13 +17,11 @@ export const TeamGridBlock: React.FC<TeamGridBlockProps> = ({
   if (!members || members.length === 0) return null
 
   return (
-    <section className="py-20 bg-background">
-      <div className="container">
+    <section className="sp-80 bg-background">
+      <div className="container-inner">
         {(heading || subheading) && (
           <div className="text-center max-w-2xl mx-auto mb-14">
-            {heading && (
-              <h2 className="text-3xl md:text-4xl font-serif tracking-tight mb-4">{heading}</h2>
-            )}
+            {heading && <h2 className="mb-4">{heading}</h2>}
             {subheading && <p className="text-muted-foreground text-lg">{subheading}</p>}
           </div>
         )}

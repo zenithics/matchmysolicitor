@@ -75,11 +75,16 @@ export async function ThemeProvider() {
   const headingFont = appearance.headingFont || 'DM Serif Display'
   const bodyFont = appearance.bodyFont || 'Plus Jakarta Sans'
 
-  // CSS vars to inject at runtime
+  // CSS vars to inject at runtime. --primary/--secondary/--accent are written
+  // directly (not as --color-primary/etc) so they override the design-fidelity
+  // layer's literals in globals.css by plain cascade — going through the
+  // --color-* aliases that `@theme inline` also declares would create a
+  // --primary -> --color-primary -> --primary cycle, which is invalid at
+  // computed-value time and does not fall back.
   const vars: Record<string, string> = {
-    '--color-primary': appearance.primaryColour || '',
-    '--color-secondary': appearance.secondaryColour || '',
-    '--color-accent': appearance.accentColour || '',
+    '--primary': appearance.primaryColour || '',
+    '--secondary': appearance.secondaryColour || '',
+    '--accent': appearance.accentColour || '',
     '--color-bg': appearance.backgroundColour || '',
     '--color-text': appearance.textColour || '',
     '--color-header-bg': appearance.headerBgColour || '',

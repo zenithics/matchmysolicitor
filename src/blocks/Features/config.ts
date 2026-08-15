@@ -20,16 +20,6 @@ export const Features: Block = {
       label: 'Intro Text',
     },
     {
-      name: 'columns',
-      type: 'select',
-      defaultValue: '3',
-      options: [
-        { label: '2 Columns', value: '2' },
-        { label: '3 Columns', value: '3' },
-        { label: '4 Columns', value: '4' },
-      ],
-    },
-    {
       name: 'features',
       type: 'array',
       minRows: 1,

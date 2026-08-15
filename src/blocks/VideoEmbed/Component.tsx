@@ -53,11 +53,9 @@ export const VideoEmbedBlock: React.FC<VideoEmbedBlockProps> = ({
   if (!embedURL) return null
 
   return (
-    <section className="py-16 bg-background">
-      <div className="container">
-        {heading && (
-          <h2 className="text-3xl font-serif tracking-tight text-center mb-8">{heading}</h2>
-        )}
+    <section className="sp-64 bg-background">
+      <div className="container-inner">
+        {heading && <h2 className="text-center mb-8">{heading}</h2>}
         <div className={`mx-auto ${widthClasses[maxWidth ?? 'large']}`}>
           <div className={`relative w-full ${aspectClasses[aspectRatio ?? '16:9']} rounded-xl overflow-hidden bg-muted`}>
             <iframe

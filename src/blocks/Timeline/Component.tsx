@@ -11,13 +11,11 @@ export const TimelineBlock: React.FC<TimelineBlockProps> = ({
   if (!events || events.length === 0) return null
 
   return (
-    <section className="py-20 bg-background">
-      <div className="container max-w-4xl">
+    <section className="sp-80 bg-muted">
+      <div className="container-inner max-w-4xl">
         {(heading || subheading) && (
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            {heading && (
-              <h2 className="text-3xl md:text-4xl font-serif tracking-tight mb-4">{heading}</h2>
-            )}
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            {heading && <h2 className="mb-4">{heading}</h2>}
             {subheading && <p className="text-muted-foreground text-lg">{subheading}</p>}
           </div>
         )}
@@ -31,7 +29,7 @@ export const TimelineBlock: React.FC<TimelineBlockProps> = ({
             return (
               <div key={event.id || i} className="relative flex items-start mb-12 last:mb-0">
                 {/* Timeline dot */}
-                <div className="absolute left-4 md:left-1/2 w-8 h-8 -translate-x-1/2 rounded-full bg-primary border-4 border-background flex items-center justify-center z-10">
+                <div className="absolute left-4 md:left-1/2 w-8 h-8 -translate-x-1/2 rounded-full bg-primary border-4 border-muted flex items-center justify-center z-10">
                   {event.icon ? (
                     <span className="text-xs">{event.icon}</span>
                   ) : (

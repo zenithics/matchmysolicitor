@@ -10,17 +10,21 @@ type Props = {
 
 export const BannerBlock: React.FC<Props> = ({ className, content, style }) => {
   return (
-    <div className={cn('mx-auto my-8 w-full', className)}>
-      <div
-        className={cn('border py-3 px-6 flex items-center rounded', {
-          'border-border bg-card': style === 'info',
-          'border-error bg-error/30': style === 'error',
-          'border-success bg-success/30': style === 'success',
-          'border-warning bg-warning/30': style === 'warning',
-        })}
-      >
-        <RichText data={content} enableGutter={false} enableProse={false} />
+    <section className={cn('sp-32-24', className)}>
+      <div className="container-inner">
+        <div
+          className={cn('rounded-[10px] border p-6', {
+            'bg-[#E9F6F4] border-[#C6E7E2] text-[#0F5D55] [&_strong]:text-[#0A4740]':
+              style === 'info',
+            'bg-[#FFFBEB] border-[#FDE68A] text-[#B45309] [&_strong]:text-[#B45309]':
+              style === 'warning',
+            'border-error bg-error/30': style === 'error',
+            'border-success bg-success/30': style === 'success',
+          })}
+        >
+          <RichText data={content} enableGutter={false} enableProse={false} />
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

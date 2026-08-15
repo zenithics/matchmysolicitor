@@ -32,19 +32,11 @@ export const MediaBlock: React.FC<Props> = (props) => {
   let caption
   if (media && typeof media === 'object') caption = media.caption
 
-  return (
-    <div
-      className={cn(
-        '',
-        {
-          container: enableGutter,
-        },
-        className,
-      )}
-    >
+  const content = (
+    <>
       {(media || staticImage) && (
         <Media
-          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+          imgClassName={cn('border border-border rounded-[10px]', imgClassName)}
           resource={media}
           src={staticImage}
         />
@@ -54,7 +46,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
           className={cn(
             'mt-6',
             {
-              container: !disableInnerContainer,
+              'container-inner': !disableInnerContainer,
             },
             captionClassName,
           )}
@@ -62,6 +54,19 @@ export const MediaBlock: React.FC<Props> = (props) => {
           <RichText data={caption} enableGutter={false} />
         </div>
       )}
-    </div>
+    </>
+  )
+
+  // Also embedded inline inside RichText content (see src/components/RichText/index.tsx),
+  // where it must stay a plain, unpadded div positioned by the prose grid — `enableGutter`
+  // is what the two call sites use to tell this component which context it's in.
+  if (!enableGutter) {
+    return <div className={cn(className)}>{content}</div>
+  }
+
+  return (
+    <section className="sp-64">
+      <div className={cn('container-inner', className)}>{content}</div>
+    </section>
   )
 }

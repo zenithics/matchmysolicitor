@@ -53,13 +53,15 @@ export const ArchiveBlock: React.FC<
   }
 
   return (
-    <div className="my-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
-        </div>
-      )}
-      <CollectionArchive posts={posts} />
-    </div>
+    <section className="sp-24-48" id={`block-${id}`}>
+      <div className="container-inner">
+        {introContent && (
+          <div className="mb-6">
+            <RichText className="ms-0 mb-0 max-w-3xl" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <CollectionArchive posts={posts} />
+      </div>
+    </section>
   )
 }

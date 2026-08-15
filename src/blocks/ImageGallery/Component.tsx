@@ -13,14 +13,12 @@ export const ImageGalleryBlock: React.FC<ImageGalleryBlockProps> = ({
   if (!images || images.length === 0) return null
 
   return (
-    <section className="py-20 bg-muted/30">
-      <div className="container">
+    <section className="sp-80 bg-muted">
+      <div className="container-inner">
         {/* Header */}
         {(heading || subheading) && (
           <div className="text-center max-w-2xl mx-auto mb-12">
-            {heading && (
-              <h2 className="text-3xl md:text-4xl font-serif tracking-tight mb-4">{heading}</h2>
-            )}
+            {heading && <h2 className="mb-4">{heading}</h2>}
             {subheading && (
               <p className="text-muted-foreground text-lg leading-relaxed">{subheading}</p>
             )}
@@ -47,7 +45,7 @@ export const ImageGalleryBlock: React.FC<ImageGalleryBlockProps> = ({
         {layout === 'scroll' && (
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-none">
             {images.map((item, index) => (
-              <div key={item.id || index} className="flex-shrink-0 w-64 snap-start">
+              <div key={item.id || index} className="shrink-0 w-64 snap-start">
                 <GalleryItem item={item as unknown as GalleryImageItem} square />
               </div>
             ))}
@@ -59,7 +57,7 @@ export const ImageGalleryBlock: React.FC<ImageGalleryBlockProps> = ({
           <div className="mt-12 text-center">
             <Link
               href={ctaLink}
-              className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-semibold tracking-wide hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3.5 rounded-[6px] bg-primary text-primary-foreground text-sm font-bold hover:bg-(--mms-primary-hover) transition-colors"
             >
               {ctaText}
             </Link>
@@ -86,7 +84,7 @@ const GalleryItem: React.FC<{ item: GalleryImageItem; square?: boolean }> = ({
 
   const inner = (
     <div
-      className={`relative overflow-hidden rounded-xl bg-muted group cursor-pointer ${
+      className={`relative overflow-hidden rounded-lg bg-card group cursor-pointer ${
         square ? 'aspect-square' : 'break-inside-avoid mb-3'
       }`}
     >
@@ -97,7 +95,7 @@ const GalleryItem: React.FC<{ item: GalleryImageItem; square?: boolean }> = ({
         loading="lazy"
       />
       {item.label && (
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/50 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/50 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <p className="text-white text-xs font-medium tracking-wide">{item.label}</p>
         </div>
       )}

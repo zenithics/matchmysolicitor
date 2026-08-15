@@ -5,57 +5,52 @@ import type { FeaturesBlock as FeaturesBlockProps } from '@/payload-types'
 import RichText from '@/components/RichText'
 import { Media } from '@/components/Media'
 
-const columnClasses: Record<string, string> = {
-  '2': 'md:grid-cols-2',
-  '3': 'md:grid-cols-2 lg:grid-cols-3',
-  '4': 'md:grid-cols-2 lg:grid-cols-4',
-}
-
 export const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
   heading,
   description,
-  columns = '3',
   features,
 }) => {
   return (
-    <div className="container">
-      {(heading || description) && (
-        <div className="text-center mb-12 max-w-2xl mx-auto">
-          {heading && <h2 className="text-3xl font-bold mb-4">{heading}</h2>}
-          {description && <p className="text-muted-foreground">{description}</p>}
+    <section className="sp-72 bg-card border-t border-b border-[#E4E7EC]">
+      <div className="container-inner">
+        {(heading || description) && (
+          <div className="text-center mb-10">
+            {heading && <h2 className="mb-4">{heading}</h2>}
+            {description && <p className="text-muted-foreground">{description}</p>}
+          </div>
+        )}
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-6">
+          {features?.map((feature, i) => {
+            const Card = feature.linkUrl ? 'a' : 'div'
+            return (
+            <Card
+              key={i}
+              {...(feature.linkUrl ? { href: feature.linkUrl } : {})}
+              className={`flex flex-col gap-4 p-[28px] rounded-[10px] border border-border bg-muted${
+                feature.linkUrl ? ' transition-colors hover:border-primary no-underline' : ''
+              }`}
+            >
+              {feature.image && typeof feature.image === 'object' ? (
+                <div className="w-full aspect-video rounded-md overflow-hidden mb-2">
+                  <Media resource={feature.image} imgClassName="w-full h-full object-cover" />
+                </div>
+              ) : feature.icon ? (
+                <span className="text-3xl">{feature.icon}</span>
+              ) : null}
+              <h3 className="text-[18px] font-bold">{feature.title}</h3>
+              {feature.description && (
+                <RichText className="mb-0 text-muted-foreground text-sm" data={feature.description} enableGutter={false} />
+              )}
+              {feature.linkUrl && feature.linkLabel && (
+                <span className="mt-auto pt-2 text-sm font-semibold text-primary">
+                  {feature.linkLabel}
+                </span>
+              )}
+            </Card>
+            )
+          })}
         </div>
-      )}
-      <div className={`grid grid-cols-1 ${columnClasses[columns ?? '3'] || columnClasses['3']} gap-8`}>
-        {features?.map((feature, i) => {
-          const Card = feature.linkUrl ? 'a' : 'div'
-          return (
-          <Card
-            key={i}
-            {...(feature.linkUrl ? { href: feature.linkUrl } : {})}
-            className={`flex flex-col gap-4 p-6 rounded-lg border border-border bg-card${
-              feature.linkUrl ? ' transition-colors hover:border-primary no-underline' : ''
-            }`}
-          >
-            {feature.image && typeof feature.image === 'object' ? (
-              <div className="w-full aspect-video rounded-md overflow-hidden mb-2">
-                <Media resource={feature.image} imgClassName="w-full h-full object-cover" />
-              </div>
-            ) : feature.icon ? (
-              <span className="text-3xl">{feature.icon}</span>
-            ) : null}
-            <h3 className="text-xl font-semibold">{feature.title}</h3>
-            {feature.description && (
-              <RichText className="mb-0 text-muted-foreground text-sm" data={feature.description} enableGutter={false} />
-            )}
-            {feature.linkUrl && feature.linkLabel && (
-              <span className="mt-auto pt-2 text-sm font-semibold text-primary">
-                {feature.linkLabel}
-              </span>
-            )}
-          </Card>
-          )
-        })}
       </div>
-    </div>
+    </section>
   )
 }

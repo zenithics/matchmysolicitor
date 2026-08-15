@@ -4,22 +4,22 @@ import type { HomeHeroBlock as HomeHeroBlockProps } from '@/payload-types'
 
 const THEME_CLASSES = {
   dark: {
-    wrapper: 'bg-[var(--brand-deep-plum)] text-white',
-    badge: 'bg-white/10 text-pink-300 border border-white/20',
-    headline: 'text-white',
-    sub: 'text-white/65',
+    wrapper: 'bg-card-foreground text-white',
+    eyebrow: 'text-accent',
+    sub: 'text-(--mms-on-dark-muted)',
+    ghostLink: 'border border-white/30 text-white hover:border-accent',
   },
   light: {
-    wrapper: 'bg-[#f8fafc] text-foreground',
-    badge: 'bg-[var(--brand-blush)] text-primary border border-primary/20',
-    headline: 'text-foreground',
+    wrapper: 'bg-muted',
+    eyebrow: 'text-primary',
     sub: 'text-muted-foreground',
+    ghostLink: 'border border-border text-card-foreground hover:border-primary',
   },
   pink: {
-    wrapper: 'bg-gradient-to-br from-primary via-pink-500 to-rose-400 text-white',
-    badge: 'bg-white/20 text-white border border-white/30',
-    headline: 'text-white',
+    wrapper: 'bg-gradient-to-br from-primary to-accent text-white',
+    eyebrow: 'text-white',
     sub: 'text-white/80',
+    ghostLink: 'border border-white/30 text-white hover:border-white',
   },
 }
 
@@ -35,27 +35,35 @@ export const HomeHeroBlock: React.FC<HomeHeroBlockProps & { disableInnerContaine
   const t = THEME_CLASSES[theme as keyof typeof THEME_CLASSES] || THEME_CLASSES.dark
   const hasImage = backgroundImage && typeof backgroundImage === 'object'
 
+  // Matches design-export/how-it-works.dc.html `@block: homeHero style="centred" theme="dark"`:
+  // full-bleed --card-foreground section, sp-80-64 rhythm, content centred at 820px.
   if (style === 'centred') {
     return (
       <section
-        className={`relative min-h-[75vh] flex items-center justify-center text-center px-6 py-24 ${t.wrapper}`}
+        className={`relative sp-80-64 ${t.wrapper}`}
         style={hasImage ? { backgroundImage: `url(${(backgroundImage as any).url})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
       >
         {hasImage && <div className="absolute inset-0 bg-black/50" />}
-        <div className="relative z-10 max-w-3xl mx-auto">
-          {badge && (
-            <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 ${t.badge}`}>
-              {badge}
-            </span>
-          )}
-          <h1 className={`font-serif text-5xl md:text-7xl leading-tight mb-5 ${t.headline}`}>{headline}</h1>
-          {subheadline && <p className={`text-base md:text-lg mb-8 max-w-xl mx-auto leading-relaxed ${t.sub}`}>{subheadline}</p>}
-          <HeroLinks links={links} />
+        <div className="container-inner relative z-10">
+          <div className="max-w-[820px] mx-auto flex flex-col items-center text-center gap-5">
+            {badge && (
+              <span className={`text-[13px] font-bold uppercase tracking-[0.12em] ${t.eyebrow}`}>
+                {badge}
+              </span>
+            )}
+            <h1 className={theme === 'light' ? undefined : 'text-white'}>{headline}</h1>
+            {subheadline && (
+              <p className={`text-lg leading-[1.65] max-w-[56ch] ${t.sub}`}>{subheadline}</p>
+            )}
+            <HeroLinks links={links} theme={theme} />
+          </div>
         </div>
       </section>
     )
   }
 
+  // No design instance found for "fullwidth" — genuinely full-bleed image hero,
+  // structure kept as-is, only tokens/typography corrected.
   if (style === 'fullwidth') {
     return (
       <section
@@ -65,41 +73,36 @@ export const HomeHeroBlock: React.FC<HomeHeroBlockProps & { disableInnerContaine
         {hasImage && <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />}
         <div className="relative z-10 max-w-2xl">
           {badge && (
-            <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-5 ${t.badge}`}>
+            <span className={`inline-block text-[13px] font-bold uppercase tracking-[0.12em] mb-5 ${t.eyebrow}`}>
               {badge}
             </span>
           )}
-          <h1 className="font-serif text-5xl md:text-6xl text-white leading-tight mb-4">{headline}</h1>
-          {subheadline && <p className="text-white/75 text-base mb-7 leading-relaxed max-w-lg">{subheadline}</p>}
-          <HeroLinks links={links} />
+          <h1 className="text-white mb-4">{headline}</h1>
+          {subheadline && <p className="text-white/75 text-lg mb-7 leading-relaxed max-w-lg">{subheadline}</p>}
+          <HeroLinks links={links} theme={theme} />
         </div>
       </section>
     )
   }
 
-  /* Default: split layout */
+  // No design instance found for "split" either — genuinely full-bleed
+  // text/image hero, structure kept as-is, only tokens/typography corrected.
   return (
     <section className={`min-h-[85vh] grid grid-cols-1 lg:grid-cols-2 ${t.wrapper}`}>
-      {/* Text side */}
       <div className="flex flex-col justify-center px-8 md:px-14 py-16 lg:py-24 order-2 lg:order-1">
         {badge && (
-          <span className={`inline-flex w-fit px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider uppercase mb-6 ${t.badge}`}>
+          <span className={`inline-flex w-fit text-[13px] font-bold uppercase tracking-[0.12em] mb-6 ${t.eyebrow}`}>
             {badge}
           </span>
         )}
-        <h1 className={`font-serif text-5xl md:text-6xl xl:text-7xl leading-[1.05] mb-5 ${t.headline}`}>
-          {headline}
-        </h1>
+        <h1 className={`mb-5 ${theme === 'light' ? '' : 'text-white'}`}>{headline}</h1>
         {subheadline && (
-          <p className={`text-base md:text-lg mb-8 leading-relaxed max-w-md ${t.sub}`}>
-            {subheadline}
-          </p>
+          <p className={`text-lg mb-8 leading-relaxed max-w-md ${t.sub}`}>{subheadline}</p>
         )}
-        <HeroLinks links={links} />
+        <HeroLinks links={links} theme={theme} />
       </div>
 
-      {/* Image side */}
-      <div className="relative min-h-[50vh] lg:min-h-0 order-1 lg:order-2 overflow-hidden bg-gradient-to-br from-pink-200 via-rose-100 to-[var(--brand-blush)]">
+      <div className="relative min-h-[50vh] lg:min-h-0 order-1 lg:order-2 overflow-hidden bg-muted">
         {hasImage ? (
           <img
             src={(backgroundImage as any).url}
@@ -107,15 +110,16 @@ export const HomeHeroBlock: React.FC<HomeHeroBlockProps & { disableInnerContaine
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center text-[120px]">💅</div>
+          <div className="absolute inset-0 bg-gradient-to-br from-muted to-border" />
         )}
       </div>
     </section>
   )
 }
 
-function HeroLinks({ links }: { links: HomeHeroBlockProps['links'] }) {
+function HeroLinks({ links, theme }: { links: HomeHeroBlockProps['links']; theme?: string | null }) {
   if (!links || links.length === 0) return null
+  const t = THEME_CLASSES[theme as keyof typeof THEME_CLASSES] || THEME_CLASSES.dark
   return (
     <div className="flex flex-wrap gap-3">
       {links.map(({ link }, i) => {
@@ -128,10 +132,8 @@ function HeroLinks({ links }: { links: HomeHeroBlockProps['links'] }) {
             key={i}
             href={href}
             {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            className={`inline-flex items-center justify-center px-7 py-3.5 rounded-full text-sm font-bold transition-all ${
-              isPrimary
-                ? 'bg-primary text-white hover:bg-primary/90 shadow-[0_4px_16px_rgba(232,23,122,0.35)]'
-                : 'border border-white/30 text-white hover:bg-white/10'
+            className={`inline-flex items-center justify-center px-6 py-3.5 rounded-[6px] text-base font-bold transition-colors ${
+              isPrimary ? 'bg-primary text-white hover:bg-(--mms-primary-hover)' : t.ghostLink
             }`}
           >
             {link.label}

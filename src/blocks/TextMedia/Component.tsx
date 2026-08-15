@@ -24,14 +24,26 @@ export const TextMediaBlock: React.FC<TextMediaBlockProps> = ({
   return (
     <section
       className={
-        isDark ? 'py-20 bg-primary text-primary-foreground' : theme === 'muted' ? 'py-20 bg-secondary' : 'py-20 bg-background'
+        isDark
+          ? 'sp-72 bg-card-foreground text-primary-foreground'
+          : theme === 'muted'
+            ? 'sp-72 bg-muted'
+            : 'sp-72 bg-card border-t border-b border-[#E4E7EC]'
       }
       data-theme={isDark ? 'dark' : undefined}
     >
-      <div className="container grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div className="container-inner grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
         <div className={isImageLeft ? 'md:order-2' : undefined}>
-          {heading && <h2 className="text-3xl md:text-4xl tracking-tight mb-5">{heading}</h2>}
-          {richText && <RichText data={richText} enableGutter={false} className="mb-8" />}
+          {heading && (
+            <h2 className={isDark ? 'mb-5 text-primary-foreground' : 'mb-5'}>{heading}</h2>
+          )}
+          {richText && (
+            <RichText
+              data={richText}
+              enableGutter={false}
+              className={isDark ? 'mb-8 text-(--mms-on-dark-muted)' : 'mb-8'}
+            />
+          )}
           {Array.isArray(links) && links.length > 0 && (
             <div className="flex flex-wrap gap-4">
               {links.map(({ link }, i) => (
@@ -42,7 +54,7 @@ export const TextMediaBlock: React.FC<TextMediaBlockProps> = ({
         </div>
 
         {image && (
-          <div className={`${isImageLeft ? 'md:order-1' : ''} relative rounded-xl overflow-hidden`}>
+          <div className={`${isImageLeft ? 'md:order-1' : ''} relative rounded-[10px] overflow-hidden`}>
             <Media resource={image} imgClassName="w-full h-full object-cover" />
           </div>
         )}

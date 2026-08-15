@@ -214,7 +214,7 @@ export function CookieSettingsButton({ label = 'Cookie Settings' }: { label?: st
           ;(window as any).__openCookiePreferences()
         }
       }}
-      className="text-sm text-white/60 hover:text-white transition-colors"
+      className="text-left text-[var(--mms-footer-muted)] hover:text-white transition-colors"
     >
       {label}
     </button>

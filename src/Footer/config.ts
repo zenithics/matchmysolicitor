@@ -19,23 +19,6 @@ export const Footer: GlobalConfig = {
       type: 'tabs',
       tabs: [
         {
-          label: 'Newsletter',
-          fields: [
-            {
-              name: 'newsletterHeading',
-              type: 'text',
-              label: 'Newsletter Heading',
-              defaultValue: 'Subscribe to our newsletter',
-            },
-            {
-              name: 'newsletterSubtext',
-              type: 'text',
-              label: 'Newsletter Subtext',
-              defaultValue: 'Stay updated with our latest news and offers.',
-            },
-          ],
-        },
-        {
           label: 'Brand',
           fields: [
             {
@@ -50,47 +33,6 @@ export const Footer: GlobalConfig = {
               label: 'Brand Tagline',
               defaultValue: 'Your tagline goes here. Edit this in the Footer settings.',
             },
-            {
-              name: 'contactEmail',
-              type: 'email',
-              label: 'Contact Email (shown in footer)',
-              defaultValue: 'hello@example.com',
-            },
-            {
-              name: 'contactHours',
-              type: 'text',
-              label: 'Contact Hours',
-              defaultValue: 'Mon–Fri, 9am–5pm GMT',
-            },
-          ],
-        },
-        {
-          label: 'Social Links',
-          fields: [
-            {
-              name: 'instagramUrl',
-              type: 'text',
-              label: 'Instagram URL',
-              admin: { placeholder: 'https://instagram.com/yourpage' },
-            },
-            {
-              name: 'tiktokUrl',
-              type: 'text',
-              label: 'TikTok URL',
-              admin: { placeholder: 'https://tiktok.com/@yourpage' },
-            },
-            {
-              name: 'pinterestUrl',
-              type: 'text',
-              label: 'Pinterest URL',
-              admin: { placeholder: 'https://pinterest.com/yourpage' },
-            },
-            {
-              name: 'facebookUrl',
-              type: 'text',
-              label: 'Facebook URL',
-              admin: { placeholder: 'https://facebook.com/yourpage' },
-            },
           ],
         },
         {
@@ -100,7 +42,7 @@ export const Footer: GlobalConfig = {
               name: 'column1Heading',
               type: 'text',
               label: 'Column 1 Heading',
-              defaultValue: 'Shop',
+              defaultValue: 'Services',
             },
             {
               name: 'column1Links',
@@ -116,7 +58,7 @@ export const Footer: GlobalConfig = {
               name: 'column2Heading',
               type: 'text',
               label: 'Column 2 Heading',
-              defaultValue: 'Info',
+              defaultValue: 'Guides',
             },
             {
               name: 'column2Links',
@@ -132,12 +74,31 @@ export const Footer: GlobalConfig = {
               name: 'column3Heading',
               type: 'text',
               label: 'Column 3 Heading',
-              defaultValue: 'Help',
+              defaultValue: 'Company',
             },
             {
               name: 'column3Links',
               type: 'array',
               label: 'Column 3 Links',
+              fields: [link({ appearances: false })],
+              admin: {
+                initCollapsed: true,
+                components: { RowLabel: '@/Footer/RowLabel#RowLabel' },
+              },
+            },
+            {
+              name: 'column4Heading',
+              type: 'text',
+              label: 'Column 4 Heading',
+              defaultValue: 'Legal',
+              admin: {
+                description: 'A "Cookie settings" button is always appended after these links.',
+              },
+            },
+            {
+              name: 'column4Links',
+              type: 'array',
+              label: 'Column 4 Links',
               fields: [link({ appearances: false })],
               admin: {
                 initCollapsed: true,
@@ -150,6 +111,13 @@ export const Footer: GlobalConfig = {
           label: 'Bottom Bar',
           fields: [
             {
+              name: 'regulatoryDisclaimer',
+              type: 'textarea',
+              label: 'Regulatory Disclaimer',
+              defaultValue:
+                'MatchMySolicitor is a matching service and is not a firm of solicitors. We do not provide legal advice. All firms on our panel are regulated by the Solicitors Regulation Authority.',
+            },
+            {
               name: 'copyrightText',
               type: 'text',
               label: 'Copyright Text',
@@ -157,12 +125,6 @@ export const Footer: GlobalConfig = {
               admin: {
                 description: 'Use {year} to insert the current year automatically.',
               },
-            },
-            {
-              name: 'madeWithText',
-              type: 'text',
-              label: 'Made With Text',
-              defaultValue: '',
             },
           ],
         },

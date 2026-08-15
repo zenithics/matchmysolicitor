@@ -30,7 +30,7 @@ export const HeroSplitBlock: React.FC<HeroSplitBlockProps> = ({
         {/* Text side */}
         <div className="flex flex-col justify-center py-20 lg:py-24 pr-0 lg:pr-12 z-10">
           {badgeText && (
-            <span className="inline-block mb-6 px-4 py-1.5 rounded-full text-xs font-semibold tracking-widest uppercase border border-accent text-accent w-fit">
+            <span className="inline-block mb-6 text-xs font-bold tracking-widest uppercase text-accent w-fit">
               {badgeText}
             </span>
           )}
@@ -61,8 +61,8 @@ export const HeroSplitBlock: React.FC<HeroSplitBlockProps> = ({
                   {...link}
                   className={
                     i === 0
-                      ? 'inline-flex items-center justify-center px-8 py-3 rounded-full bg-primary text-primary-foreground text-sm font-semibold tracking-wide hover:bg-primary/90 transition-colors'
-                      : 'inline-flex items-center justify-center px-8 py-3 rounded-full border border-foreground/30 text-sm font-semibold tracking-wide hover:bg-foreground/5 transition-colors'
+                      ? 'inline-flex items-center justify-center px-6 py-3.5 rounded-[6px] bg-primary text-primary-foreground text-sm font-bold hover:bg-(--mms-primary-hover) transition-colors'
+                      : 'inline-flex items-center justify-center px-6 py-3.5 rounded-[6px] border border-foreground/30 text-sm font-bold hover:bg-foreground/5 transition-colors'
                   }
                 />
               ))}

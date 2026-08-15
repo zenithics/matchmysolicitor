@@ -44,47 +44,71 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-inter), system-ui, sans-serif;
-  --font-serif: var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --font-serif: var(--font-jakarta), system-ui, sans-serif;
 }
 
 @layer utilities {
   .container {
     width: 100%;
+    max-width: var(--mms-container, 1180px);
     margin-inline: auto;
-    padding-inline: 1rem;
+    padding-inline: 24px;
   }
 
-  @variant sm {
-    .container {
-      max-width: var(--breakpoint-sm);
-    }
+  /*
+   * Use inside a section that already carries its own horizontal gutter
+   * (an .sp-* class below) — centers content at the design's 1180px without
+   * doubling up the 24px side padding the section already applied.
+   */
+  .container-inner {
+    width: 100%;
+    max-width: var(--mms-container, 1180px);
+    margin-inline: auto;
   }
 
-  @variant md {
-    .container {
-      max-width: var(--breakpoint-md);
-      padding-inline: 2rem;
-    }
-  }
+  /*
+   * Section rhythm, ported from design-export/styles.css (§4). Each class owns
+   * an entire block's padding — vertical AND the 24px/20px horizontal gutter —
+   * so a block rendering `<section className="sp-64">` can also carry its own
+   * background all the way to the viewport edge. Named for the desktop
+   * top/bottom pair: .sp-80-64 is padding: 80px 24px 64px.
+   */
+  .sp-96    { padding: 96px var(--mms-gutter, 24px); }
+  .sp-80    { padding: 80px var(--mms-gutter, 24px); }
+  .sp-80-64 { padding: 80px var(--mms-gutter, 24px) 64px; }
+  .sp-80-72 { padding: 80px var(--mms-gutter, 24px) 72px; }
+  .sp-72    { padding: 72px var(--mms-gutter, 24px); }
+  .sp-64    { padding: 64px var(--mms-gutter, 24px); }
+  .sp-64-88 { padding: 64px var(--mms-gutter, 24px) 88px; }
+  .sp-64-56 { padding: 64px var(--mms-gutter, 24px) 56px; }
+  .sp-56-96 { padding: 56px var(--mms-gutter, 24px) 96px; }
+  .sp-56-32 { padding: 56px var(--mms-gutter, 24px) 32px; }
+  .sp-56-24 { padding: 56px var(--mms-gutter, 24px) 24px; }
+  .sp-32-72 { padding: 32px var(--mms-gutter, 24px) 72px; }
+  .sp-32-24 { padding: 32px var(--mms-gutter, 24px) 24px; }
+  .sp-24-48 { padding: 24px var(--mms-gutter, 24px) 48px; }
+  .sp-8-88  { padding: 8px  var(--mms-gutter, 24px) 88px; }
+  .sp-0-32  { padding: 0    var(--mms-gutter, 24px) 32px; }
+}
 
-  @variant lg {
-    .container {
-      max-width: var(--breakpoint-lg);
-    }
-  }
-
-  @variant xl {
-    .container {
-      max-width: var(--breakpoint-xl);
-    }
-  }
-
-  @variant 2xl {
-    .container {
-      max-width: var(--breakpoint-2xl);
-    }
-  }
+@media (max-width: 640px) {
+  .sp-96    { padding: 56px var(--mms-gutter-sm, 20px); }
+  .sp-80    { padding: 48px var(--mms-gutter-sm, 20px); }
+  .sp-80-64 { padding: 48px var(--mms-gutter-sm, 20px) 36px; }
+  .sp-80-72 { padding: 48px var(--mms-gutter-sm, 20px) 40px; }
+  .sp-72    { padding: 44px var(--mms-gutter-sm, 20px); }
+  .sp-64    { padding: 44px var(--mms-gutter-sm, 20px); }
+  .sp-64-88 { padding: 44px var(--mms-gutter-sm, 20px) 56px; }
+  .sp-64-56 { padding: 44px var(--mms-gutter-sm, 20px) 36px; }
+  .sp-56-96 { padding: 32px var(--mms-gutter-sm, 20px) 64px; }
+  .sp-56-32 { padding: 40px var(--mms-gutter-sm, 20px) 28px; }
+  .sp-56-24 { padding: 36px var(--mms-gutter-sm, 20px) 20px; }
+  .sp-32-72 { padding: 24px var(--mms-gutter-sm, 20px) 48px; }
+  .sp-32-24 { padding: 24px var(--mms-gutter-sm, 20px) 20px; }
+  .sp-24-48 { padding: 20px var(--mms-gutter-sm, 20px) 32px; }
+  .sp-8-88  { padding: 8px  var(--mms-gutter-sm, 20px) 56px; }
+  .sp-0-32  { padding: 0    var(--mms-gutter-sm, 20px) 24px; }
 }
 
 /* Zenithics CMS Template — neutral professional blue */
@@ -234,18 +258,26 @@ html[data-theme='light'] {
   opacity: initial;
 }
 
-/* SiteAppearance runtime overrides — CSS vars injected by ThemeProvider take precedence */
+/*
+ * SiteAppearance runtime overrides — CSS vars injected by ThemeProvider take
+ * precedence. --primary/--secondary/--accent are deliberately NOT set here:
+ * ThemeProvider writes those custom properties directly (see
+ * ThemeProvider/index.tsx) so they cascade over the literal defaults declared
+ * in the design-fidelity layer below, without reading back through the
+ * --color-primary/--color-secondary/--color-accent aliases that `@theme inline`
+ * also declares. Doing that here would recreate a --primary -> --color-primary
+ * -> --primary cycle: a cyclic custom property is invalid at computed-value
+ * time, and a var() fallback only applies when the property is unset, not when
+ * it's cyclic, so the declared fallback would never take effect.
+ */
 :root {
-  --primary: var(--color-primary, oklch(54% 0.215 261deg));
-  --secondary: var(--color-secondary, oklch(96% 0.008 261deg));
-  --accent: var(--color-accent, oklch(62% 0.215 261deg));
-  --background: var(--color-bg, oklch(100% 0 0));
-  --foreground: var(--color-text, oklch(17% 0.028 264deg));
+  --background: var(--color-bg, #F7F8FA);
+  --foreground: var(--color-text, #3A414C);
   --brand-header-bg: var(--color-header-bg, oklch(100% 0 0));
-  --brand-footer-bg: var(--color-footer-bg, oklch(17% 0.028 264deg));
+  --brand-footer-bg: var(--color-footer-bg, #1A1F26);
   /* Typography overrides from CMS */
-  --font-sans: var(--font-body, var(--font-inter), system-ui, sans-serif);
-  --font-serif: var(--font-heading, var(--font-inter), system-ui, sans-serif);
+  --font-sans: var(--font-body, var(--font-jakarta), system-ui, sans-serif);
+  --font-serif: var(--font-heading, var(--font-jakarta), system-ui, sans-serif);
 }
 
 /*
@@ -261,6 +293,9 @@ html[data-theme='light'] {
  * overrides so ThemeProvider still wins on --color-*.
  */
 :root {
+  --primary: #1E4FD8;              /* design --primary; NOT blue-600 #2563EB */
+  --secondary: oklch(96% 0.008 261deg); /* slate-100 — design has no distinct secondary token */
+  --accent: #2CC5B6;               /* design --accent, teal — was unmapped entirely */
   --card: #FFFFFF;                 /* --white */
   --card-foreground: #1A1F26;      /* --ink: headings, dark sections */
   --secondary-foreground: #1A1F26; /* keeps text dark on light secondary surfaces */
@@ -270,6 +305,7 @@ html[data-theme='light'] {
   --input: #D3D8DF;
   --ring: #1E4FD8;                 /* --primary, matches the focus outline */
   --primary-foreground: #FFFFFF;
+  --accent-foreground: #FFFFFF;
   --radius: 10px;
 
   /* Design tokens with no shadcn equivalent, exposed for block components. */
@@ -279,12 +315,23 @@ html[data-theme='light'] {
   --mms-primary-hover: #1740B8;
   --mms-rule: #EEF1F4;             /* hairlines, progress track */
   --mms-container: 1180px;
+  --mms-gutter: 24px;              /* desktop section side padding */
+  --mms-gutter-sm: 20px;           /* mobile section side padding, <=640px */
+  --mms-footer-border: #2A313B;    /* footer's own hairlines, on --brand-footer-bg */
+  --mms-footer-muted: #98A1AE;     /* footer link/body colour on --brand-footer-bg */
 }
 
 /* Heading element sizing from CMS.
  * Fallbacks are the design's fluid clamps, so headings scale on phones unless
  * the CMS explicitly sets a fixed size. This rule comes after the fidelity
- * layer, so the clamps have to live here to survive the cascade. */
+ * layer, so the clamps have to live here to survive the cascade.
+ *
+ * Color is set explicitly to --card-foreground (the design's --ink, #1A1F26):
+ * headings are NOT the same colour as body copy in this design (--foreground
+ * is --body, #3A414C) and nothing else in the cascade sets a heading colour,
+ * so without this every h1-h6 renders in body colour instead of ink. Dark
+ * sections that need light headings should override color on that section. */
+h1, h2, h3, h4, h5, h6 { color: var(--card-foreground); }
 h1 { font-size: var(--size-h1, clamp(28px, 6vw, 46px)); font-weight: var(--weight-heading, 700); line-height: 1.12; letter-spacing: -0.02em; }
 h2 { font-size: var(--size-h2, clamp(23px, 4vw, 34px)); font-weight: var(--weight-heading, 700); line-height: 1.2; letter-spacing: -0.015em; }
 h3 { font-size: var(--size-h3, clamp(18px, 2.6vw, 22px)); font-weight: var(--weight-heading, 700); line-height: 1.35; }

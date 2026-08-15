@@ -6,9 +6,9 @@ export const HomeHero: Block = {
   interfaceName: 'HomeHeroBlock',
   labels: { singular: 'Home Hero Banner', plural: 'Home Hero Blocks' },
   fields: [
-    { name: 'badge', type: 'text', admin: { description: 'Small pill badge above headline e.g. "New Collection"' } },
-    { name: 'headline', type: 'text', required: true, defaultValue: 'Press-On Perfection.' },
-    { name: 'subheadline', type: 'textarea', defaultValue: 'Welcome to your new site. Configure your content in the admin panel.' },
+    { name: 'badge', type: 'text', admin: { description: 'Small uppercase eyebrow label above headline e.g. "How it works"' } },
+    { name: 'headline', type: 'text', required: true, defaultValue: 'Matched with a specialist employment solicitor.' },
+    { name: 'subheadline', type: 'textarea', defaultValue: 'Tell us your situation. A vetted, SRA-regulated solicitor will be in touch within 24 hours.' },
     linkGroup({ overrides: { maxRows: 2 } }),
     { name: 'backgroundImage', type: 'upload', relationTo: 'media', admin: { description: 'Full-width background image' } },
     {

@@ -1,45 +1,35 @@
-'use client'
-
-import React, { useState } from 'react'
+import React from 'react'
 
 import type { FAQBlock as FAQBlockProps } from '@/payload-types'
 
 import RichText from '@/components/RichText'
 
 export const FAQBlock: React.FC<FAQBlockProps> = ({ heading, description, items }) => {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
-
   return (
-    <div className="container max-w-3xl">
-      {heading && (
-        <h2 className="text-3xl font-bold text-center mb-4">{heading}</h2>
-      )}
-      {description && (
-        <p className="text-center text-muted-foreground mb-12">{description}</p>
-      )}
-      <div className="flex flex-col gap-2">
-        {items?.map((item, i) => (
-          <div key={i} className="border border-border rounded-lg overflow-hidden">
-            <button
-              className="w-full flex justify-between items-center p-4 text-left font-medium hover:bg-muted/50 transition-colors"
-              onClick={() => setOpenIndex(openIndex === i ? null : i)}
-              aria-expanded={openIndex === i}
+    <section className="sp-72 bg-card border-t border-b border-[#E4E7EC]">
+      <div className="container-inner max-w-[900px]">
+        {heading && <h2 className="mb-10">{heading}</h2>}
+        {description && <p className="text-muted-foreground mb-8">{description}</p>}
+        <div className="flex flex-col gap-3">
+          {items?.map((item, i) => (
+            <details
+              key={i}
+              className="bg-card border border-[#E4E7EC] rounded-lg px-[22px] py-[18px]"
             >
-              <span>{item.question}</span>
-              <span className="text-xl shrink-0 ml-4 transition-transform duration-200" style={{
-                transform: openIndex === i ? 'rotate(45deg)' : 'rotate(0deg)',
-              }}>
-                +
-              </span>
-            </button>
-            {openIndex === i && item.answer && (
-              <div className="px-4 pb-4">
-                <RichText className="mb-0 text-muted-foreground" data={item.answer} enableGutter={false} />
-              </div>
-            )}
-          </div>
-        ))}
+              <summary className="font-bold text-base text-card-foreground cursor-pointer focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 focus-visible:rounded">
+                {item.question}
+              </summary>
+              {item.answer && (
+                <RichText
+                  className="mt-3 mb-0 text-[15px] leading-[1.7] text-muted-foreground"
+                  data={item.answer}
+                  enableGutter={false}
+                />
+              )}
+            </details>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

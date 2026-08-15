@@ -21,15 +21,13 @@ export const EmbedBlock: React.FC<EmbedBlockProps> = ({
   return (
     <section className="py-16 bg-background">
       <div className="container">
-        {heading && (
-          <h2 className="text-3xl font-serif tracking-tight text-center mb-8">{heading}</h2>
-        )}
+        {heading && <h2 className="text-center mb-8">{heading}</h2>}
         <div className={`mx-auto ${widthClasses[maxWidth ?? 'large']}`}>
           <iframe
             src={embedURL}
             title={heading || 'Embedded content'}
             style={{ height: `${height}px` }}
-            className={`w-full rounded-xl bg-muted ${showBorder ? 'border border-border' : 'border-0'}`}
+            className={`w-full rounded-lg bg-muted ${showBorder ? 'border border-border' : 'border-0'}`}
             loading="lazy"
             allow="payment; clipboard-write"
           />

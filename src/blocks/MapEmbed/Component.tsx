@@ -19,11 +19,9 @@ export const MapEmbedBlock: React.FC<MapEmbedBlockProps> = ({
   const mapHeightPx = heightClasses[mapHeight ?? 'medium']
 
   return (
-    <section className="py-16 bg-background">
-      <div className="container">
-        {heading && (
-          <h2 className="text-3xl font-serif tracking-tight text-center mb-10">{heading}</h2>
-        )}
+    <section className="sp-64 bg-background">
+      <div className="container-inner">
+        {heading && <h2 className="text-center mb-10">{heading}</h2>}
 
         <div className="flex flex-col gap-12">
           {locations.map((location) => (
