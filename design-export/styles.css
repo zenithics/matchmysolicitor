@@ -1,35 +1,136 @@
-/* MatchMySolicitor shared styles: interactive states, fluid type, responsive layout */
+/* ============================================================================
+   MatchMySolicitor — shared stylesheet
+   Ship this file with the repo. It is not page content and no CMS import will
+   carry it. See EXPORT-NOTES.md.
 
-/* ---- fluid typography ---- */
+   Contents
+     1. Design tokens
+     2. Fluid typography
+     3. Focus + transitions
+     4. Section rhythm classes  (.sp-*)   — own padding at BOTH breakpoints
+     5. Grid classes            (.grid-*)
+     6. Card padding            (.card-40)
+     7. Interactive states
+     8. Header / footer layout
+     9. Enquiry wizard
+   ==========================================================================*/
+
+/* ---- 1. design tokens ---------------------------------------------------- */
+:root {
+  --ink:            #1A1F26;  /* headings, dark sections */
+  --body:           #3A414C;  /* body copy */
+  --muted:          #5B6472;  /* secondary copy */
+  --muted-light:    #6B7482;  /* labels, meta */
+  --on-dark-muted:  #B9C1CC;  /* body copy on ink */
+  --primary:        #1E4FD8;  /* links, primary CTA, focus ring */
+  --primary-hover:  #1740B8;
+  --primary-deep:   #2E3846;  /* .btn-ink hover */
+  --accent:         #2CC5B6;  /* eyebrows, ticks, focus ring on dark */
+  --border:         #D3D8DF;  /* inputs, cards */
+  --rule:           #EEF1F4;  /* hairlines, progress track */
+  --surface:        #F7F8FA;  /* page background */
+  --white:          #FFFFFF;
+
+  --container:      1180px;   /* content max-width */
+  --gutter:         24px;     /* desktop side padding */
+  --gutter-sm:      20px;     /* mobile side padding */
+  --tap:            44px;     /* minimum touch target */
+  --bp-header:      919px;    /* nav collapses below this */
+}
+
+* { box-sizing: border-box; }
+
+/* ---- 2. fluid typography ------------------------------------------------- */
 body { font-size: clamp(15px, 1.5vw, 16.5px); }
 h1 { font-size: clamp(28px, 6vw, 46px); line-height: 1.12; letter-spacing: -0.02em; }
-h2 { font-size: clamp(23px, 4vw, 34px); line-height: 1.2; letter-spacing: -0.015em; }
+h2 { font-size: clamp(23px, 4vw, 34px); line-height: 1.2;  letter-spacing: -0.015em; }
 h3 { font-size: clamp(18px, 2.6vw, 22px); line-height: 1.35; }
 
-/* ---- transitions + visible focus ---- */
+/* ---- 3. transitions + visible focus ------------------------------------- */
 a, button, summary {
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 a:focus-visible, button:focus-visible, summary:focus-visible,
 input:focus-visible, select:focus-visible, textarea:focus-visible {
-  outline: 2px solid #1E4FD8;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* ---- interactive state classes ---- */
-.btn-primary:hover:not(:disabled) { background: #1740B8 !important; }
-.btn-ink:hover { background: #2E3846 !important; }
-.btn-ghost-dark:hover { border-color: #2CC5B6 !important; color: #FFFFFF !important; }
-.nav-link:hover { color: #1A1F26 !important; }
-.footer-link:hover { color: #FFFFFF !important; }
-.card-link:hover { border-color: #1E4FD8 !important; box-shadow: 0 4px 16px rgba(30, 79, 216, 0.10); }
-.card-link-ink:hover { border-color: #1A1F26 !important; box-shadow: 0 4px 16px rgba(26, 31, 38, 0.08); }
-.nav-drop a:hover { background: #F7F8FA; }
+/* ---- 4. section rhythm --------------------------------------------------
+   Each class owns its element's padding at every width — desktop value first,
+   phone value in the media query below. Named for the desktop top/bottom pair,
+   so `.sp-80-64` is `padding: 80px 24px 64px`.
+   Applied to 119 section wrappers across the site.
+   -----------------------------------------------------------------------*/
+.sp-96    { padding: 96px var(--gutter); }
+.sp-80    { padding: 80px var(--gutter); }
+.sp-80-64 { padding: 80px var(--gutter) 64px; }
+.sp-80-72 { padding: 80px var(--gutter) 72px; }
+.sp-72    { padding: 72px var(--gutter); }
+.sp-64    { padding: 64px var(--gutter); }
+.sp-64-88 { padding: 64px var(--gutter) 88px; }
+.sp-64-56 { padding: 64px var(--gutter) 56px; }
+.sp-56-96 { padding: 56px var(--gutter) 96px; }
+.sp-56-32 { padding: 56px var(--gutter) 32px; }
+.sp-56-24 { padding: 56px var(--gutter) 24px; }
+.sp-32-72 { padding: 32px var(--gutter) 72px; }
+.sp-32-24 { padding: 32px var(--gutter) 24px; }
+.sp-24-48 { padding: 24px var(--gutter) 48px; }
+.sp-8-88  { padding: 8px  var(--gutter) 88px; }
+.sp-0-32  { padding: 0    var(--gutter) 32px; }
 
-/* ---- header: breakpoint owned by CSS ---- */
+@media (max-width: 640px) {
+  .sp-96    { padding: 56px var(--gutter-sm); }
+  .sp-80    { padding: 48px var(--gutter-sm); }
+  .sp-80-64 { padding: 48px var(--gutter-sm) 36px; }
+  .sp-80-72 { padding: 48px var(--gutter-sm) 40px; }
+  .sp-72    { padding: 44px var(--gutter-sm); }
+  .sp-64    { padding: 44px var(--gutter-sm); }
+  .sp-64-88 { padding: 44px var(--gutter-sm) 56px; }
+  .sp-64-56 { padding: 44px var(--gutter-sm) 36px; }
+  .sp-56-96 { padding: 32px var(--gutter-sm) 64px; }
+  .sp-56-32 { padding: 40px var(--gutter-sm) 28px; }
+  .sp-56-24 { padding: 36px var(--gutter-sm) 20px; }
+  .sp-32-72 { padding: 24px var(--gutter-sm) 48px; }
+  .sp-32-24 { padding: 24px var(--gutter-sm) 20px; }
+  .sp-24-48 { padding: 20px var(--gutter-sm) 32px; }
+  .sp-8-88  { padding: 8px  var(--gutter-sm) 56px; }
+  .sp-0-32  { padding: 0    var(--gutter-sm) 24px; }
+}
+
+/* ---- 5. grids -----------------------------------------------------------
+   Most grids on the site use `repeat(auto-fit, minmax(Npx, 1fr))` inline and
+   need no breakpoint — they reflow on their own. Only the two fixed-column
+   patterns below need stacking.
+   -----------------------------------------------------------------------*/
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 860px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ---- 6. large card padding ---------------------------------------------- */
+.card-40 { padding: 40px; }
+@media (max-width: 640px) { .card-40 { padding: 28px 22px; } }
+
+/* ---- 7. interactive states ----------------------------------------------
+   `!important` is REQUIRED here: these elements set background / color / border
+   inline for their resting state, and an inline style outranks any class. Do not
+   remove it unless the resting styles move into classes too.
+   -----------------------------------------------------------------------*/
+.btn-primary:hover:not(:disabled) { background: var(--primary-hover) !important; }
+.btn-ink:hover                    { background: var(--primary-deep) !important; }
+.btn-ghost-dark:hover             { border-color: var(--accent) !important; color: var(--white) !important; }
+.nav-link:hover                   { color: var(--ink) !important; }
+.footer-link:hover                { color: var(--white) !important; }
+.card-link:hover                  { border-color: var(--primary) !important; box-shadow: 0 4px 16px rgba(30, 79, 216, 0.10); }
+.card-link-ink:hover              { border-color: var(--ink) !important;     box-shadow: 0 4px 16px rgba(26, 31, 38, 0.08); }
+.nav-drop a:hover                 { background: var(--surface); }
+
+/* ---- 8. header + footer ------------------------------------------------- */
 .nav-desktop { display: flex; align-items: center; gap: 26px; font-size: 15px; font-weight: 600; }
-.nav-mobile-toggle { display: none; }
+.nav-mobile-toggle { display: none; min-height: var(--tap); min-width: var(--tap); }
 .nav-drawer { display: none; }
 @media (max-width: 919px) {
   .nav-desktop { display: none; }
@@ -37,50 +138,44 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .nav-drawer { display: flex; }
 }
 
-/* ---- footer grid ---- */
+/* persistent CTA — visible at every width, outside the burger */
+.nav-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  flex-shrink: 0; min-height: var(--tap);
+  background: var(--primary); color: var(--white); padding: 11px 18px;
+  border-radius: 6px; font-weight: 700; font-size: 15px;
+  text-decoration: none; white-space: nowrap;
+}
+.nav-cta:hover { background: var(--primary-hover); color: var(--white) !important; }
+.nav-cta:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 480px) { .nav-cta { padding: 10px 14px; font-size: 14px; } }
+
 .footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 40px; }
 @media (max-width: 980px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .footer-grid { grid-template-columns: 1fr; } }
 
-/* ---- stack fixed multi-column grids on small screens ---- */
-@media (max-width: 860px) {
-  [style*="grid-template-columns:1.15fr"],
-  [style*="grid-template-columns:1.2fr"],
-  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
-  [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
-  [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+/* ---- 9. enquiry wizard --------------------------------------------------
+   Step 1 renders inline in the hero; steps 2-4 open as a modal on desktop and
+   a full-screen sheet on phones. Step logic is NOT in the design files.
+   -----------------------------------------------------------------------*/
+.wiz-choice:hover         { border-color: var(--accent) !important; }
+.wiz-choice:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wiz-consent:hover        { border-color: var(--primary) !important; }
+.wiz-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: rgba(16, 20, 26, 0.62);
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 24px;
 }
-
-/* ---- tighter section rhythm on phones ---- */
-@media (max-width: 640px) {
-  [style*="padding:88px 24px 72px"] { padding: 48px 20px 40px !important; }
-  [style*="padding:80px 24px 64px"] { padding: 48px 20px 36px !important; }
-  [style*="padding:80px 24px"] { padding: 48px 20px !important; }
-  [style*="padding:72px 24px 64px"] { padding: 44px 20px 36px !important; }
-  [style*="padding:72px 24px"] { padding: 44px 20px !important; }
-  [style*="padding:64px 24px"] { padding: 44px 20px !important; }
-  [style*="padding:96px 24px"] { padding: 56px 20px !important; }
-  [style*="padding:56px 24px 96px"] { padding: 32px 20px 64px !important; }
-  [style*="padding:56px 24px 32px"] { padding: 40px 20px 28px !important; }
-  [style*="padding:32px 24px 72px"] { padding: 24px 20px 48px !important; }
-  [style*="padding:40px"][style*="border-radius:10px"] { padding: 28px 22px !important; }
+.wiz-panel {
+  background: var(--white); border-radius: 14px;
+  width: min(560px, 100%); max-height: calc(100vh - 64px); overflow-y: auto;
 }
-
-/* ---- enquiry wizard (inline-hero step 1, modal / mobile sheet for steps 2-4) ---- */
-.wiz-choice:hover { border-color: #2CC5B6 !important; }
-.wiz-choice:focus-visible { outline: 3px solid #2CC5B6; outline-offset: 2px; }
-.wiz-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(16,20,26,0.62); display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
-.wiz-panel { background: #FFFFFF; border-radius: 14px; width: min(560px, 100%); max-height: calc(100vh - 64px); overflow-y: auto; }
 @media (max-width: 640px) {
   .wiz-overlay { padding: 0; align-items: stretch; }
-  .wiz-panel { width: 100%; max-height: none; min-height: 100vh; min-height: 100dvh; border-radius: 0; }
+  .wiz-panel {
+    width: 100%; max-height: none;
+    min-height: 100vh; min-height: 100dvh;
+    border-radius: 0;
+  }
 }
-.wiz-consent:hover { border-color: #1E4FD8 !important; }
-
-/* ---- persistent header CTA (visible at every width, outside the burger) ---- */
-.nav-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; min-height: 44px; background: #1E4FD8; color: #FFFFFF !important; padding: 11px 18px; border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; white-space: nowrap; }
-.nav-cta:hover { background: #1740B8; }
-.nav-cta:focus-visible { outline: 3px solid #2CC5B6; outline-offset: 2px; }
-@media (max-width: 480px) { .nav-cta { padding: 10px 14px; font-size: 14px; min-height: 44px; } }
-
-.nav-mobile-toggle { min-height: 44px; min-width: 44px; }
