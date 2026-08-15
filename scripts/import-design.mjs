@@ -42,6 +42,7 @@ const positional = args.filter((a) => !a.startsWith('--'))
 const EXPORT_DIR = resolve(positional[0] || './design-export')
 const IMAGE_DIR = positional[1] ? resolve(positional[1]) : null
 const DRY = flags.has('--dry')
+const SKIP_MEDIA = process.argv.includes('--skip-media')
 const DRAFTS = flags.has('--drafts')
 const ONLY = (args.find((a) => a.startsWith('--only=')) || '').replace('--only=', '')
 const ONLY_SLUGS = ONLY ? new Set(ONLY.split(',')) : null
@@ -184,7 +185,11 @@ async function upsert(collection, field, value, data) {
 
 const mediaCache = new Map()
 
+const mediaFailures = []
+
 async function uploadMedia(filePath, alt) {
+  if (SKIP_MEDIA) return null
+
   const name = basename(filePath)
   if (mediaCache.has(name)) return mediaCache.get(name)
 
@@ -200,7 +205,16 @@ async function uploadMedia(filePath, alt) {
     headers: { Authorization: `JWT ${token}` },
     body: form,
   })
-  if (!res.ok) throw new Error(`media upload ${name} — ${res.status} ${(await res.text()).slice(0, 200)}`)
+  if (!res.ok) {
+    // A failing image must not abandon a 50-page import. Warn, remember the
+    // failure, carry on, and report every one of them in the summary so the
+    // gaps are known rather than discovered later in the CMS.
+    const detail = `${res.status} ${(await res.text()).slice(0, 200)}`
+    console.log(`  ! media upload failed: ${name} — ${detail}`)
+    mediaFailures.push({ name, detail })
+    mediaCache.set(name, null)
+    return null
+  }
   const json = await res.json()
   const id = json.doc?.id || json.id
   mediaCache.set(name, id)
@@ -623,6 +637,14 @@ async function main() {
   }
 
   console.log(`\n  created ${results.created}, updated ${results.updated}, failed ${results.failed.length}`)
+
+  if (SKIP_MEDIA) {
+    console.log('  ~ media skipped (--skip-media). Add images via the CMS page editor.')
+  } else if (mediaFailures.length) {
+    console.log(`\n  ${mediaFailures.length} image(s) did not upload — pages imported without them:`)
+    for (const f of mediaFailures) console.log(`    - ${f.name}: ${f.detail}`)
+    console.log('  Re-run the import once fixed; it upserts, so nothing is duplicated.')
+  }
   if (results.failed.length) {
     console.log('\n  failures:')
     for (const f of results.failed) console.log(`    - ${f}`)
