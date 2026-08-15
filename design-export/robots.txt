@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /legal/
+Disallow: /thank-you
+
+Sitemap: https://matchmysolicitor.co.uk/sitemap.xml

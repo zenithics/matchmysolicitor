@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import React from 'react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
@@ -96,8 +97,14 @@ export async function Footer() {
       <div className="max-w-[1280px] mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
         {/* Brand */}
         <div className="col-span-2 md:col-span-1">
-          <Link href="/" className="font-serif text-2xl tracking-[0.08em] hover:text-primary transition-colors block mb-3">
-            {brandName}
+          <Link href="/" className="block mb-3" aria-label={brandName}>
+            <Image
+              src="/logo-reversed.svg"
+              alt={brandName}
+              width={200}
+              height={37}
+              className="h-8 w-auto object-contain"
+            />
           </Link>
           <p className="text-sm text-white/55 leading-relaxed max-w-[200px]">
             {brandTagline}

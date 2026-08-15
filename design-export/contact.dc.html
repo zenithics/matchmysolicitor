@@ -30,7 +30,7 @@
 <main>
 <!-- @block: content size="normal" -->
 <section style="background:#1A1F26; color:#FFFFFF;">
-  <div style="max-width:820px; margin:0 auto; padding:64px 24px 56px; display:flex; flex-direction:column; gap:18px;">
+  <div class="sp-64-56" style="max-width:820px; margin:0 auto; display:flex; flex-direction:column; gap:18px">
     <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(28px, 5.5vw, 42px); line-height:1.15; font-weight:700; margin:0; letter-spacing:-0.015em;">Tell us what has happened</h1>
     <p style="margin:0; font-size:18px; line-height:1.65; color:#B9C1CC; max-width:58ch;">The enquiry form below is the fastest route to a specialist: it captures what we need to make the right match first time. Free, confidential, no obligation.</p>
     <p style="margin:0; font-size:15px; line-height:1.65; color:#98A1AE; max-width:58ch;">We're a matching service — we'll pass your details to one specialist firm, and they contact you directly.</p>
@@ -43,7 +43,7 @@
      reason="4-step qualification form with conditional branching on employer/employee, case type
      routing, and query-string pre-fill (?type=&case=). No library block covers multi-step forms:
      formBlock is a single flat form. This is the one bespoke component in the build." -->
-<section style="max-width:720px; margin:0 auto; padding:56px 24px 96px;">
+<section class="sp-56-96" style="max-width:720px; margin:0 auto">
   <sc-if value="{{ notSubmitted }}" hint-placeholder-val="{{ true }}">
     <div style="text-align:center; display:flex; flex-direction:column; gap:12px; margin-bottom:36px;">
       <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4.4vw, 34px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.015em;">Start your free enquiry</h2>
@@ -66,7 +66,7 @@
       <sc-if value="{{ onStep1 }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex; flex-direction:column; gap:20px;">
           <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:24px; font-weight:700; color:#1A1F26; margin:0;">First things first, which side are you on?</h2>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="grid-2" style="display:grid; gap:16px">
             <button onClick="{{ pickEmployer }}" class="card-link-ink" style="cursor:pointer; text-align:left; border:2px solid {{ employerBorder }}; background:#FFFFFF; border-radius:10px; padding:24px; display:flex; flex-direction:column; gap:6px;">
               <span style="font-size:18px; font-weight:700; color:#1A1F26;">I'm an employer</span>
               <span style="font-size:14px; color:#5B6472; line-height:1.5;">Facing a claim, negotiating a settlement, or need urgent representation</span>
@@ -211,7 +211,7 @@
 <!-- /@block -->
 
 <!-- @block: content size="normal" -->
-<section style="max-width:820px; margin:0 auto; padding:8px 24px 88px; display:flex; flex-direction:column; gap:20px;">
+<section class="sp-8-88" style="max-width:820px; margin:0 auto; display:flex; flex-direction:column; gap:20px">
   <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(22px, 3.5vw, 28px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.01em;">Other ways to reach us</h2>
   <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:28px; display:flex; flex-direction:column; gap:10px;">
     <span style="font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#1E4FD8;">Email</span>
@@ -224,7 +224,7 @@
 
 <!-- @block: cta -->
 <section style="background:#1A1F26; color:#FFFFFF;">
-  <div style="max-width:1180px; margin:0 auto; padding:64px 24px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;">
+  <div class="sp-64" style="max-width:1180px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap">
     <div style="display:flex; flex-direction:column; gap:8px;">
       <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(23px, 3.8vw, 30px); font-weight:700; margin:0; letter-spacing:-0.01em;">Urgent matter, like a hearing this week?</h2>
       <p style="margin:0; color:#B9C1CC; font-size:16px;">Say so in your enquiry and we prioritise same-day matching.</p>
