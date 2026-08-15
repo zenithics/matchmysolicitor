@@ -56,6 +56,27 @@ const blockComponents = {
   enquiryWizard: EnquiryWizardBlock,
 }
 
+/*
+ * Blocks that render their own <section> with vertical padding. Wrapping these
+ * in my-16 as well stacked ~160px between sections, which is what made the
+ * imported pages read as far more spaced out than the design. Blocks not listed
+ * here have no internal padding and still need the wrapper.
+ */
+const SELF_PADDED_BLOCKS = new Set([
+  'homeHero',
+  'heroSplit',
+  'textMedia',
+  'howItWorks',
+  'embed',
+  'imageGallery',
+  'mapEmbed',
+  'newsletter',
+  'teamGrid',
+  'timeline',
+  'videoEmbed',
+  'enquiryWizard',
+])
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
 }> = (props) => {
@@ -74,7 +95,10 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               return (
-                <div className="my-16" key={index}>
+                <div
+                  className={SELF_PADDED_BLOCKS.has(blockType) ? undefined : 'my-16'}
+                  key={index}
+                >
                   {/* @ts-expect-error there may be some mismatch between the expected types here */}
                   <Block {...block} disableInnerContainer />
                 </div>

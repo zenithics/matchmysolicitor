@@ -17,6 +17,16 @@ export const RenderHero: React.FC<Page['hero']> = (props) => {
 
   if (!type || type === 'none') return null
 
+  /*
+   * Pages imported from a Claude Design export carry their hero as the first
+   * *block*, so the hero field stays empty but still defaults to 'lowImpact'.
+   * Rendering it produced a tall empty container between the header and the
+   * real hero. Treat a hero with no content as no hero.
+   */
+  const { richText, media, links } = (props || {}) as Record<string, unknown>
+  const hasContent = Boolean(richText) || Boolean(media) || Boolean((links as unknown[])?.length)
+  if (!hasContent) return null
+
   const HeroToRender = heroes[type]
 
   if (!HeroToRender) return null
