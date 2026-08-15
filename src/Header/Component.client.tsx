@@ -35,7 +35,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
 }) => {
   const [theme, setTheme] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
   const pathname = usePathname()
@@ -52,11 +51,6 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerTheme])
 
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
-  }, [])
 
   const navLeft = (data?.navItemsLeft ?? []).map((item: any) => ({
     href: resolveLinkHref(item.link),
@@ -73,18 +67,16 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
   return (
     <>
       <header
-        className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-          scrolled
-            ? 'bg-white/95 backdrop-blur-sm shadow-sm'
-            : 'bg-background'
-        }`}
+        /* The design's header is flat and does not change on scroll — the
+         * blur/shadow treatment was a starter invention. */
+        className="sticky top-0 z-50 w-full bg-white border-b border-[#E4E7EC]"
         {...(theme ? { 'data-theme': theme } : {})}
       >
-        <div className="max-w-[1280px] mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
+        <div className="mx-auto w-full max-w-[var(--mms-container)] px-6">
+          <div className="flex h-[72px] items-center justify-between">
 
             {/* Left nav — desktop */}
-            <nav className="hidden md:flex items-center gap-7 order-2 ml-10 mr-auto" aria-label="Primary navigation left">
+            <nav className="hidden md:flex items-center gap-[26px] order-2 ml-10 mr-auto" aria-label="Primary navigation left">
               {navLeft.map(({ href, label, newTab }) => {
                 const children = dropdowns[href]
                 const isActive =
@@ -134,7 +126,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                     {openMenu === href && (
                       <div
                         role="menu"
-                        className="absolute left-[-16px] top-full z-50 min-w-[260px] rounded-lg border border-border bg-white p-2 shadow-[0_8px_24px_rgba(26,31,38,0.10)]"
+                        className="absolute left-[-16px] top-full z-50 min-w-[280px] rounded-lg border border-border bg-white p-2 shadow-[0_8px_24px_rgba(26,31,38,0.10)]"
                       >
                         {children.map((child) => (
                           <Link
@@ -165,7 +157,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={logo.alt || 'Logo'}
                   width={logo.width ?? 160}
                   height={logo.height ?? 40}
-                  className="h-8 w-auto object-contain"
+                  className="h-[38px] w-auto object-contain"
                   priority
                 />
               ) : (
@@ -177,7 +169,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={brandName}
                   width={200}
                   height={37}
-                  className="h-8 w-auto object-contain"
+                  className="h-[38px] w-auto object-contain"
                   priority
                 />
               )}
@@ -192,7 +184,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                     href={href}
                     target={newTab ? '_blank' : undefined}
                     rel={newTab ? 'noopener noreferrer' : undefined}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                    className={`text-[15px] font-semibold transition-colors hover:text-primary ${
                       pathname === href ? 'text-primary' : 'text-foreground/80'
                     }`}
                   >
