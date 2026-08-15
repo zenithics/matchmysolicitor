@@ -226,7 +226,6 @@ export const seed = async ({
         ],
         navItemsRight: [
           { link: { type: 'custom', label: 'How It Works', url: '/how-it-works' } },
-          { link: { type: 'custom', label: 'Contact', url: '/contact' } },
         ],
       },
     }),

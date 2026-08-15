@@ -29,7 +29,6 @@ export async function POST(): Promise<Response> {
           ],
           navItemsRight: [
             { link: { type: 'custom', label: 'How It Works', url: '/how-it-works' } },
-            { link: { type: 'custom', label: 'Contact', url: '/contact' } },
           ],
         },
       }),

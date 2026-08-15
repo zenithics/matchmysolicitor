@@ -23,7 +23,7 @@ export const ContentBlock: React.FC<ContentBlockProps> = (props) => {
       <div className="container-inner">
         <div
           className={cn('grid grid-cols-4 lg:grid-cols-12 gap-y-8 gap-x-16', {
-            'max-w-205 mx-auto': isProseColumn,
+            'max-w-[640px] mx-auto': isProseColumn,
           })}
         >
           {columns &&

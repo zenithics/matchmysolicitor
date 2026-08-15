@@ -133,9 +133,17 @@ function extractText(html) {
   for (const m of html.matchAll(
     /<(h[1-6]|p|li|blockquote|span|summary|figcaption|dt|dd)[^>]*>([\s\S]*?)<\/\1>/gi,
   )) {
-    const text = stripTags(m[2])
+    const tag = m[1].toLowerCase()
+    let text = stripTags(m[2])
+    // Every <li> in the export carries its own bullet glyph as a leading
+    // <span> (✓ for tick lists, · elsewhere) so the design's own CSS can
+    // colour it independently of the item text — stripTags flattens that
+    // span straight into the li's text. Left in, toRichText's real <ul>
+    // renders a browser bullet on top of it, so every item doubles up
+    // ("• · Tribunal claim defence").
+    if (tag === 'li') text = text.replace(/^[✓✔·•]\s*/, '')
     claimed.push([m.index, m.index + m[0].length])
-    if (text) parts.push({ index: m.index, tag: m[1].toLowerCase(), text })
+    if (text) parts.push({ index: m.index, tag, text })
   }
 
   for (const m of html.matchAll(/<div[^>]*>([^<]+)<\/div>/gi)) {

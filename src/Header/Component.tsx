@@ -37,6 +37,30 @@ export async function Header() {
    * the published service pages themselves — they follow a strict slug
    * convention (for-employers-*, for-employees-*) set by the importer.
    */
+  // design-export/SiteHeader.dc.html's dropdown order (most urgent/searched
+  // service first) — deliberately not alphabetical, so sorting the query by
+  // title doesn't reproduce it. No "order" field exists on Pages to drive this
+  // from the CMS instead (adding one is a schema change), so it's a fixed
+  // priority list here; anything not in it sorts after, alphabetically.
+  const DROPDOWN_ORDER: Record<string, string[]> = {
+    'for-employers': [
+      'for-employers-tribunal-defence',
+      'for-employers-settlement-agreements',
+      'for-employers-constructive-dismissal-defence',
+      'for-employers-interim-relief-hearings',
+      'for-employers-redundancy-restructuring',
+      'for-employers-disciplinary-grievance',
+    ],
+    'for-employees': [
+      'for-employees-unfair-dismissal',
+      'for-employees-constructive-dismissal',
+      'for-employees-discrimination',
+      'for-employees-settlement-agreements',
+      'for-employees-employment-tribunal-claims',
+      'for-employees-senior-exits',
+    ],
+  }
+
   const dropdowns: Record<string, { href: string; label: string }[]> = {}
   try {
     const payload = await getPayload({ config: configPromise })
@@ -54,12 +78,23 @@ export async function Header() {
         },
         sort: 'title',
       })
+      const priority = DROPDOWN_ORDER[parent] ?? []
       const items = (children?.docs ?? [])
         .filter((d: { slug?: string | null }) => typeof d.slug === 'string')
         .map((d: { slug?: string | null; title?: string | null }) => ({
           href: `/${d.slug}`,
           label: (d.title ?? '').replace(/^For (employers|employees):?\s*/i, ''),
+          slug: d.slug as string,
         }))
+        .sort((a, b) => {
+          const ai = priority.indexOf(a.slug)
+          const bi = priority.indexOf(b.slug)
+          if (ai === -1 && bi === -1) return 0
+          if (ai === -1) return 1
+          if (bi === -1) return -1
+          return ai - bi
+        })
+        .map(({ href, label }) => ({ href, label }))
       if (items.length) dropdowns[`/${parent}`] = items
     }
   } catch {

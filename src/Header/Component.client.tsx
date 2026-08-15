@@ -92,8 +92,13 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                 const children = dropdowns[href]
                 const isActive =
                   pathname === href || (href !== '/' && pathname.startsWith(href.split('?')[0]))
-                const linkClass = `text-[15px] font-semibold transition-colors hover:text-primary ${
-                  isActive ? 'text-primary' : 'text-foreground/80'
+                // .nav-link:hover { color: var(--ink) !important } in the design's
+                // own stylesheet — hover/active stay ink with an underline, never
+                // switch to the brand blue.
+                const linkClass = `text-[15px] font-semibold transition-colors border-b-2 hover:text-card-foreground ${
+                  isActive
+                    ? 'text-card-foreground border-card-foreground'
+                    : 'text-foreground/80 border-transparent'
                 }`
 
                 if (!children?.length) {
@@ -201,8 +206,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                     href={href}
                     target={newTab ? '_blank' : undefined}
                     rel={newTab ? 'noopener noreferrer' : undefined}
-                    className={`text-[15px] font-semibold transition-colors hover:text-primary ${
-                      pathname === href ? 'text-primary' : 'text-foreground/80'
+                    className={`text-[15px] font-semibold transition-colors border-b-2 hover:text-card-foreground ${
+                      pathname === href
+                        ? 'text-card-foreground border-card-foreground'
+                        : 'text-foreground/80 border-transparent'
                     }`}
                   >
                     {label}

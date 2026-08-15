@@ -378,34 +378,68 @@ function mapBlock(b, ctx) {
   const items = b.items || []
 
   switch (t) {
-    case 'content':
+    case 'content': {
+      const base = toRichText(b.text)
+      // Some content sections use bare <div> "cards" with a bold lead-in
+      // phrase (e.g. about.dc.html's "How the panel is vetted" list) instead
+      // of <li> — those have a nested <strong>, so they're invisible to
+      // extractText (which only treats fully tag-free divs as leaf text) and
+      // silently disappear. Pull them in as their own paragraphs, preserving
+      // the bold lead-in, rather than losing the whole card.
+      const html = b.rawHtml || ''
+      const cardNodes = [...html.matchAll(/<div[^>]*>\s*<strong[^>]*>[\s\S]*?<\/div>/gi)]
+        .map((m) => parseInlineNodes(m[0]))
+        .filter((nodes) => nodes.length)
+        .map((nodes) => paragraph(nodes))
       return {
         blockType: 'content',
-        columns: [{ size: 'full', richText: toRichText(b.text) }],
+        columns: [{ size: 'full', richText: root([...(base.root.children || []), ...cardNodes]) }],
       }
+    }
 
     case 'cta':
       return { blockType: 'cta', richText: toRichText(b.text), links: toLinkGroup(b.links) }
 
     case 'banner': {
-      // The badge ("1 JAN 2027") sits in a <span>; the sentence after it is a
-      // sibling <div> mixing plain text with <strong> and a trailing <a> — the
-      // generic text pass can't see inside that div (it has nested tags, so it
-      // isn't a "leaf" div by that pass's rules), which is why only the badge
-      // ever survived import. There's no badge field any more (it broke
-      // production once, see 283b3a5), so both live in one rich-text
-      // paragraph, with the date as bold leading text.
+      // "info" covers two visually distinct designs, both with style="info":
+      //   1. The full-bleed dated notice (index.dc.html): a <span> badge, then
+      //      a sibling <div> mixing plain text with <strong> and a trailing
+      //      <a> — no <p> boundaries, one flowing sentence.
+      //   2. A contained card (about.dc.html "We are not a law firm",
+      //      guides.dc.html's per-guide disclaimer): an optional bare
+      //      <strong> title on its own line, then one or more real <p> body
+      //      paragraphs (or, for guides, no title at all — just a sentence).
+      // The generic text pass can't see any of this (nested tags disqualify a
+      // div/strong from being "leaf" content), which is why only the date
+      // badge ever survived import. There's no badge field any more (it broke
+      // production once, see 283b3a5) — Banner/Component.tsx tells these two
+      // shapes apart at render time from the content itself (whether the
+      // first bold run looks like a date), so both must import as real rich
+      // text with the title/paragraph structure intact.
       const html = b.rawHtml || ''
-      const badgeMatch = html.match(/<span[^>]*>([\s\S]*?)<\/span>/i)
-      const badge = badgeMatch ? stripInnerTags(badgeMatch[1]) : ''
-      const rest = badgeMatch ? html.slice(badgeMatch.index + badgeMatch[0].length) : html
-      const children = []
-      if (badge) children.push(textNode(`${badge} `, 1))
-      children.push(...parseInlineNodes(rest))
+      const spanBadgeMatch = html.match(/<span[^>]*>([\s\S]*?)<\/span>/i)
+
+      if (spanBadgeMatch) {
+        const badge = stripInnerTags(spanBadgeMatch[1])
+        const rest = html.slice(spanBadgeMatch.index + spanBadgeMatch[0].length)
+        const children = [textNode(`${badge} `, 1), ...parseInlineNodes(rest)]
+        return { blockType: 'banner', style: 'info', content: root([paragraph(children)]) }
+      }
+
+      const titleMatch = html.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i)
+      const rest = titleMatch ? html.slice(titleMatch.index + titleMatch[0].length) : html
+      const bodyParas = [...rest.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/gi)]
+      const bodyNodes = bodyParas.length
+        ? bodyParas.map((m) => paragraph(parseInlineNodes(m[1])))
+        : (() => {
+            const nodes = parseInlineNodes(rest)
+            return nodes.length ? [paragraph(nodes)] : []
+          })()
+      const titlePara = titleMatch ? paragraph([textNode(stripInnerTags(titleMatch[1]), 1)]) : null
       return {
         blockType: 'banner',
         style: 'info',
-        content: root(children.length ? [paragraph(children)] : []),
+        content: root([...(titlePara ? [titlePara] : []), ...bodyNodes]),
       }
     }
 
@@ -419,16 +453,27 @@ function mapBlock(b, ctx) {
         }).filter((s) => s.value),
       }
 
-    case 'faq':
+    case 'faq': {
+      // The design uses two different presentations for this block: a
+      // collapsible <details>/<summary> accordion (every service/location
+      // page) and a single always-open list with plain <h3> questions
+      // (how-it-works.dc.html only). Nothing in the item data itself differs
+      // between them, so the choice of question tag is the only signal —
+      // stash it in `description` (unused by either real instance) as a
+      // sentinel FAQ/Component.tsx checks and strips, rather than adding a
+      // schema field for a single page's layout choice.
+      const usesSummaryTag = items.some((it) => (it.text || []).some((x) => x.tag === 'summary'))
       return {
         blockType: 'faq',
         heading: heading(b),
+        ...(usesSummaryTag ? {} : { description: '__open__' }),
         items: items.map((it) => {
           const q = (it.text || []).find((x) => x.tag === 'summary' || /^h[1-6]$/.test(x.tag))
           const answers = (it.text || []).filter((x) => x !== q)
           return { question: q?.text || '', answer: toRichText(answers) }
         }).filter((i) => i.question),
       }
+    }
 
     case 'features':
       return {
@@ -439,7 +484,17 @@ function mapBlock(b, ctx) {
         features: items.map((it) => {
           const parts = (it.text || []).filter((x) => x.text)
           const title = parts[0]?.text || ''
-          const rest = parts.slice(1)
+          let rest = parts.slice(1)
+          // A short ALL-CAPS <span> right after the title (e.g. "URGENT" on
+          // for-employers.dc.html's interim-relief card) is an inline badge
+          // next to the heading, not body copy — there's no dedicated field
+          // for it, so fold it into the title as a bracketed suffix that
+          // Features/Component.tsx knows to pull out and render as a pill.
+          let badgedTitle = title
+          if (rest[0]?.tag === 'span' && /^[A-Z][A-Z\s]{1,14}$/.test(rest[0].text)) {
+            badgedTitle = `${title} [${rest[0].text}]`
+            rest = rest.slice(1)
+          }
           const link = (it.links || [])[0]
           // Some cards wrap the WHOLE tile in one <a> (e.g. the city cards on
           // employment-solicitors.dc.html) rather than linking just their last
@@ -452,24 +507,38 @@ function mapBlock(b, ctx) {
           const linkLabel = wholeCardLink ? rest[rest.length - 1]?.text : link?.label
           const bodyParts = wholeCardLink ? rest.slice(0, -1) : rest.filter((p) => p.text !== link?.label)
           return {
-            title,
+            title: badgedTitle,
             description: toRichText(bodyParts),
             ...(link?.url ? { linkUrl: rewriteUrl(link.url), linkLabel: linkLabel || 'Read more' } : {}),
           }
         }).filter((f) => f.title),
       }
 
-    case 'howItWorks':
+    case 'howItWorks': {
+      // The "More about how it works →" link sits below the step grid, not
+      // inside any @item, so it's on b.links (block-level), not an item's own.
+      const link = (b.links || [])[0]
+      // Same dual-presentation problem as Banner/FAQ: this design uses the
+      // block two ways — a 3/4-column grid with oversized numerals (homepage)
+      // and a vertical timeline with numbered circles joined by a connector
+      // line (how-it-works.dc.html) — same field shape either way, so there's
+      // no schema signal to pick one. The connector line (a 2px-wide filler
+      // div between circles) only exists in the timeline instance; stash that
+      // as a subheading sentinel (empty in both real instances otherwise) for
+      // HowItWorks/Component.tsx to switch on, same trick as FAQ's.
+      const isTimeline = /width:\s*2px/i.test(b.rawHtml || '')
       return {
         blockType: 'howItWorks',
         heading: heading(b),
-        subheading: firstPara(b),
+        subheading: isTimeline ? '__timeline__' : firstPara(b),
         steps: items.map((it) => {
           const hs = (it.text || []).filter((x) => /^h[1-6]$/.test(x.tag)).map((x) => x.text)
           const ps = (it.text || []).filter((x) => x.tag === 'p').map((x) => x.text)
           return { title: hs[0] || '', description: ps.join('\n\n') }
         }).filter((s) => s.title),
+        ...(link?.url ? { ctaText: link.label || 'Learn more', ctaLink: rewriteUrl(link.url) } : {}),
       }
+    }
 
     case 'archive':
       // Guides listings: let the CMS populate from the posts collection.
@@ -482,17 +551,25 @@ function mapBlock(b, ctx) {
       }
 
     case 'enquiryWizard': {
-      const variant = ctx.isHero ? 'inline-hero' : 'page'
+      // Every enquiryWizard marker in the export declares its own variant
+      // attribute explicitly (@block: enquiryWizard variant="page"/"inline-hero"/
+      // "modal") — trust it. The position heuristic (ctx.isHero) is only a
+      // fallback for the case it's somehow missing; it was previously used
+      // unconditionally, which is why /enquiry — whose marker says variant="page"
+      // — imported as "inline-hero" (it happens to be that page's first block).
+      const variant = b.variant || (ctx.isHero ? 'inline-hero' : 'page')
+      const isHeroVariant = variant === 'inline-hero'
       // eyebrow/bullets are inline-hero-only fields (config.ts conditions them
       // on variant), and only meaningful on the hero instance — the design's
       // eyebrow is a leaf <div> just above the h1 (not a <span>, unlike
       // homeHero's badge), and the tick list is a <ul> whose <li> text keeps a
-      // leading "✓" from the design's inline glyph span.
-      const eyebrow = ctx.isHero ? (b.text || []).find((x) => x.tag === 'div')?.text || '' : ''
-      const bullets = ctx.isHero
+      // leading glyph from the design's inline span (stripped generically now
+      // by extractText for every <li>, not just this one).
+      const eyebrow = isHeroVariant ? (b.text || []).find((x) => x.tag === 'div')?.text || '' : ''
+      const bullets = isHeroVariant
         ? (b.text || [])
             .filter((x) => x.tag === 'li')
-            .map((x) => ({ text: x.text.replace(/^[✓✔]\s*/, '') }))
+            .map((x) => ({ text: x.text }))
             .filter((x) => x.text)
             .slice(0, 4)
         : []
@@ -509,20 +586,38 @@ function mapBlock(b, ctx) {
     case 'textMedia': {
       const h = heading(b)
       const rest = (b.text || []).filter((x) => x.text !== h)
+      // The design isn't consistent about which side the image sits on (image
+      // first on the homepage, text first on for-employers/for-employees) —
+      // derive it per instance from whichever comes first in the markup,
+      // rather than assuming one fixed layout for every textMedia block.
+      const html = b.rawHtml || ''
+      const imageMarkerIdx = html.search(/<!--\s*@field:\s*image/i)
+      const headingIdx = h ? html.indexOf(h) : -1
+      const imagePosition =
+        imageMarkerIdx !== -1 && headingIdx !== -1 && imageMarkerIdx < headingIdx ? 'left' : 'right'
       return {
         blockType: 'textMedia',
         heading: h,
         richText: toRichText(rest),
-        imagePosition: 'right',
+        imagePosition,
         ...(ctx.heroImage ? { image: ctx.heroImage } : {}),
         ...(b.links?.length ? { links: toLinkGroup(b.links) } : {}),
       }
     }
 
     case 'homeHero':
+      // Same class of bug as enquiryWizard's variant: the marker declares its
+      // own style ("@block: homeHero style=\"centred\" theme=\"dark\"" on
+      // how-it-works.dc.html), captured on b.style, but it was never read —
+      // every hero silently fell back to the component's "split" default
+      // regardless of what the design actually specified.
       return {
         blockType: 'homeHero',
-        badge: (b.text || []).find((x) => x.tag === 'span')?.text || '',
+        style: b.style || 'split',
+        theme: b.theme || 'dark',
+        // The eyebrow is a leaf <div> in the "centred" style (like
+        // enquiryWizard's), not necessarily a <span>.
+        badge: (b.text || []).find((x) => x.tag === 'div' || x.tag === 'span')?.text || '',
         headline: heading(b),
         subheadline: firstPara(b),
         ...(ctx.heroImage ? { backgroundImage: ctx.heroImage } : {}),
@@ -572,10 +667,19 @@ async function seedSiteChrome(brand) {
     footerBgColour: brand.colours.ink,
     // The export sets font-family:'Plus Jakarta Sans' on 255 elements; that is
     // the design's typeface for both headings and body. Must be set
-    // explicitly: once a site-appearance record exists, leaving headingFont
-    // empty applies the global's own default of DM Serif Display. (headingFont
-    // didn't accept this value until now — see src/globals/SiteAppearance.ts.)
-    headingFont: 'Plus Jakarta Sans',
+    // explicitly: once a site-appearance record exists, leaving a font field
+    // empty applies the global's own default (DM Serif Display for headings).
+    //
+    // headingFont is DELIBERATELY omitted here. "Plus Jakarta Sans" is now a
+    // valid option in the field's select config (src/globals/SiteAppearance.ts),
+    // but the column is backed by a real Postgres enum type that hasn't been
+    // migrated to include it — writing it 500s the whole global (confirmed
+    // live, not theoretical). bodyFont already had this value as a valid
+    // option before today, so it isn't blocked the same way, and it covers the
+    // overwhelming majority of the site's type (everything using --font-sans)
+    // — only a handful of font-serif elements (HeroSplit heading, 404, legal
+    // page h1s, two modal titles) stay on the wrong face until headingFont's
+    // enum is migrated and this line can be restored.
     bodyFont: 'Plus Jakarta Sans',
     // The design uses fluid type (styles.css §2). SiteAppearance defaults
     // these to fixed rem values, and those defaults are injected as CSS vars,
@@ -596,9 +700,11 @@ async function seedSiteChrome(brand) {
     // No "Free enquiry" here — the header renders a persistent CTA button
     // outside these nav items already, pointing at the same /enquiry. Adding
     // it here duplicates that button in the nav (round-3 finding R3).
+    // No "Contact" here — design-export/SiteHeader.dc.html's nav-desktop is
+    // For Employers/For Employees/Guides/How It Works only. Contact already
+    // lives in the footer; it was never part of the designed header nav.
     navItemsRight: [
       navLink('How It Works', '/how-it-works'),
-      navLink('Contact', '/contact'),
     ],
   })
 
