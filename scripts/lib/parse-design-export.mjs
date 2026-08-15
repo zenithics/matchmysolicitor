@@ -20,6 +20,40 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, basename } from 'node:path'
 
+const MUSTACHE = /\{\{[^}]*\}\}/
+
+/**
+ * Remove the design's runtime template strings. Any node whose copy contains a
+ * {{ token }} belongs to the JS-driven wizard, which the React block re-renders
+ * at runtime, so importing it verbatim publishes the raw token to the live page.
+ * Partial stripping would leave gaps like "Thank you, . Your enquiry is on its
+ * way.", so such entries are dropped whole rather than blanked.
+ */
+function scrubTemplatePlaceholders(node) {
+  if (Array.isArray(node)) {
+    for (let i = node.length - 1; i >= 0; i--) {
+      const child = node[i]
+      const copy = typeof child === 'string' ? child : child && typeof child === 'object' ? child.text : null
+      if (typeof copy === 'string' && MUSTACHE.test(copy)) {
+        node.splice(i, 1)
+        continue
+      }
+      scrubTemplatePlaceholders(child)
+    }
+    return
+  }
+  if (node && typeof node === 'object') {
+    for (const [k, v] of Object.entries(node)) {
+      if (typeof v === 'string') {
+        if (MUSTACHE.test(v)) delete node[k]
+      } else {
+        scrubTemplatePlaceholders(v)
+      }
+    }
+  }
+}
+
+
 // Real block library — keep in sync with src/blocks/RenderBlocks.tsx
 const KNOWN_BLOCKS = new Set([
   'archive', 'banner', 'code', 'content', 'cta', 'formBlock', 'mediaBlock',
@@ -139,6 +173,11 @@ function parsePage(file, html, warnings) {
     const body = html.slice(start, end)
     covered.push([m.index, end])
     const parsed = { text: extractText(body), items: parseItems(body), images: extractImages(body), links: extractLinks(body) }
+    // The design's wizard is JS-templated, so its later steps sit in the export
+    // as raw markup containing {{ mustache }} tokens. Those regions are owned by
+    // the React block at runtime, not by CMS content: importing them verbatim
+    // publishes a literal "{{ step2Heading }}" onto the live page.
+    scrubTemplatePlaceholders(parsed)
 
     if (kind === 'newblock') {
       newBlocks.push({ page: meta.slug, name, ...attrs(rawAttrs), ...parsed })
