@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Page Not Found | MatchMySolicitor</title>
+<meta name="description" content="That page has moved or no longer exists. Start a free employment law enquiry instead and we will match you with a specialist solicitor within 24 hours.">
+<link rel="canonical" href="https://matchmysolicitor.co.uk/404">
+<meta name="robots" content="noindex, follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; font-weight:500; color:#3A414C; background:#F7F8FA; -webkit-font-smoothing:antialiased; }
+  a { color:#1E4FD8; text-decoration:none; }
+  a:hover { color:#1740B8; }
+  * { box-sizing:border-box; }
+</style>
+</helmet>
+<dc-import name="SiteHeader" hint-size="100%,72px"></dc-import>
+<!-- @page slug="404" title="Page Not Found"
+     metaTitle="Page Not Found | MatchMySolicitor"
+     description="That page has moved or no longer exists. Start a free employment law enquiry instead and we will match you with a specialist solicitor within 24 hours."
+     collection="pages" template="standard" -->
+<main>
+<!-- @block: content size="normal" -->
+<section style="max-width:720px; margin:0 auto; padding:96px 24px; text-align:center; display:flex; flex-direction:column; gap:20px; align-items:center;">
+  <span style="font-size:14px; font-weight:700; letter-spacing:0.1em; color:#98A1AE;">404</span>
+  <h1 style="font-size:clamp(26px, 5vw, 38px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.015em;">That page does not exist</h1>
+  <p style="margin:0; font-size:17px; line-height:1.65; color:#5B6472; max-width:48ch;">The link may be out of date. If you came here about an employment dispute, the quickest route to help is a free enquiry.</p>
+  <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+    <a href="enquiry.dc.html" class="btn-primary" style="background:#1E4FD8; color:#FFFFFF; padding:15px 26px; border-radius:6px; font-weight:700; font-size:16px;">Start a free enquiry →</a>
+    <a href="index.dc.html" style="border:1.5px solid #D3D8DF; color:#1A1F26; padding:15px 26px; border-radius:6px; font-weight:700; font-size:16px;">Back to the homepage →</a>
+  </div>
+</section>
+<!-- /@block -->
+</main>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+<x-import component-from-global-scope="cookie-banner" from="./cookie-banner.js" hint-size="0,0"></x-import>
+</x-dc>
+</body>
+</html>

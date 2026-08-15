@@ -38,6 +38,4 @@ src/payload-types.ts
 npm-debug.log*
 
 # local design import working dirs
-design-export/
-design-images/
 public/media/

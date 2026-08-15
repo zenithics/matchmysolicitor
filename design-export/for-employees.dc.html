@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Employment Solicitors for Employees | MatchMySolicitor</title>
+<meta name="description" content="Dismissed, discriminated against or pushed towards an exit? Get matched with a specialist employment solicitor in 24 hours. Free initial consultation.">
+<link rel="canonical" href="https://matchmysolicitor.co.uk/for-employees">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { margin:0; font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:#3A414C; background:#F7F8FA; -webkit-font-smoothing:antialiased; }
+  a { color:#1E4FD8; text-decoration:none; }
+  a:hover { color:#1A1F26; }
+  * { box-sizing:border-box; }
+</style>
+</helmet>
+
+<dc-import name="SiteHeader" active="employees" hint-size="100%,72px"></dc-import>
+
+<!-- @page slug="for-employees" title="Employment Law Solicitors for Employees"
+     metaTitle="Employment Solicitors for Employees | Free Consultation"
+     description="Dismissed, discriminated against or pushed towards an exit? Get matched with a specialist employment solicitor in 24 hours. Free initial consultation."
+     collection="pages" template="standard" -->
+
+<!-- @block: enquiryWizard variant="inline-hero" -->
+<!-- NOTE: step 1 only. The coded wizard replaces this block on import. No form logic here: the choice buttons deep-link into the enquiry flow. -->
+<section style="background:#1A1F26; color:#FFFFFF;">
+  <div style="max-width:1180px; margin:0 auto; padding:64px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(330px, 1fr)); gap:56px; align-items:center;">
+    <div style="display:flex; flex-direction:column; gap:20px;">
+      <h1 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(28px, 5.5vw, 44px); line-height:1.14; font-weight:700; margin:0; letter-spacing:-0.015em; text-wrap:pretty;">Know your rights. Get expert advice on your employment dispute.</h1>
+      <p style="margin:0; font-size:18px; line-height:1.65; color:#B9C1CC; max-width:52ch;">Dismissed unfairly, forced out, discriminated against, or offered a deal that doesn't feel right? Our partner solicitors specialise in complex, high-value employment disputes, for people who want to fight or negotiate, not just get paperwork signed.</p>
+      <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:15px; color:#FFFFFF;">
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>SRA-regulated panel</li>
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>One firm, not ten</li>
+        <li style="display:flex; gap:10px;"><span style="color:#2CC5B6; font-weight:700;">✓</span>Free, no-obligation first conversation</li>
+      </ul>
+    </div>
+    <div id="enquiry-form" style="background:#FFFFFF; border-radius:12px; padding:28px; display:flex; flex-direction:column; gap:16px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <span style="font-size:12px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#6B7482;">Step 1 of 4</span>
+        <span style="font-size:13px; color:#6B7482;">Takes about 2 minutes</span>
+      </div>
+      <div style="height:4px; border-radius:2px; background:#EEF1F4; overflow:hidden;">
+        <div style="width:25%; height:100%; background:#1E4FD8;"></div>
+      </div>
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:21px; font-weight:700; color:#1A1F26; margin:0;">Are you an employee or an employer?</h2>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <a href="enquiry.dc.html?type=employee" class="wiz-choice" style="text-align:left; background:#FFFFFF; border:2px solid #D3D8DF; border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:5px; color:inherit;">
+          <span style="font-size:17px; font-weight:700; color:#1A1F26;">I'm an employee</span>
+          <span style="font-size:14px; line-height:1.5; color:#5B6472;">Dismissed, facing an exit, or treated unfairly at work</span>
+        </a>
+        <a href="enquiry.dc.html?type=employer" class="wiz-choice" style="text-align:left; background:#FFFFFF; border:2px solid #D3D8DF; border-radius:10px; padding:18px 20px; display:flex; flex-direction:column; gap:5px; color:inherit;">
+          <span style="font-size:17px; font-weight:700; color:#1A1F26;">I'm an employer</span>
+          <span style="font-size:14px; line-height:1.5; color:#5B6472;">Defending a claim or planning a departure</span>
+        </a>
+      </div>
+      <p style="margin:0; font-size:13px; line-height:1.6; color:#6B7482;"><span aria-hidden="true">🔒</span> Secure · Your details are only shared with the firm we match you to</p>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: banner style="info" -->
+<!-- NOTE: Employment Rights Act 2025 s.25, commencing 1 January 2027. Facts are fixed: qualifying
+     period two years -> six months (NOT a day-one right), compensatory award cap removed. Body copy
+     elsewhere still says "two years", correct until 1 Jan 2027. -->
+<section style="background:#E9F6F4; border-bottom:1px solid #C6E7E2;">
+  <div style="max-width:1180px; margin:0 auto; padding:22px 24px; display:flex; gap:16px; align-items:flex-start;">
+    <span style="background:#0D9488; color:#FFFFFF; font-size:12px; font-weight:700; padding:5px 10px; border-radius:4px; letter-spacing:0.06em; flex-shrink:0; margin-top:2px;">1 JAN 2027</span>
+    <div style="font-size:16px; line-height:1.65; color:#0F5D55;">
+      <strong style="color:#0A4740;">The two-year rule is changing.</strong> From 1 January 2027 you will be protected from unfair dismissal after six months' service. Different rules may apply to your situation. <a href="enquiry.dc.html?type=employee" style="font-weight:700; color:#0B7268;">Check where you stand →</a>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: stats -->
+<section style="background:#FFFFFF; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:28px 24px; display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:24px;">
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">SRA</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Regulated solicitors only</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">24h</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Typical time to first contact</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">Free</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Initial consultation — your solicitor quotes before any work begins</div>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="display:flex; flex-direction:column; gap:4px;">
+      <div style="font-family:'Plus Jakarta Sans',sans-serif; font-size:26px; font-weight:800; color:#1A1F26; letter-spacing:-0.01em;">UK</div>
+      <div style="font-size:14px; color:#5B6472; line-height:1.5;">Nationwide panel coverage</div>
+    </div>
+    <!-- /@item -->
+  </div>
+</section>
+<!-- /@block -->
+
+<!-- @block: banner style="info" -->
+<section style="background:#FFFFFF; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:28px 24px; font-size:16px; line-height:1.6; color:#5B6472; text-align:center;">
+    Our partner solicitors work with professionals and senior employees who want expert representation. If you're looking for free advice or a simple settlement agreement sign-off, we may not be the right fit.
+  </div>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: features columns="2" -->
+<section style="max-width:1180px; margin:0 auto; padding:80px 24px;">
+  <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4vw, 34px); font-weight:700; color:#1A1F26; margin:0 0 12px; letter-spacing:-0.01em;">Disputes our partner solicitors take on</h2>
+  <p style="color:#5B6472; font-size:17px; margin:0 0 44px; max-width:66ch; line-height:1.6;">Serious claims and negotiations where specialist representation changes the outcome.</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Unfair dismissal</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">Dismissed without a fair reason or fair process, with 2+ years' service? You may have a strong claim, and strict time limits apply. A specialist will assess your case and act quickly.</p>
+      <a href="for-employees-unfair-dismissal.dc.html" style="font-weight:700; font-size:14px;">More about unfair dismissal →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Constructive dismissal</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">If your employer's conduct left you no real choice but to resign, you may be able to claim as if you were dismissed. Timing and evidence are critical, get advice before you resign if you can.</p>
+      <a href="for-employees-constructive-dismissal.dc.html" style="font-weight:700; font-size:14px;">More about constructive dismissal →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Workplace discrimination</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">Treated worse because of age, sex, race, disability, or pregnancy and maternity? Discrimination awards are uncapped, and no minimum service is required. These claims demand real specialists.</p>
+      <a href="for-employees-discrimination.dc.html" style="font-weight:700; font-size:14px;">More about discrimination claims →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Senior exits</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">Senior professionals negotiating a departure, protecting your reputation, references, bonus, equity and notice terms. Discreet, commercially minded solicitors who negotiate exits like yours every week.</p>
+      <a href="for-employees-senior-exits.dc.html" style="font-weight:700; font-size:14px;">More about senior exits →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Settlement disputes &amp; negotiations</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">Been offered a settlement and not sure it's fair? Don't just sign it. A specialist can assess what your case is really worth and negotiate a better deal, often several times the opening offer.</p>
+      <a href="for-employees-settlement-agreements.dc.html" style="font-weight:700; font-size:14px;">More about settlement negotiation →</a>
+    </div>
+    <!-- /@item -->
+    <!-- @item -->
+    <div style="background:#FFFFFF; border:1px solid #E4E7EC; border-radius:10px; padding:32px; display:flex; flex-direction:column; gap:12px;">
+      <h3 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:22px; font-weight:700; color:#1A1F26; margin:0;">Merits assessments</h3>
+      <p style="margin:0; line-height:1.65; color:#5B6472;">"Is my case worth pursuing?" Before you commit time and money, get a clear-eyed professional view of your prospects, likely award, and realistic options.</p>
+      <a href="for-employees-employment-tribunal-claims.dc.html" style="font-weight:700; font-size:14px;">More about tribunal claims →</a>
+    </div>
+    <!-- /@item -->
+  </div>
+  <p style="margin:36px 0 0; font-size:15px; color:#5B6472; line-height:1.6; max-width:70ch;">Have legal expenses insurance through your home or car policy? You may already be covered for representation, mention it in your enquiry and we'll match you with a firm that works with your insurer.</p>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: textMedia fields="heading,richText,links,image,imagePosition,theme"
+     reason="see for-employers.dc.html: prose beside an image with a CTA link." -->
+<section style="background:#FFFFFF; border-top:1px solid #E4E7EC; border-bottom:1px solid #E4E7EC;">
+  <div style="max-width:1180px; margin:0 auto; padding:72px 24px; display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center;">
+    <!-- @field: image file="for-employees-one-to-one-consultation-calm-setting.jpg" alt="One-to-one consultation, calm setting" -->
+    <div style="width:100%; max-width:100%; min-width:0; aspect-ratio:4/3; border-radius:10px; background:repeating-linear-gradient(45deg, #E8ECEF 0 14px, #F4F6F8 14px 28px); display:flex; align-items:center; justify-content:center;">
+      <span style="font-family:monospace; font-size:13px; color:#6B7482; background:#FFFFFF; padding:8px 14px; border-radius:4px;">photo: one-to-one consultation, calm setting</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px;">
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(24px, 4vw, 32px); font-weight:700; color:#1A1F26; margin:0; letter-spacing:-0.01em;">You don't have to work out the law. Just tell us what happened.</h2>
+      <p style="margin:0; font-size:17px; line-height:1.7;">You don't need to know whether your case is "unfair dismissal" or "constructive dismissal". Describe your situation in your own words, two paragraphs is fine, and we'll match you with a solicitor who handles exactly this kind of dispute.</p>
+      <p style="margin:0; font-size:17px; line-height:1.7;">The initial conversation with your matched solicitor is free and confidential. There's no obligation to go further, and no pressure.</p>
+      <a href="enquiry.dc.html?type=employee" class="btn-primary" style="background:#1E4FD8; color:#FFFFFF; padding:14px 24px; border-radius:6px; font-weight:700; font-size:16px; align-self:flex-start; margin-top:6px;">Start your free enquiry →</a>
+    </div>
+  </div>
+</section>
+
+<!-- /@block -->
+
+<!-- @block: cta -->
+<section style="background:#1A1F26; color:#FFFFFF;">
+  <div style="max-width:1180px; margin:0 auto; padding:64px 24px; display:flex; align-items:center; justify-content:space-between; gap:32px; flex-wrap:wrap;">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <h2 style="font-family:'Plus Jakarta Sans',sans-serif; font-size:clamp(23px, 3.8vw, 30px); font-weight:700; margin:0; letter-spacing:-0.01em;">Time limits on employment claims are short. Act now.</h2>
+      <p style="margin:0; color:#B9C1CC; font-size:16px;">Most tribunal claims must be started within 3 months of the event. Free enquiry, no obligation.</p>
+    </div>
+    <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
+      <a href="enquiry.dc.html?type=employee" class="btn-primary" style="background:#1E4FD8; color:#FFFFFF; padding:15px 26px; border-radius:6px; font-weight:700; font-size:16px;">Start your enquiry →</a>
+    </div>
+  </div>
+</section>
+<!-- /@block -->
+
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+<x-import component-from-global-scope="cookie-banner" from="./cookie-banner.js" hint-size="0,0"></x-import>
+</x-dc>
+</body>
+</html>

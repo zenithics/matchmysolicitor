@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</helmet>
+<header style="position:sticky; top:0; z-index:100; background:#FFFFFF; border-bottom:1px solid #E4E7EC; font-family:'Plus Jakarta Sans',system-ui,sans-serif;">
+  <div style="max-width:1180px; margin:0 auto; padding:0 24px; height:72px; display:flex; align-items:center; justify-content:space-between; gap:24px;">
+    <a href="index.dc.html" style="display:flex; align-items:center; flex-shrink:0; text-decoration:none;"><img src="uploads/matchmysolicitor-horizontal.svg" alt="MatchMySolicitor" style="height:38px; width:auto; display:block;"></a>
+    <nav class="nav-desktop" aria-label="Main">
+      <div style="position:relative;" onMouseLeave="{{ closeMenus }}">
+        <button onClick="{{ toggleEmployers }}" onMouseEnter="{{ hoverEmployers }}" aria-haspopup="true" aria-expanded="{{ employersOpen }}" class="nav-link" style="background:none; border:none; cursor:pointer; font:inherit; padding:8px 0; color:{{ employersColor }}; border-bottom:2px solid {{ employersBorder }}; display:flex; align-items:center; gap:6px;">For Employers <span style="font-size:10px;" aria-hidden="true">▾</span></button>
+        <sc-if value="{{ employersOpen }}" hint-placeholder-val="{{ false }}">
+          <div role="menu" class="nav-drop" style="position:absolute; top:100%; left:-16px; background:#FFFFFF; border:1px solid #E4E7EC; border-radius:8px; box-shadow:0 8px 24px rgba(26,31,38,0.10); padding:8px; min-width:280px; display:flex; flex-direction:column; z-index:110;">
+            <a role="menuitem" href="for-employers.dc.html" style="padding:11px 14px; border-radius:6px; color:#1A1F26; font-weight:700; text-decoration:none;">Employer services overview</a>
+            <a role="menuitem" href="for-employers-tribunal-defence.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Tribunal defence</a>
+            <a role="menuitem" href="for-employers-settlement-agreements.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Settlement agreements</a>
+            <a role="menuitem" href="for-employers-constructive-dismissal-defence.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Constructive dismissal defence</a>
+            <a role="menuitem" href="for-employers-interim-relief-hearings.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Interim relief hearings</a>
+            <a role="menuitem" href="for-employers-redundancy-restructuring.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Redundancy and restructuring</a>
+            <a role="menuitem" href="for-employers-disciplinary-grievance.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Disciplinary and grievance</a>
+          </div>
+        </sc-if>
+      </div>
+      <div style="position:relative;" onMouseLeave="{{ closeMenus }}">
+        <button onClick="{{ toggleEmployees }}" onMouseEnter="{{ hoverEmployees }}" aria-haspopup="true" aria-expanded="{{ employeesOpen }}" class="nav-link" style="background:none; border:none; cursor:pointer; font:inherit; padding:8px 0; color:{{ employeesColor }}; border-bottom:2px solid {{ employeesBorder }}; display:flex; align-items:center; gap:6px;">For Employees <span style="font-size:10px;" aria-hidden="true">▾</span></button>
+        <sc-if value="{{ employeesOpen }}" hint-placeholder-val="{{ false }}">
+          <div role="menu" class="nav-drop" style="position:absolute; top:100%; left:-16px; background:#FFFFFF; border:1px solid #E4E7EC; border-radius:8px; box-shadow:0 8px 24px rgba(26,31,38,0.10); padding:8px; min-width:300px; display:flex; flex-direction:column; z-index:110;">
+            <a role="menuitem" href="for-employees.dc.html" style="padding:11px 14px; border-radius:6px; color:#1A1F26; font-weight:700; text-decoration:none;">Employee services overview</a>
+            <a role="menuitem" href="for-employees-unfair-dismissal.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Unfair dismissal</a>
+            <a role="menuitem" href="for-employees-constructive-dismissal.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Constructive dismissal</a>
+            <a role="menuitem" href="for-employees-discrimination.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Workplace discrimination</a>
+            <a role="menuitem" href="for-employees-settlement-agreements.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Settlement agreements</a>
+            <a role="menuitem" href="for-employees-employment-tribunal-claims.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Employment tribunal claims</a>
+            <a role="menuitem" href="for-employees-senior-exits.dc.html" style="padding:11px 14px; border-radius:6px; color:#3A414C; font-weight:500; text-decoration:none;">Senior exits</a>
+          </div>
+        </sc-if>
+      </div>
+      <a href="guides.dc.html" class="nav-link" style="padding:8px 0; color:{{ guidesColor }}; border-bottom:2px solid {{ guidesBorder }}; text-decoration:none;">Guides</a>
+      <a href="how-it-works.dc.html" class="nav-link" style="padding:8px 0; color:{{ howColor }}; border-bottom:2px solid {{ howBorder }}; text-decoration:none;">How It Works</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:12px; flex-shrink:0;">
+      <a href="enquiry.dc.html" class="nav-cta">{{ ctaLabel }} <span aria-hidden="true">→</span></a>
+      <button onClick="{{ toggleMobile }}" class="nav-mobile-toggle" aria-label="Menu" aria-expanded="{{ mobileOpen }}" style="background:none; border:1.5px solid #E4E7EC; border-radius:6px; padding:10px 12px; cursor:pointer; font:700 14px 'Plus Jakarta Sans',sans-serif; color:#1A1F26;">{{ mobileButtonLabel }}</button>
+    </div>
+  </div>
+  <sc-if value="{{ mobileOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="nav-drawer" style="position:fixed; inset:72px 0 0 0; background:#FFFFFF; z-index:99; overflow-y:auto; padding:24px; flex-direction:column; gap:4px; font-size:17px; font-weight:600;">
+      <a href="for-employers.dc.html" style="padding:14px 8px; color:#1A1F26; border-bottom:1px solid #E4E7EC; text-decoration:none;">For Employers</a>
+      <a href="for-employers-tribunal-defence.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Tribunal defence</a>
+      <a href="for-employers-settlement-agreements.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Settlement agreements</a>
+      <a href="for-employers-constructive-dismissal-defence.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Constructive dismissal defence</a>
+      <a href="for-employers-interim-relief-hearings.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Interim relief hearings</a>
+      <a href="for-employers-redundancy-restructuring.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Redundancy and restructuring</a>
+      <a href="for-employers-disciplinary-grievance.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; border-bottom:1px solid #E4E7EC; text-decoration:none;">Disciplinary and grievance</a>
+      <a href="for-employees.dc.html" style="padding:14px 8px; color:#1A1F26; border-bottom:1px solid #E4E7EC; text-decoration:none;">For Employees</a>
+      <a href="for-employees-unfair-dismissal.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Unfair dismissal</a>
+      <a href="for-employees-constructive-dismissal.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Constructive dismissal</a>
+      <a href="for-employees-discrimination.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Workplace discrimination</a>
+      <a href="for-employees-settlement-agreements.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Settlement agreements</a>
+      <a href="for-employees-employment-tribunal-claims.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; text-decoration:none;">Tribunal claims</a>
+      <a href="for-employees-senior-exits.dc.html" style="padding:12px 8px 12px 24px; color:#3A414C; font-weight:500; border-bottom:1px solid #E4E7EC; text-decoration:none;">Senior exits</a>
+      <a href="guides.dc.html" style="padding:14px 8px; color:#1A1F26; border-bottom:1px solid #E4E7EC; text-decoration:none;">Guides</a>
+      <a href="how-it-works.dc.html" style="padding:14px 8px; color:#1A1F26; border-bottom:1px solid #E4E7EC; text-decoration:none;">How It Works</a>
+      <a href="enquiry.dc.html" class="btn-primary" style="margin-top:16px; background:#1E4FD8; color:#FFFFFF; padding:15px 22px; border-radius:6px; font-weight:700; text-align:center; text-decoration:none;">Free enquiry →</a>
+    </div>
+  </sc-if>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1200, &quot;height&quot;: 90}, &quot;active&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;&quot;, &quot;employers&quot;, &quot;employees&quot;, &quot;guides&quot;, &quot;how&quot;], &quot;default&quot;: &quot;&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { menu: null, mobileOpen: false };
+  componentDidMount() {
+    this._onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.state.menu || this.state.mobileOpen) {
+        this.setState({ menu: null, mobileOpen: false });
+        if (this._trigger && this._trigger.focus) this._trigger.focus();
+      }
+    };
+    document.addEventListener('keydown', this._onKey);
+  }
+  componentWillUnmount() { document.removeEventListener('keydown', this._onKey); }
+  _open(name, e) {
+    if (e && e.currentTarget) this._trigger = e.currentTarget;
+    this.setState({ menu: name });
+  }
+  renderVals() {
+    const s = this.state;
+    const active = this.props.active ?? '';
+    const col = (k) => active === k ? '#1A1F26' : '#3A414C';
+    const bor = (k) => active === k ? '#1E4FD8' : 'transparent';
+    const canHover = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(hover: hover)').matches;
+    return {
+      employersOpen: s.menu === 'employers', employeesOpen: s.menu === 'employees',
+      hoverEmployers: (e) => { if (canHover) this._open('employers', e); },
+      hoverEmployees: (e) => { if (canHover) this._open('employees', e); },
+      toggleEmployers: (e) => s.menu === 'employers' ? this.setState({ menu: null }) : this._open('employers', e),
+      toggleEmployees: (e) => s.menu === 'employees' ? this.setState({ menu: null }) : this._open('employees', e),
+      closeMenus: () => this.setState({ menu: null }),
+      employersColor: col('employers'), employersBorder: bor('employers'),
+      employeesColor: col('employees'), employeesBorder: bor('employees'),
+      guidesColor: col('guides'), guidesBorder: bor('guides'),
+      howColor: col('how'), howBorder: bor('how'),
+      ctaLabel: active === 'employers' ? 'Get matched' : 'Check your claim',
+      mobileOpen: s.mobileOpen,
+      mobileButtonLabel: s.mobileOpen ? '✕ Close' : '☰ Menu',
+      toggleMobile: (e) => { if (e && e.currentTarget) this._trigger = e.currentTarget; this.setState({ mobileOpen: !s.mobileOpen }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

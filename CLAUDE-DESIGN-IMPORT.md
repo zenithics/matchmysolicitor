@@ -6,21 +6,34 @@ and posts in under 10 seconds, 0 failures**.
 
 ## Run it
 
+The design export and images are **committed to this repo** (`design-export/`
+and `design-images/`), so there is nothing to download or unzip.
+
+**Terminal 1** — start the CMS and leave it running (it blocks the terminal):
+
 ```bash
-# 1. unzip the Claude Design export somewhere in the repo
-unzip ~/Downloads/employment_law_connect_overview.zip -d ./design-export
-
-# 2. unzip the image set (optional but recommended)
-unzip ~/Downloads/matchmysolicitor-images.zip -d ./design-images
-
-# 3. make sure the CMS is running and .env has credentials
 pnpm dev
-
-# 4. import
-node --env-file=.env scripts/import-design.mjs ./design-export ./design-images
 ```
 
-`.env` needs, in addition to the usual database keys:
+**Terminal 2** — run the import:
+
+```bash
+pnpm import:design
+```
+
+That is the whole flow. Use `pnpm import:design:dry` to preview without writing.
+
+### Environment
+
+The import needs a `.env` containing the usual database keys plus an admin
+login. If the repo is linked to Vercel, the quickest way to get the database
+keys is:
+
+```bash
+vercel env pull .env
+```
+
+Then add your CMS admin login to that file:
 
 ```
 CMS_URL=http://localhost:3000
@@ -28,14 +41,20 @@ CMS_EMAIL=you@zenithics.com
 CMS_PASSWORD=your-admin-password
 ```
 
-Credentials are read from the environment on purpose — never hardcode them in a
-script that gets committed.
+The script loads `.env` itself — do **not** use `node --env-file`, which hard
+fails when the file is missing. Real environment variables always take
+precedence, so Codespace and Vercel secrets are never overwritten. Credentials
+are read from the environment on purpose and never committed.
+
+If no admin user exists yet, create one at `http://localhost:3000/admin`.
 
 ### Flags
 
+Passed through `pnpm import:design -- <flag>`:
+
 | Flag | Effect |
 | --- | --- |
-| `--dry` | Parse and report only. Writes nothing. Run this first. |
+| `--dry` | Parse and report only. Writes nothing. |
 | `--drafts` | Create pages as drafts instead of published. |
 | `--only=a,b` | Restrict to specific slugs, for fixing one page. |
 

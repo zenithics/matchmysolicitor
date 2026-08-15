@@ -1,0 +1,86 @@
+/* MatchMySolicitor shared styles: interactive states, fluid type, responsive layout */
+
+/* ---- fluid typography ---- */
+body { font-size: clamp(15px, 1.5vw, 16.5px); }
+h1 { font-size: clamp(28px, 6vw, 46px); line-height: 1.12; letter-spacing: -0.02em; }
+h2 { font-size: clamp(23px, 4vw, 34px); line-height: 1.2; letter-spacing: -0.015em; }
+h3 { font-size: clamp(18px, 2.6vw, 22px); line-height: 1.35; }
+
+/* ---- transitions + visible focus ---- */
+a, button, summary {
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+a:focus-visible, button:focus-visible, summary:focus-visible,
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #1E4FD8;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ---- interactive state classes ---- */
+.btn-primary:hover:not(:disabled) { background: #1740B8 !important; }
+.btn-ink:hover { background: #2E3846 !important; }
+.btn-ghost-dark:hover { border-color: #2CC5B6 !important; color: #FFFFFF !important; }
+.nav-link:hover { color: #1A1F26 !important; }
+.footer-link:hover { color: #FFFFFF !important; }
+.card-link:hover { border-color: #1E4FD8 !important; box-shadow: 0 4px 16px rgba(30, 79, 216, 0.10); }
+.card-link-ink:hover { border-color: #1A1F26 !important; box-shadow: 0 4px 16px rgba(26, 31, 38, 0.08); }
+.nav-drop a:hover { background: #F7F8FA; }
+
+/* ---- header: breakpoint owned by CSS ---- */
+.nav-desktop { display: flex; align-items: center; gap: 26px; font-size: 15px; font-weight: 600; }
+.nav-mobile-toggle { display: none; }
+.nav-drawer { display: none; }
+@media (max-width: 919px) {
+  .nav-desktop { display: none; }
+  .nav-mobile-toggle { display: block; }
+  .nav-drawer { display: flex; }
+}
+
+/* ---- footer grid ---- */
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; gap: 40px; }
+@media (max-width: 980px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .footer-grid { grid-template-columns: 1fr; } }
+
+/* ---- stack fixed multi-column grids on small screens ---- */
+@media (max-width: 860px) {
+  [style*="grid-template-columns:1.15fr"],
+  [style*="grid-template-columns:1.2fr"],
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns:repeat(4,1fr)"] { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+/* ---- tighter section rhythm on phones ---- */
+@media (max-width: 640px) {
+  [style*="padding:88px 24px 72px"] { padding: 48px 20px 40px !important; }
+  [style*="padding:80px 24px 64px"] { padding: 48px 20px 36px !important; }
+  [style*="padding:80px 24px"] { padding: 48px 20px !important; }
+  [style*="padding:72px 24px 64px"] { padding: 44px 20px 36px !important; }
+  [style*="padding:72px 24px"] { padding: 44px 20px !important; }
+  [style*="padding:64px 24px"] { padding: 44px 20px !important; }
+  [style*="padding:96px 24px"] { padding: 56px 20px !important; }
+  [style*="padding:56px 24px 96px"] { padding: 32px 20px 64px !important; }
+  [style*="padding:56px 24px 32px"] { padding: 40px 20px 28px !important; }
+  [style*="padding:32px 24px 72px"] { padding: 24px 20px 48px !important; }
+  [style*="padding:40px"][style*="border-radius:10px"] { padding: 28px 22px !important; }
+}
+
+/* ---- enquiry wizard (inline-hero step 1, modal / mobile sheet for steps 2-4) ---- */
+.wiz-choice:hover { border-color: #2CC5B6 !important; }
+.wiz-choice:focus-visible { outline: 3px solid #2CC5B6; outline-offset: 2px; }
+.wiz-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(16,20,26,0.62); display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
+.wiz-panel { background: #FFFFFF; border-radius: 14px; width: min(560px, 100%); max-height: calc(100vh - 64px); overflow-y: auto; }
+@media (max-width: 640px) {
+  .wiz-overlay { padding: 0; align-items: stretch; }
+  .wiz-panel { width: 100%; max-height: none; min-height: 100vh; min-height: 100dvh; border-radius: 0; }
+}
+.wiz-consent:hover { border-color: #1E4FD8 !important; }
+
+/* ---- persistent header CTA (visible at every width, outside the burger) ---- */
+.nav-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex-shrink: 0; min-height: 44px; background: #1E4FD8; color: #FFFFFF !important; padding: 11px 18px; border-radius: 6px; font-weight: 700; font-size: 15px; text-decoration: none; white-space: nowrap; }
+.nav-cta:hover { background: #1740B8; }
+.nav-cta:focus-visible { outline: 3px solid #2CC5B6; outline-offset: 2px; }
+@media (max-width: 480px) { .nav-cta { padding: 10px 14px; font-size: 14px; min-height: 44px; } }
+
+.nav-mobile-toggle { min-height: 44px; min-width: 44px; }

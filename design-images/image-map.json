@@ -1,0 +1,219 @@
+{
+  "note": "Maps each page slug to its hero image and OG (meta.image). Import: set meta.image from ogImage; populate hero image field where the page has a hero slot.",
+  "generated": "2026-08-15",
+  "brand": {
+    "blue": "#1E4FD8",
+    "teal": "#2CC5B6",
+    "dark": "#1A1F26"
+  },
+  "altText": {
+    "hero-home": "Person at a kitchen table considering their options after a problem at work",
+    "hero-employee": "Employee walking outside a UK office building holding a folder",
+    "hero-employer": "Two colleagues reviewing employment documents in a meeting room",
+    "hero-location": "British city centre street with professional people walking to work",
+    "hero-guides": "Notebook, glasses and laptop on a desk while reading employment guidance",
+    "hero-about": "Small professional team talking in a bright UK office"
+  },
+  "pages": {
+    "404": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "about": {
+      "hero": "heroes/hero-about.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "contact": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "employment-solicitors": {
+      "hero": "heroes/hero-location.webp",
+      "ogImage": "og/og-location.webp"
+    },
+    "employment-solicitors-leeds": {
+      "hero": "heroes/hero-location.webp",
+      "ogImage": "og/og-location.webp"
+    },
+    "employment-solicitors-manchester": {
+      "hero": "heroes/hero-location.webp",
+      "ogImage": "og/og-location.webp"
+    },
+    "employment-solicitors-nottingham": {
+      "hero": "heroes/hero-location.webp",
+      "ogImage": "og/og-location.webp"
+    },
+    "employment-solicitors-sheffield": {
+      "hero": "heroes/hero-location.webp",
+      "ogImage": "og/og-location.webp"
+    },
+    "enquiry": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "for-employees": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-constructive-dismissal": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-discrimination": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-employment-tribunal-claims": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-senior-exits": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-settlement-agreements": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employees-unfair-dismissal": {
+      "hero": "heroes/hero-employee.webp",
+      "ogImage": "og/og-employee.webp"
+    },
+    "for-employers": {
+      "hero": "heroes/hero-employer.webp",
+      "ogImage": "og/og-employer.webp"
+    },
+    "for-employers-constructive-dismissal-defence": {
+      "hero": "heroes/hero-employer.webp",
+      "ogImage": "og/og-employer.webp"
+    },
+    "for-employers-interim-relief-hearings": {
+      "hero": "heroes/hero-employer.webp",
+      "ogImage": "og/og-employer.webp"
+    },
+    "for-employers-settlement-agreements": {
+      "hero": "heroes/hero-employer.webp",
+      "ogImage": "og/og-employer.webp"
+    },
+    "for-employers-tribunal-defence": {
+      "hero": "heroes/hero-employer.webp",
+      "ogImage": "og/og-employer.webp"
+    },
+    "guides": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-acas-early-conciliation": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-age-discrimination": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-category-discrimination": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-category-dismissal": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-category-exit-negotiations": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-category-tribunal-process": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-disability-discrimination": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-employment-rights-act-1996": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-garden-leave": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-how-long-tribunal": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-need-solicitor-tribunal": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-offered-settlement-agreement": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-page-2": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-pregnancy-maternity-discrimination": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-protected-conversations": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-race-discrimination": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-sacked-without-warning": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-tribunal-process": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-what-is-constructive-dismissal": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-what-is-unfair-dismissal": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "guides-without-prejudice": {
+      "hero": "heroes/hero-guides.webp",
+      "ogImage": "og/og-guides.webp"
+    },
+    "how-it-works": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "index": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "legal-complaints": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "legal-cookie-policy": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "legal-privacy-policy": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "legal-terms-of-use": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    },
+    "home": {
+      "hero": "heroes/hero-home.webp",
+      "ogImage": "og/og-default.webp"
+    }
+  }
+}
