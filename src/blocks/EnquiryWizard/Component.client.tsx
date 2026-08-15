@@ -444,7 +444,7 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
   // The step-1 card. On inline-hero this is the right-hand column of the hero;
   // on the modal-trigger variant it is a centred standalone section.
   const starter = (
-    <div className="bg-card rounded-[12px] p-7 flex flex-col gap-4">
+    <div id="enquiry-form" className="bg-card rounded-[12px] p-7 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <span className="text-xs font-bold uppercase tracking-wider text-(--mms-muted-light)">
           Step 1 of 4

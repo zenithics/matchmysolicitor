@@ -66,6 +66,46 @@ const headingNode = (text, tag) => ({
   children: [textNode(text)],
 })
 
+const linkNode = (text, url, newTab = false) => ({
+  type: 'link', direction: 'ltr', format: '', indent: 0, version: 3,
+  fields: { linkType: 'custom', url, newTab },
+  children: [textNode(text)],
+})
+
+const stripInnerTags = (html) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
+
+/**
+ * Convert a fragment of inline HTML (plain text mixed with <strong> and <a>)
+ * into Lexical inline nodes, in document order. Not a general HTML parser —
+ * handles exactly the two inline tags the design export mixes into banner/CTA
+ * sentences. Without this, any text sitting inside a <strong>/<a> wrapper is
+ * invisible to the generic block-level text extraction (which only reads whole
+ * headings/paragraphs/list items), so a sentence like "**Bold lead-in.** body
+ * copy **link text**" imports as nothing at all.
+ */
+function parseInlineNodes(html) {
+  const nodes = []
+  const re = /<strong[^>]*>([\s\S]*?)<\/strong>|<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi
+  let last = 0
+  let m
+  const pushPlain = (segment) => {
+    const text = stripInnerTags(segment)
+    if (text) nodes.push(textNode(text))
+  }
+  while ((m = re.exec(html))) {
+    pushPlain(html.slice(last, m.index))
+    if (m[1] !== undefined) {
+      nodes.push(textNode(stripInnerTags(m[1]), 1))
+    } else {
+      const label = stripInnerTags(m[3])
+      if (label) nodes.push(linkNode(label, rewriteUrl(m[2]) || m[2]))
+    }
+    last = m.index + m[0].length
+  }
+  pushPlain(html.slice(last))
+  return nodes
+}
+
 const listNode = (items) => ({
   type: 'list', listType: 'bullet', tag: 'ul', start: 1,
   direction: 'ltr', format: '', indent: 0, version: 1,
@@ -347,8 +387,27 @@ function mapBlock(b, ctx) {
     case 'cta':
       return { blockType: 'cta', richText: toRichText(b.text), links: toLinkGroup(b.links) }
 
-    case 'banner':
-      return { blockType: 'banner', style: 'info', content: toRichText(b.text) }
+    case 'banner': {
+      // The badge ("1 JAN 2027") sits in a <span>; the sentence after it is a
+      // sibling <div> mixing plain text with <strong> and a trailing <a> — the
+      // generic text pass can't see inside that div (it has nested tags, so it
+      // isn't a "leaf" div by that pass's rules), which is why only the badge
+      // ever survived import. There's no badge field any more (it broke
+      // production once, see 283b3a5), so both live in one rich-text
+      // paragraph, with the date as bold leading text.
+      const html = b.rawHtml || ''
+      const badgeMatch = html.match(/<span[^>]*>([\s\S]*?)<\/span>/i)
+      const badge = badgeMatch ? stripInnerTags(badgeMatch[1]) : ''
+      const rest = badgeMatch ? html.slice(badgeMatch.index + badgeMatch[0].length) : html
+      const children = []
+      if (badge) children.push(textNode(`${badge} `, 1))
+      children.push(...parseInlineNodes(rest))
+      return {
+        blockType: 'banner',
+        style: 'info',
+        content: root(children.length ? [paragraph(children)] : []),
+      }
+    }
 
     case 'stats':
       return {
@@ -378,14 +437,24 @@ function mapBlock(b, ctx) {
         description: firstPara(b),
         columns: items.length === 4 ? '4' : items.length === 2 ? '2' : '3',
         features: items.map((it) => {
-          const texts = (it.text || []).map((x) => x.text).filter(Boolean)
+          const parts = (it.text || []).filter((x) => x.text)
+          const title = parts[0]?.text || ''
+          const rest = parts.slice(1)
           const link = (it.links || [])[0]
-          // Tile copy often repeats the link label as its last line; drop it.
-          const body = texts.slice(1).filter((x) => x !== link?.label)
+          // Some cards wrap the WHOLE tile in one <a> (e.g. the city cards on
+          // employment-solicitors.dc.html) rather than linking just their last
+          // line. extractLinks then returns the entire tile's flattened text as
+          // the link label, which doesn't match any single text part — so it
+          // can't be filtered out of the body the normal way, and importing it
+          // as-is duplicates the whole card into its own CTA label. Detect that
+          // case and use the tile's own last line as the real label instead.
+          const wholeCardLink = Boolean(link) && rest.length > 1 && link.label !== rest[rest.length - 1]?.text
+          const linkLabel = wholeCardLink ? rest[rest.length - 1]?.text : link?.label
+          const bodyParts = wholeCardLink ? rest.slice(0, -1) : rest.filter((p) => p.text !== link?.label)
           return {
-            title: texts[0] || '',
-            description: plain(body.join(' ')),
-            ...(link?.url ? { linkUrl: rewriteUrl(link.url), linkLabel: link.label || 'Read more' } : {}),
+            title,
+            description: toRichText(bodyParts),
+            ...(link?.url ? { linkUrl: rewriteUrl(link.url), linkLabel: linkLabel || 'Read more' } : {}),
           }
         }).filter((f) => f.title),
       }
@@ -412,13 +481,30 @@ function mapBlock(b, ctx) {
         limit: Math.max(items.length || 6, 6),
       }
 
-    case 'enquiryWizard':
+    case 'enquiryWizard': {
+      const variant = ctx.isHero ? 'inline-hero' : 'page'
+      // eyebrow/bullets are inline-hero-only fields (config.ts conditions them
+      // on variant), and only meaningful on the hero instance — the design's
+      // eyebrow is a leaf <div> just above the h1 (not a <span>, unlike
+      // homeHero's badge), and the tick list is a <ul> whose <li> text keeps a
+      // leading "✓" from the design's inline glyph span.
+      const eyebrow = ctx.isHero ? (b.text || []).find((x) => x.tag === 'div')?.text || '' : ''
+      const bullets = ctx.isHero
+        ? (b.text || [])
+            .filter((x) => x.tag === 'li')
+            .map((x) => ({ text: x.text.replace(/^[✓✔]\s*/, '') }))
+            .filter((x) => x.text)
+            .slice(0, 4)
+        : []
       return {
         blockType: 'enquiryWizard',
-        variant: ctx.isHero ? 'inline-hero' : 'page',
+        variant,
         heading: heading(b) || 'Check where you stand',
         subheading: firstPara(b),
+        ...(eyebrow ? { eyebrow } : {}),
+        ...(bullets.length ? { bullets } : {}),
       }
+    }
 
     case 'textMedia': {
       const h = heading(b)
@@ -429,6 +515,7 @@ function mapBlock(b, ctx) {
         richText: toRichText(rest),
         imagePosition: 'right',
         ...(ctx.heroImage ? { image: ctx.heroImage } : {}),
+        ...(b.links?.length ? { links: toLinkGroup(b.links) } : {}),
       }
     }
 
@@ -565,17 +652,27 @@ async function main() {
 
   // Paginated listings (guides + guides-page-2) declare the same slug. The
   // archive block paginates from the posts collection, so the extra page is
-  // redundant — keep the first and drop the rest rather than silently
-  // overwriting the real listing with page 2.
-  const seenSlugs = new Set()
-  pages = pages.filter((p) => {
-    if (seenSlugs.has(p.slug)) {
-      console.log(`  ! duplicate slug "${p.slug}" — keeping the first, skipping the later copy`)
-      return false
+  // redundant — keep the canonical one and drop the rest rather than silently
+  // overwriting the real listing with page 2. "Keep the first" is NOT the same
+  // as "keep the file without a -page-N suffix": readdirSync().sort() is plain
+  // alphabetical, and "-" (0x2D) sorts before "." (0x2E), so
+  // "guides-page-2.dc.html" sorts BEFORE "guides.dc.html" and would otherwise
+  // win by file order alone, publishing page 2's content at the /guides slug.
+  const isPaginatedVariant = (p) => /-page-\d+\.dc\.html$/i.test(p.file || '')
+  const bySlug = new Map()
+  for (const p of pages) {
+    const existing = bySlug.get(p.slug)
+    if (!existing) {
+      bySlug.set(p.slug, p)
+      continue
     }
-    seenSlugs.add(p.slug)
-    return true
-  })
+    const dropExisting = isPaginatedVariant(existing) && !isPaginatedVariant(p)
+    const keep = dropExisting ? p : existing
+    const dropped = dropExisting ? existing : p
+    console.log(`  ! duplicate slug "${p.slug}" — keeping ${keep.file}, skipping ${dropped.file}`)
+    bySlug.set(p.slug, keep)
+  }
+  pages = [...bySlug.values()]
 
   for (const p of pages) {
     const file = (p.file || '').replace(/\.dc\.html$/, '')
@@ -617,7 +714,21 @@ async function main() {
       (slug === 'home' ? images.map['index'] : {}) || {}
     let heroConsumed = false
 
-    const layout = page.blocks.map((b, i) => {
+    // A page's wizard later-step markup (variant="modal") is exported as its
+    // own @block marker so designers can see steps 2-4, but it's the SAME
+    // wizard the hero block already renders (the component owns opening it as
+    // a modal) — not a second section. Importing it verbatim publishes a
+    // visible duplicate, e.g. step 4's heading sitting right above step 1's on
+    // the homepage. Keep only the first enquiryWizard block on any page.
+    let sawWizard = false
+    const blocksForLayout = page.blocks.filter((b) => {
+      if (b.blockType !== 'enquiryWizard') return true
+      if (sawWizard) return false
+      sawWizard = true
+      return true
+    })
+
+    const layout = blocksForLayout.map((b, i) => {
       const isHero = i === 0 && b.blockType === 'enquiryWizard'
       const heroImage = !heroConsumed && img.hero ? ((heroConsumed = true), img.hero) : null
       return mapBlock(b, { isHero, heroImage })

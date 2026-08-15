@@ -68,14 +68,31 @@ const attrs = (s) => {
   return out
 }
 
+// Named entities the design export actually uses. Numeric entities (&#39; etc.)
+// are decoded generically below; &amp; must be decoded LAST, since decoding it
+// first would turn a literal "&amp;amp;" into "&amp;" and then re-decode that too.
+const NAMED_ENTITIES = {
+  nbsp: ' ', rsquo: '’', lsquo: '‘', rdquo: '”', ldquo: '“',
+  mdash: '—', ndash: '–', hellip: '…', quot: '"', apos: "'",
+  lt: '<', gt: '>',
+}
+
+const decodeEntities = (text) =>
+  text
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&([a-z]+);/gi, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m)
+    .replace(/&amp;/g, '&')
+
 const stripTags = (html) =>
-  html.replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/&nbsp;/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
+  decodeEntities(
+    html.replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/<[^>]+>/g, ' '),
+  )
+    .replace(/\s+/g, ' ')
+    .trim()
 
 /**
  * Pull anchors so button labels and tile destinations survive. Claude Design
@@ -129,7 +146,13 @@ function extractText(html) {
     if (text) parts.push({ index: m.index, tag: 'div', text })
   }
 
+  // Every `@field: image` marker is followed by a placeholder box whose visible
+  // label is "photo: <alt text>" (Claude Design doesn't generate photography).
+  // That label is a real <span>, so the pass above happily captures it as body
+  // copy — without this filter, the imported page prints "photo: professional
+  // on phone, workplace" as a literal paragraph once the real image is missing.
   return parts
+    .filter(({ text }) => !/^photo:\s/i.test(text))
     .sort((a, b) => a.index - b.index)
     .map(({ tag, text }) => ({ tag, text }))
 }
@@ -147,6 +170,17 @@ function parseItems(body) {
   }
   return items
 }
+
+/**
+ * Remove every @item...@item region from a block body before extracting the
+ * block's own heading/subheading text. Without this, a section with no
+ * subheading of its own (h2 straight into the item grid) has its `description`
+ * silently filled in with the first item's own body copy, because the generic
+ * text pass has no concept of item boundaries and just takes the first
+ * paragraph found anywhere in the block, items included.
+ */
+const stripItemRegions = (body) =>
+  body.replace(/<!--\s*@item\s*-->[\s\S]*?<!--\s*\/@item\s*-->/g, '')
 
 function parsePage(file, html, warnings) {
   const pageMatch = html.match(/<!--\s*@page([\s\S]*?)-->/)
@@ -172,7 +206,13 @@ function parsePage(file, html, warnings) {
     const end = Math.min(nextMarker, closeIdx === -1 ? html.length : closeIdx + 16)
     const body = html.slice(start, end)
     covered.push([m.index, end])
-    const parsed = { text: extractText(body), items: parseItems(body), images: extractImages(body), links: extractLinks(body) }
+    const parsed = {
+      text: extractText(stripItemRegions(body)),
+      items: parseItems(body),
+      images: extractImages(body),
+      links: extractLinks(body),
+      rawHtml: body,
+    }
     // The design's wizard is JS-templated, so its later steps sit in the export
     // as raw markup containing {{ mustache }} tokens. Those regions are owned by
     // the React block at runtime, not by CMS content: importing them verbatim

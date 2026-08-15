@@ -3,20 +3,19 @@ import type { Media, Page, Post, Config } from '../payload-types'
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
 
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
+const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null): string | undefined => {
+  if (!image || typeof image !== 'object' || !('url' in image)) return undefined
+
   const serverUrl = getServerSideURL()
-
-  let url = serverUrl + '/website-template-OG.webp'
-
-  if (image && typeof image === 'object' && 'url' in image) {
-    const ogUrl = image.sizes?.og?.url
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
-  }
-
-  return url
+  const ogUrl = image.sizes?.og?.url
+  return ogUrl ? serverUrl + ogUrl : serverUrl + image.url
 }
 
-async function getSEOSettings(): Promise<{ siteTitle: string; titleSeparator: string }> {
+async function getSEOSettings(): Promise<{
+  siteTitle: string
+  titleSeparator: string
+  defaultOgImage?: Media | Config['db']['defaultIDType'] | null
+}> {
   try {
     const { getPayload } = await import('payload')
     const config = (await import('@payload-config')).default
@@ -25,6 +24,7 @@ async function getSEOSettings(): Promise<{ siteTitle: string; titleSeparator: st
     return {
       siteTitle: (settings as any)?.siteTitle || 'MatchMySolicitor',
       titleSeparator: (settings as any)?.titleSeparator || ' | ',
+      defaultOgImage: (settings as any)?.defaultOgImage,
     }
   } catch {
     return { siteTitle: 'MatchMySolicitor', titleSeparator: ' | ' }
@@ -35,9 +35,9 @@ export const generateMeta = async (args: {
   doc: Partial<Page> | Partial<Post> | null
 }): Promise<Metadata> => {
   const { doc } = args
-  const { siteTitle, titleSeparator } = await getSEOSettings()
+  const { siteTitle, titleSeparator, defaultOgImage } = await getSEOSettings()
 
-  const ogImage = getImageURL(doc?.meta?.image)
+  const ogImage = getImageURL(doc?.meta?.image) || getImageURL(defaultOgImage)
   const metaTitle = doc?.meta?.title
   // A page's own meta.title sometimes already ends with the site name (e.g. content
   // imported with the brand baked in) — appending it again would double it up.
