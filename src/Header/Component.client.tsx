@@ -11,6 +11,7 @@ import Image from 'next/image'
 interface HeaderClientProps {
   data: Header
   logo?: Media | null
+  brandName?: string
 }
 
 function resolveLinkHref(link: any): string {
@@ -24,7 +25,7 @@ function resolveLinkHref(link: any): string {
   return '#'
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo, brandName = 'Your Brand' }) => {
   const [theme, setTheme] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -109,7 +110,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data, logo }) => {
                 />
               ) : (
                 <span className="font-sans text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
-                  Your Brand
+                  {brandName}
                 </span>
               )}
             </Link>

@@ -438,6 +438,23 @@ const navLink = (label, url) => ({ link: { type: 'custom', url: rewriteUrl(url),
  * placeholders. Seeded here from the design's own navigation.
  */
 async function seedSiteChrome(brand) {
+  // The starter ships with the previous client's palette as its defaults, so a
+  // fresh site renders in someone else's brand colours until this is set. The
+  // values come from the design export's own stylesheet, not invented here.
+  await api('/api/globals/site-appearance', {
+    method: 'POST',
+    body: JSON.stringify({
+      // Tabs in this global are label-only, so these fields are flat, not nested.
+      primaryColour: brand.colours.primary,
+      secondaryColour: brand.colours.ink,
+      accentColour: brand.colours.accent,
+      backgroundColour: '#FFFFFF',
+      textColour: brand.colours.ink,
+      headerBgColour: '#FFFFFF',
+      footerBgColour: brand.colours.ink,
+    }),
+  })
+
   await api('/api/globals/header', {
     method: 'POST',
     body: JSON.stringify({
@@ -628,12 +645,14 @@ async function main() {
   if (!DRY) {
     await seedSiteChrome({
       name: 'MatchMySolicitor',
+      // From design-export/styles.css — the design's own interactive states.
+      colours: { primary: '#1E4FD8', accent: '#2CC5B6', ink: '#1A1F26' },
       tagline: 'Matched with an SRA-regulated employment solicitor, usually within 24 hours.',
       email: 'hello@matchmysolicitor.co.uk',
       description:
         'Dismissed, facing a tribunal claim or negotiating an exit? Get matched with a specialist employment solicitor. Free, no obligation.',
     })
-    console.log('  ~ header, footer and SEO defaults seeded')
+    console.log('  ~ brand colours, header, footer and SEO defaults seeded')
   }
 
   console.log(`\n  created ${results.created}, updated ${results.updated}, failed ${results.failed.length}`)
