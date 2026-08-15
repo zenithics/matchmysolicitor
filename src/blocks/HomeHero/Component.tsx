@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import type { HomeHeroBlock as HomeHeroBlockProps } from '@/payload-types'
+import { ArrowRight, stripTrailingArrow } from '@/components/icons/ArrowRight'
 
 const THEME_CLASSES = {
   dark: {
@@ -132,11 +133,12 @@ function HeroLinks({ links, theme }: { links: HomeHeroBlockProps['links']; theme
             key={i}
             href={href}
             {...(link.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-            className={`inline-flex items-center justify-center px-6 py-3.5 rounded-[6px] text-base font-bold transition-colors ${
+            className={`group inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-[6px] text-base font-bold transition-colors ${
               isPrimary ? 'bg-primary text-white hover:bg-(--mms-primary-hover)' : t.ghostLink
             }`}
           >
-            {link.label}
+            {isPrimary ? stripTrailingArrow(link.label) : link.label}
+            {isPrimary && <ArrowRight />}
           </Link>
         )
       })}

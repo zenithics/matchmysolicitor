@@ -25,13 +25,14 @@ export const Footer: GlobalConfig = {
               name: 'brandName',
               type: 'text',
               label: 'Brand / Logo Text',
-              defaultValue: 'Your Brand',
+              defaultValue: 'MatchMySolicitor',
             },
             {
               name: 'brandTagline',
               type: 'textarea',
               label: 'Brand Tagline',
-              defaultValue: 'Your tagline goes here. Edit this in the Footer settings.',
+              defaultValue:
+                'A referral service connecting employers and employees with vetted specialist employment solicitors across the UK. We are not a law firm and do not provide legal advice.',
             },
           ],
         },
@@ -121,7 +122,7 @@ export const Footer: GlobalConfig = {
               name: 'copyrightText',
               type: 'text',
               label: 'Copyright Text',
-              defaultValue: '© {year} Your Brand. All rights reserved.',
+              defaultValue: '© {year} MatchMySolicitor. All rights reserved.',
               admin: {
                 description: 'Use {year} to insert the current year automatically.',
               },

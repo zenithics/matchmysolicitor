@@ -1,4 +1,5 @@
 import { Button, type ButtonProps } from '@/components/ui/button'
+import { ArrowRight, stripTrailingArrow } from '@/components/icons/ArrowRight'
 import { cn } from '@/utilities/ui'
 import Link from 'next/link'
 import React from 'react'
@@ -55,11 +56,18 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     )
   }
 
+  // The design renders a trailing arrow as part of the control on primary and
+  // outline CTAs, not typed into the label — strip one if a CMS editor already
+  // typed a glyph, so it doesn't render twice.
+  const showArrow = appearance === 'default' || appearance === 'outline'
+  const displayLabel = showArrow ? stripTrailingArrow(label) : label
+
   return (
-    <Button asChild className={className} size={size} variant={appearance}>
+    <Button asChild className={cn('group', className)} size={size} variant={appearance}>
       <Link className={cn(className)} href={href || url || ''} {...newTabProps}>
-        {label && label}
+        {displayLabel && displayLabel}
         {children && children}
+        {showArrow && <ArrowRight />}
       </Link>
     </Button>
   )

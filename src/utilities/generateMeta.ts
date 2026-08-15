@@ -23,11 +23,11 @@ async function getSEOSettings(): Promise<{ siteTitle: string; titleSeparator: st
     const payload = await getPayload({ config })
     const settings = await payload.findGlobal({ slug: 'seo-settings' })
     return {
-      siteTitle: (settings as any)?.siteTitle || 'Your Brand',
+      siteTitle: (settings as any)?.siteTitle || 'MatchMySolicitor',
       titleSeparator: (settings as any)?.titleSeparator || ' | ',
     }
   } catch {
-    return { siteTitle: 'Your Brand', titleSeparator: ' | ' }
+    return { siteTitle: 'MatchMySolicitor', titleSeparator: ' | ' }
   }
 }
 
@@ -39,7 +39,12 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image)
   const metaTitle = doc?.meta?.title
-  const title = metaTitle ? `${metaTitle}${titleSeparator}${siteTitle}` : siteTitle
+  // A page's own meta.title sometimes already ends with the site name (e.g. content
+  // imported with the brand baked in) — appending it again would double it up.
+  const title =
+    metaTitle && !metaTitle.trim().endsWith(siteTitle)
+      ? `${metaTitle}${titleSeparator}${siteTitle}`
+      : metaTitle || siteTitle
 
   const metaAny = doc?.meta as any
   const canonicalUrl = metaAny?.canonicalUrl
@@ -60,6 +65,7 @@ export const generateMeta = async (args: {
     openGraph: mergeOpenGraph({
       description: doc?.meta?.description || '',
       images: ogImage ? [{ url: ogImage }] : undefined,
+      siteName: siteTitle,
       title,
       url: canonicalUrl || `${serverUrl}/${pageSlug}`,
       type: ogType === 'article' ? 'article' : ogType === 'product' ? 'website' : 'website',

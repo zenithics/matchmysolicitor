@@ -1,6 +1,7 @@
 'use client'
 
 import { useHeaderTheme } from '@/providers/HeaderTheme'
+import { ArrowRight } from '@/components/icons/ArrowRight'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -27,10 +28,19 @@ function resolveLinkHref(link: any): string {
   return '#'
 }
 
+const CTA_HREF = '/enquiry'
+
+// The CTA link is rendered separately, outside the CMS nav items — filter any
+// nav item pointing at the same href so a CMS editor re-adding it (or stale
+// seed data) can't duplicate the button.
+function dedupeCta<T extends { href: string }>(items: T[]): T[] {
+  return items.filter((item) => item.href.split('?')[0] !== CTA_HREF)
+}
+
 export const HeaderClient: React.FC<HeaderClientProps> = ({
   data,
   logo,
-  brandName = 'Your Brand',
+  brandName = 'MatchMySolicitor',
   dropdowns = {},
 }) => {
   const [theme, setTheme] = useState<string | null>(null)
@@ -51,17 +61,21 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [headerTheme])
 
-  const navLeft = (data?.navItemsLeft ?? []).map((item: any) => ({
-    href: resolveLinkHref(item.link),
-    label: item.link?.label ?? '',
-    newTab: item.link?.newTab ?? false,
-  }))
+  const navLeft = dedupeCta(
+    (data?.navItemsLeft ?? []).map((item: any) => ({
+      href: resolveLinkHref(item.link),
+      label: item.link?.label ?? '',
+      newTab: item.link?.newTab ?? false,
+    })),
+  )
 
-  const navRight = (data?.navItemsRight ?? []).map((item: any) => ({
-    href: resolveLinkHref(item.link),
-    label: item.link?.label ?? '',
-    newTab: item.link?.newTab ?? false,
-  }))
+  const navRight = dedupeCta(
+    (data?.navItemsRight ?? []).map((item: any) => ({
+      href: resolveLinkHref(item.link),
+      label: item.link?.label ?? '',
+      newTab: item.link?.newTab ?? false,
+    })),
+  )
 
   return (
     <>
@@ -203,9 +217,10 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   risk tonight. */}
               <Link
                 href="/enquiry"
-                className="inline-flex items-center justify-center gap-2 shrink-0 min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[18px] py-[11px] text-[15px] font-bold text-primary-foreground transition-colors hover:bg-[var(--mms-primary-hover)] max-[480px]:px-[14px] max-[480px]:text-[14px]"
+                className="group inline-flex items-center justify-center gap-2 shrink-0 min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[18px] py-[11px] text-[15px] font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover) max-[480px]:px-[14px] max-[480px]:text-[14px]"
               >
                 Check your claim
+                <ArrowRight />
               </Link>
 
               {/* Mobile hamburger */}
@@ -236,6 +251,13 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                 {label}
               </Link>
             ))}
+            <Link
+              href={CTA_HREF}
+              className="group mt-4 inline-flex items-center justify-center gap-2 rounded-[6px] bg-primary px-[22px] py-[15px] text-base font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover)"
+            >
+              Free enquiry
+              <ArrowRight />
+            </Link>
           </nav>
         </div>
       </header>

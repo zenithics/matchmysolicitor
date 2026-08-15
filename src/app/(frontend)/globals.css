@@ -10,18 +10,6 @@
 @custom-variant xl (@media (width >= theme(--breakpoint-xl)));
 @custom-variant 2xl (@media (width >= theme(--breakpoint-2xl)));
 
-@layer base {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-weight: unset;
-    font-size: unset;
-  }
-}
-
 @plugin "@tailwindcss/typography";
 
 @source inline("lg:col-span-4");
@@ -323,18 +311,25 @@ html[data-theme='light'] {
 
 /* Heading element sizing from CMS.
  * Fallbacks are the design's fluid clamps, so headings scale on phones unless
- * the CMS explicitly sets a fixed size. This rule comes after the fidelity
- * layer, so the clamps have to live here to survive the cascade.
+ * the CMS explicitly sets a fixed size.
  *
  * Color is set explicitly to --card-foreground (the design's --ink, #1A1F26):
  * headings are NOT the same colour as body copy in this design (--foreground
  * is --body, #3A414C) and nothing else in the cascade sets a heading colour,
  * so without this every h1-h6 renders in body colour instead of ink. Dark
- * sections that need light headings should override color on that section. */
-h1, h2, h3, h4, h5, h6 { color: var(--card-foreground); }
-h1 { font-size: var(--size-h1, clamp(28px, 6vw, 46px)); font-weight: var(--weight-heading, 700); line-height: 1.12; letter-spacing: -0.02em; }
-h2 { font-size: var(--size-h2, clamp(23px, 4vw, 34px)); font-weight: var(--weight-heading, 700); line-height: 1.2; letter-spacing: -0.015em; }
-h3 { font-size: var(--size-h3, clamp(18px, 2.6vw, 22px)); font-weight: var(--weight-heading, 700); line-height: 1.35; }
-h4 { font-size: var(--size-h4, 1.5rem); font-weight: var(--weight-heading, 700); }
-h5 { font-size: var(--size-h5, 1.25rem); font-weight: var(--weight-heading, 700); }
-body { font-size: var(--size-body, 1rem); font-weight: var(--weight-body, 400); }
+ * sections that need light headings should override color on that section.
+ *
+ * Must live in @layer base: unlayered CSS beats every layered rule, including
+ * Tailwind's utilities (all in @layer utilities), so an unlayered version of
+ * this rule wins over a CMS-authored `text-white` on a heading every time —
+ * headings on dark sections rendered ink-on-ink and were invisible until this
+ * was layered. */
+@layer base {
+  h1, h2, h3, h4, h5, h6 { color: var(--card-foreground); }
+  h1 { font-size: var(--size-h1, clamp(28px, 6vw, 46px)); font-weight: var(--weight-heading, 700); line-height: 1.12; letter-spacing: -0.02em; }
+  h2 { font-size: var(--size-h2, clamp(23px, 4vw, 34px)); font-weight: var(--weight-heading, 700); line-height: 1.2; letter-spacing: -0.015em; }
+  h3 { font-size: var(--size-h3, clamp(18px, 2.6vw, 22px)); font-weight: var(--weight-heading, 700); line-height: 1.35; }
+  h4 { font-size: var(--size-h4, 1.5rem); font-weight: var(--weight-heading, 700); }
+  h5 { font-size: var(--size-h5, 1.25rem); font-weight: var(--weight-heading, 700); }
+  body { font-size: var(--size-body, 1rem); font-weight: var(--weight-body, 400); }
+}

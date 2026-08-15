@@ -12,7 +12,7 @@ export const CallToActionBlock: React.FC<CTABlockProps> = ({ links, richText }) 
         <div className="max-w-[48rem]">
           {richText && (
             <RichText
-              className="mb-0 [&_h2]:text-white [&_h2]:mb-2 [&_p]:mt-2 [&_p]:text-base [&_p]:text-(--mms-on-dark-muted)"
+              className="mb-0 [&_h1]:text-white [&_h2]:text-white [&_h2]:mb-2 [&_h3]:text-white [&_p]:mt-2 [&_p]:text-base [&_p]:text-(--mms-on-dark-muted)"
               data={richText}
               enableGutter={false}
               enableProse={false}

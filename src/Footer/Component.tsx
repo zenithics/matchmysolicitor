@@ -56,8 +56,10 @@ export async function Footer() {
 
   const year = new Date().getFullYear()
 
-  const brandName = footerData?.brandName ?? 'Your Brand'
-  const brandTagline = footerData?.brandTagline ?? 'Your tagline goes here. Edit this in the Footer settings.'
+  const brandName = footerData?.brandName ?? 'MatchMySolicitor'
+  const brandTagline =
+    footerData?.brandTagline ??
+    'A referral service connecting employers and employees with vetted specialist employment solicitors across the UK. We are not a law firm and do not provide legal advice.'
 
   const col1Heading = footerData?.column1Heading ?? 'Services'
   const col2Heading = footerData?.column2Heading ?? 'Guides'
@@ -86,7 +88,7 @@ export async function Footer() {
     footerData?.regulatoryDisclaimer ??
     'MatchMySolicitor is a matching service and is not a firm of solicitors. We do not provide legal advice. All firms on our panel are regulated by the Solicitors Regulation Authority.'
 
-  const copyrightRaw = footerData?.copyrightText ?? `© {year} Your Brand. All rights reserved.`
+  const copyrightRaw = footerData?.copyrightText ?? `© {year} MatchMySolicitor. All rights reserved.`
   const copyrightText = copyrightRaw.replace('{year}', String(year))
 
   const columns = [
