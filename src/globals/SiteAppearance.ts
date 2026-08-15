@@ -74,6 +74,7 @@ export const SiteAppearance: GlobalConfig = {
               defaultValue: 'DM Serif Display',
               options: [
                 { label: 'DM Serif Display (current)', value: 'DM Serif Display' },
+                { label: 'Plus Jakarta Sans', value: 'Plus Jakarta Sans' },
                 { label: 'Inter', value: 'Inter' },
                 { label: 'Poppins', value: 'Poppins' },
                 { label: 'Montserrat', value: 'Montserrat' },

@@ -543,62 +543,73 @@ const navLink = (label, url) => ({ link: { type: 'custom', url: rewriteUrl(url),
  * an import alone would leave the site with an empty menu and "Your Brand"
  * placeholders. Seeded here from the design's own navigation.
  */
+// One failing global must not block the rest — site-appearance, header, footer
+// and seo-settings are independent concerns, and an editor can always fix one
+// of them by hand in /admin, but only if the other three actually landed.
+async function seedGlobal(slug, data) {
+  try {
+    await api(`/api/globals/${slug}`, { method: 'POST', body: JSON.stringify(data) })
+    console.log(`  ~ ${slug} seeded`)
+  } catch (e) {
+    console.log(`  ! ${slug} skipped — ${e.message}`)
+  }
+}
+
 async function seedSiteChrome(brand) {
   // The starter ships with the previous client's palette as its defaults, so a
   // fresh site renders in someone else's brand colours until this is set. The
   // values come from the design export's own stylesheet, not invented here.
-  await api('/api/globals/site-appearance', {
-    method: 'POST',
-    body: JSON.stringify({
-      // Tabs in this global are label-only, so these fields are flat, not nested.
-      primaryColour: brand.colours.primary,
-      // Light, NOT ink: this drives --secondary, whose paired foreground stays
-      // dark. Setting it to ink gives dark-on-dark cards across the site.
-      secondaryColour: brand.colours.surface,
-      accentColour: brand.colours.accent,
-      backgroundColour: '#FFFFFF',
-      textColour: brand.colours.ink,
-      headerBgColour: '#FFFFFF',
-      footerBgColour: brand.colours.ink,
-      // The export sets font-family:'Plus Jakarta Sans' on 255 elements; that is
-      // the design's typeface for both headings and body. Must be set
-      // explicitly: once a site-appearance record exists, leaving headingFont
-      // empty applies the global's own default of DM Serif Display.
-      headingFont: 'Plus Jakarta Sans',
-      bodyFont: 'Plus Jakarta Sans',
-      // The design uses fluid type (styles.css §2). SiteAppearance defaults
-      // these to fixed rem values, and those defaults are injected as CSS vars,
-      // so a CSS-level clamp fallback would never apply. Seeding the clamps
-      // here is the only place they survive the cascade.
-      h1Size: 'clamp(28px, 6vw, 46px)',
-      h2Size: 'clamp(23px, 4vw, 34px)',
-      h3Size: 'clamp(18px, 2.6vw, 22px)',
-      bodySize: 'clamp(15px, 1.5vw, 16.5px)',
-    }),
+  await seedGlobal('site-appearance', {
+    // Tabs in this global are label-only, so these fields are flat, not nested.
+    primaryColour: brand.colours.primary,
+    // Light, NOT ink: this drives --secondary, whose paired foreground stays
+    // dark. Setting it to ink gives dark-on-dark cards across the site.
+    secondaryColour: brand.colours.surface,
+    accentColour: brand.colours.accent,
+    backgroundColour: '#FFFFFF',
+    textColour: brand.colours.ink,
+    headerBgColour: '#FFFFFF',
+    footerBgColour: brand.colours.ink,
+    // The export sets font-family:'Plus Jakarta Sans' on 255 elements; that is
+    // the design's typeface for both headings and body. Must be set
+    // explicitly: once a site-appearance record exists, leaving headingFont
+    // empty applies the global's own default of DM Serif Display. (headingFont
+    // didn't accept this value until now — see src/globals/SiteAppearance.ts.)
+    headingFont: 'Plus Jakarta Sans',
+    bodyFont: 'Plus Jakarta Sans',
+    // The design uses fluid type (styles.css §2). SiteAppearance defaults
+    // these to fixed rem values, and those defaults are injected as CSS vars,
+    // so a CSS-level clamp fallback would never apply. Seeding the clamps
+    // here is the only place they survive the cascade.
+    h1Size: 'clamp(28px, 6vw, 46px)',
+    h2Size: 'clamp(23px, 4vw, 34px)',
+    h3Size: 'clamp(18px, 2.6vw, 22px)',
+    bodySize: 'clamp(15px, 1.5vw, 16.5px)',
   })
 
-  await api('/api/globals/header', {
-    method: 'POST',
-    body: JSON.stringify({
-      navItemsLeft: [
-        navLink('For Employers', '/for-employers'),
-        navLink('For Employees', '/for-employees'),
-        navLink('Guides', '/guides'),
-      ],
-      navItemsRight: [
-        navLink('How It Works', '/how-it-works'),
-        navLink('Contact', '/contact'),
-        navLink('Free enquiry', '/enquiry'),
-      ],
-    }),
+  await seedGlobal('header', {
+    navItemsLeft: [
+      navLink('For Employers', '/for-employers'),
+      navLink('For Employees', '/for-employees'),
+      navLink('Guides', '/guides'),
+    ],
+    // No "Free enquiry" here — the header renders a persistent CTA button
+    // outside these nav items already, pointing at the same /enquiry. Adding
+    // it here duplicates that button in the nav (round-3 finding R3).
+    navItemsRight: [
+      navLink('How It Works', '/how-it-works'),
+      navLink('Contact', '/contact'),
+    ],
   })
 
-  await api('/api/globals/footer', {
-    method: 'POST',
-    body: JSON.stringify({
+  await seedGlobal('footer', {
       brandName: brand.name,
       brandTagline: brand.tagline,
-      contactEmail: brand.email,
+      // 4 link columns (Services/Guides/Company/Legal), matching the design's
+      // own footer-grid and src/Footer/config.ts's actual field shape — a 3rd
+      // "Company" column crammed with the legal links (an earlier shape of
+      // this seed) leaves column4Heading/column4Links unset and the Legal
+      // column empty.
       column1Heading: 'Services',
       column1Links: [
         navLink('For Employers', '/for-employers'),
@@ -619,23 +630,22 @@ async function seedSiteChrome(brand) {
       column3Links: [
         navLink('About us', '/about'),
         navLink('Contact', '/contact'),
-        navLink('Privacy policy', '/legal-privacy-policy'),
-        navLink('Terms of use', '/legal-terms-of-use'),
-        navLink('Cookie policy', '/legal-cookie-policy'),
-        navLink('Complaints', '/legal-complaints'),
       ],
-      copyrightText: `\u00a9 {year} ${brand.name}. All rights reserved. Website designed by Zenithics.`,
-    }),
+      column4Heading: 'Legal',
+      column4Links: [
+        navLink('Privacy policy', '/legal/privacy-policy'),
+        navLink('Terms of use', '/legal/terms-of-use'),
+        navLink('Cookie policy', '/legal/cookie-policy'),
+        navLink('Complaints', '/legal/complaints'),
+      ],
+      copyrightText: `\u00a9 {year} ${brand.name}. All rights reserved.`,
   })
 
-  await api('/api/globals/seo-settings', {
-    method: 'POST',
-    body: JSON.stringify({
-      siteTitle: brand.name,
-      titleSeparator: ' | ',
-      defaultDescription: brand.description,
-    }),
-  }).catch((e) => console.log(`  ! seo-settings skipped — ${e.message}`))
+  await seedGlobal('seo-settings', {
+    siteTitle: brand.name,
+    titleSeparator: ' | ',
+    defaultDescription: brand.description,
+  })
 }
 
 /* --------------------------------------------------------------------- main */
