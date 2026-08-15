@@ -185,6 +185,21 @@ async function upsert(collection, field, value, data) {
 
 const mediaCache = new Map()
 
+const MIME_TYPES = {
+  '.webp': 'image/webp',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.avif': 'image/avif',
+}
+
+function mimeTypeFor(name) {
+  const ext = name.slice(name.lastIndexOf('.')).toLowerCase()
+  return MIME_TYPES[ext] || 'application/octet-stream'
+}
+
 const mediaFailures = []
 
 async function uploadMedia(filePath, alt) {
@@ -198,7 +213,11 @@ async function uploadMedia(filePath, alt) {
 
   const buf = readFileSync(filePath)
   const form = new FormData()
-  form.append('file', new Blob([buf]), name)
+  // The Blob MUST carry a MIME type. Without one the browser-style FormData
+  // sends application/octet-stream, Payload can't identify the image, and
+  // sharp throws while generating the resize set — surfacing as a bare
+  // 500 "Something went wrong" with nothing useful in the response body.
+  form.append('file', new Blob([buf], { type: mimeTypeFor(name) }), name)
   form.append('_payload', JSON.stringify({ alt: alt || name }))
   const res = await fetch(`${BASE}/api/media`, {
     method: 'POST',
@@ -454,10 +473,12 @@ async function seedSiteChrome(brand) {
       textColour: brand.colours.ink,
       headerBgColour: '#FFFFFF',
       footerBgColour: brand.colours.ink,
-      // The design ships no custom font-family, so pin both to the starter's
-      // sans. Leaving these unset lets the global default to DM Serif.
-      headingFont: 'Inter',
-      bodyFont: 'Inter',
+      // The export sets font-family:'Plus Jakarta Sans' on 255 elements; that is
+      // the design's typeface for both headings and body. Must be set
+      // explicitly: once a site-appearance record exists, leaving headingFont
+      // empty applies the global's own default of DM Serif Display.
+      headingFont: 'Plus Jakarta Sans',
+      bodyFont: 'Plus Jakarta Sans',
     }),
   })
 
