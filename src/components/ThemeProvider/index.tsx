@@ -38,8 +38,16 @@ const FONT_STACK: Record<string, string> = {
   'Plus Jakarta Sans': 'var(--font-jakarta), system-ui, sans-serif',
 }
 
+/*
+ * Fonts already self-hosted through next/font in the frontend layout. These
+ * resolve via CSS variables (see FONT_STACK), so requesting them from Google
+ * as well is a duplicate download AND a third-party request — which on a site
+ * carrying a cookie banner is a consent problem, not just waste.
+ */
+const SELF_HOSTED_FONTS = new Set(['Plus Jakarta Sans', 'Inter', 'DM Serif Display'])
+
 function buildGoogleFontsUrl(fonts: string[]): string | null {
-  const unique = [...new Set(fonts)].filter((f) => FONT_WEIGHTS[f])
+  const unique = [...new Set(fonts)].filter((f) => FONT_WEIGHTS[f] && !SELF_HOSTED_FONTS.has(f))
   if (!unique.length) return null
 
   const families = unique.map((font) => {
@@ -97,7 +105,9 @@ export async function ThemeProvider() {
   const css = `:root {\n${cssBody}\n}`
 
   // Only load external Google Fonts when a non-default font is chosen
-  const fontsToLoad = [headingFont, bodyFont].filter((f) => FONT_WEIGHTS[f])
+  const fontsToLoad = [headingFont, bodyFont].filter(
+    (f) => FONT_WEIGHTS[f] && !SELF_HOSTED_FONTS.has(f),
+  )
   const googleFontsUrl = fontsToLoad.length ? buildGoogleFontsUrl(fontsToLoad) : null
 
   return (

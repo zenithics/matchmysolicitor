@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
 import { GeistMono } from 'geist/font/mono'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { DM_Serif_Display, Inter, Plus_Jakarta_Sans } from 'next/font/google'
 import React from 'react'
 
 import { AdminBar } from '@/components/AdminBar'
@@ -47,6 +47,16 @@ const jakarta = Plus_Jakarta_Sans({
   display: 'swap',
 })
 
+// FONT_STACK maps the starter's default heading font to var(--font-dm-serif),
+// which nothing defined — the same latent bug Plus Jakarta Sans had. Loading it
+// here means ThemeProvider can skip the Google request for it entirely.
+const dmSerif = DM_Serif_Display({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-dm-serif',
+  display: 'swap',
+})
+
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const { getPayload } = await import('payload')
@@ -67,6 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         GeistMono.variable,
         inter.variable,
         jakarta.variable,
+        dmSerif.variable,
       )}
       lang={locale.language}
       suppressHydrationWarning
