@@ -890,6 +890,9 @@ async function main() {
     const data = {
       title: page.title || slug,
       slug,
+      // The design puts a breadcrumb trail on About and the guide category
+      // pages only, marked up as <nav aria-label="Breadcrumb">.
+      showBreadcrumbs: Boolean(page.hasBreadcrumbs),
       _status: DRAFTS ? 'draft' : 'published',
       layout,
       meta: {
@@ -921,7 +924,10 @@ async function main() {
     const data = {
       title: post.title || post.slug,
       slug: post.slug,
-      _status: 'draft', // guides are seeded unpublished for review
+      // Guides were previously seeded as drafts "for review", which left the
+      // whole guides section empty on the live site until someone noticed.
+      // Import them published; unpublish individually if a guide isn't ready.
+      _status: 'published',
       content: toRichText(body, { skipFirstHeading: true }),
       ...(post.category && catIds[post.category] ? { categories: [catIds[post.category]] } : {}),
       meta: {
