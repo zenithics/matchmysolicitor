@@ -409,8 +409,20 @@ function mapBlock(b, ctx) {
       }
     }
 
-    case 'cta':
-      return { blockType: 'cta', richText: toRichText(b.text), links: toLinkGroup(b.links) }
+    case 'cta': {
+      // The design uses three CTA presentations and nothing but the wrapper's
+      // inline style distinguishes them: a full-width #1A1F26 band that closes
+      // the page, a boxed #1A1F26 card mid-page, and a boxed #F7F8FA panel.
+      const wrapper = (b.rawHtml || '').slice(0, 400)
+      const tone = /#1A1F26/i.test(wrapper)
+        ? /border-radius/i.test(wrapper)
+          ? 'darkCard'
+          : 'dark'
+        : /#F7F8FA/i.test(wrapper)
+          ? 'light'
+          : 'dark'
+      return { blockType: 'cta', tone, richText: toRichText(b.text), links: toLinkGroup(b.links) }
+    }
 
     case 'banner': {
       // "info" covers two visually distinct designs, both with style="info":
@@ -878,6 +890,9 @@ async function main() {
     const data = {
       title: page.title || slug,
       slug,
+      // The design puts a breadcrumb trail on About and the guide category
+      // pages only, marked up as <nav aria-label="Breadcrumb">.
+      showBreadcrumbs: Boolean(page.hasBreadcrumbs),
       _status: DRAFTS ? 'draft' : 'published',
       layout,
       meta: {
@@ -909,7 +924,10 @@ async function main() {
     const data = {
       title: post.title || post.slug,
       slug: post.slug,
-      _status: 'draft', // guides are seeded unpublished for review
+      // Guides were previously seeded as drafts "for review", which left the
+      // whole guides section empty on the live site until someone noticed.
+      // Import them published; unpublish individually if a guide isn't ready.
+      _status: 'published',
       content: toRichText(body, { skipFirstHeading: true }),
       ...(post.category && catIds[post.category] ? { categories: [catIds[post.category]] } : {}),
       meta: {

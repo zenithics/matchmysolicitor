@@ -95,6 +95,16 @@ export const Pages: CollectionConfig = {
       label: 'Title',
     },
     {
+      name: 'showBreadcrumbs',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Show breadcrumb trail',
+      admin: {
+        position: 'sidebar',
+        description: 'Adds a Home / <page> trail above the content. Used on About and the guide category pages.',
+      },
+    },
+    {
       type: 'tabs',
       tabs: [
         {

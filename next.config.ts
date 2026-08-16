@@ -55,6 +55,15 @@ const nextConfig: NextConfig = {
 
   reactStrictMode: true,
   redirects,
+  // Guides are Posts, which live at /posts/[slug]. Every link in the design and
+  // in the CMS content points at /guides/..., so serve posts under that path
+  // rather than 404ing (rewrite, not redirect, so the /guides URL is canonical).
+  async rewrites() {
+    return [
+      { source: '/guides/page/:pageNumber', destination: '/posts/page/:pageNumber' },
+      { source: '/guides/:slug', destination: '/posts/:slug' },
+    ]
+  },
   async headers() {
     const allowedOrigins = [
       process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',

@@ -247,7 +247,15 @@ function parsePage(file, html, warnings) {
     warnings.push(`${file}: ${orphans} <section> tag(s) outside any block marker — content would be lost`)
   }
 
-  return { ...meta, file, collection: meta.collection || 'pages', blocks, newBlocks }
+  return {
+    ...meta,
+    file,
+    collection: meta.collection || 'pages',
+    // Whether the design draws a breadcrumb trail on this page.
+    hasBreadcrumbs: /aria-label="Breadcrumb"/i.test(html),
+    blocks,
+    newBlocks,
+  }
 }
 
 /**

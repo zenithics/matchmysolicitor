@@ -14,6 +14,17 @@ export const CallToAction: Block = {
   interfaceName: 'CallToActionBlock',
   fields: [
     {
+      name: 'tone',
+      type: 'select',
+      defaultValue: 'dark',
+      options: [
+        { label: 'Dark band (full-width, closes the page)', value: 'dark' },
+        { label: 'Dark card (boxed, mid-page)', value: 'darkCard' },
+        { label: 'Light panel (bordered box, mid-page)', value: 'light' },
+      ],
+      admin: { description: 'Dark band closes the page. Dark card and light panel are the boxed mid-page prompts.' },
+    },
+    {
       name: 'richText',
       type: 'richText',
       editor: lexicalEditor({
