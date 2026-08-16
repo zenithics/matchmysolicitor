@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { RelatedPosts } from '@/blocks/RelatedPosts/Component'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
@@ -77,7 +78,7 @@ export default async function Post({ params: paramsPromise }: Args) {
       : undefined
 
   return (
-    <article className="pt-16 pb-16">
+    <article className="pt-6 pb-16">
       {articleJsonLd && (
         <script
           type="application/ld+json"
@@ -92,6 +93,26 @@ export default async function Post({ params: paramsPromise }: Args) {
       {draft && <LivePreviewListener />}
 
       <HeadingIdInjector />
+
+      {/* The design puts a Home / Guides / <category> / <title> trail above
+          every guide. Guides are served under /guides/*, not /posts/*. */}
+      <div className="container">
+        <Breadcrumbs
+          items={[
+            { name: 'Guides', url: '/guides' },
+            ...(typeof post.categories?.[0] === 'object' && post.categories?.[0]
+              ? [
+                  {
+                    name: (post.categories[0] as any).title as string,
+                    url: `/guides-category-${(post.categories[0] as any).slug}`,
+                  },
+                ]
+              : []),
+            { name: post.title, url: `/guides/${post.slug}` },
+          ]}
+          siteUrl={getServerSideURL()}
+        />
+      </div>
 
       {draft ? (
         <LivePreviewPost initialData={post as Post} postUrl={postUrl} />
