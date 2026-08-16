@@ -83,6 +83,18 @@ const stripInnerTags = (html) => html.replace(/<[^>]+>/g, '').replace(/\s+/g, ' 
  * headings/paragraphs/list items), so a sentence like "**Bold lead-in.** body
  * copy **link text**" imports as nothing at all.
  */
+// extractLinks() (parse-design-export.mjs) does this same ".dc.html" → "/foo"
+// conversion before a URL ever reaches rewriteUrl (which only rewrites paths
+// that already start with "/" and passes anything else through unchanged) —
+// parseInlineNodes reads raw href attributes directly, bypassing that, so
+// without this a link href imports as the literal "enquiry.dc.html?type=..."
+// rather than "/enquiry?type=...".
+function toSiteUrl(url) {
+  if (!/\.dc\.html/i.test(url)) return url
+  const converted = '/' + url.replace(/\.dc\.html/i, '').replace(/^\.\//, '')
+  return converted === '/index' ? '/' : converted
+}
+
 function parseInlineNodes(html) {
   const nodes = []
   const re = /<strong[^>]*>([\s\S]*?)<\/strong>|<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi
@@ -98,7 +110,7 @@ function parseInlineNodes(html) {
       nodes.push(textNode(stripInnerTags(m[1]), 1))
     } else {
       const label = stripInnerTags(m[3])
-      if (label) nodes.push(linkNode(label, rewriteUrl(m[2]) || m[2]))
+      if (label) nodes.push(linkNode(label, rewriteUrl(toSiteUrl(m[2])) || toSiteUrl(m[2])))
     }
     last = m.index + m[0].length
   }
