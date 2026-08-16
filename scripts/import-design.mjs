@@ -441,13 +441,36 @@ function mapBlock(b, ctx) {
       // first bold run looks like a date), so both must import as real rich
       // text with the title/paragraph structure intact.
       const html = b.rawHtml || ''
+      // The wrapper colour is what actually distinguishes the three panels:
+      // #FFFBEB is the amber warning, #FFFFFF the white "note" card (location
+      // pages' "Your local tribunal"), everything else the teal info panel.
+      const wrapperBg = (html.slice(0, 400).match(/background:\s*(#[0-9A-Fa-f]{6})/) || [])[1]
+      const style =
+        wrapperBg === '#FFFBEB' ? 'warning' : wrapperBg === '#FFFFFF' ? 'note' : 'info'
+
+      // The white note card is a real multi-part panel (eyebrow, heading, then
+      // body paragraphs); flattening it into one bold-led sentence is what made
+      // it render as a full-width teal band instead.
+      if (style === 'note') {
+        const parts = [...html.matchAll(/<(span|h2|p)[^>]*>([\s\S]*?)<\/\1>/gi)]
+          .map((m) => stripInnerTags(m[2]).trim())
+          .filter(Boolean)
+        return {
+          blockType: 'banner',
+          style,
+          content: root(
+            parts.map((text, i) => paragraph([textNode(text, i < 2 ? 1 : 0)])),
+          ),
+        }
+      }
+
       const spanBadgeMatch = html.match(/<span[^>]*>([\s\S]*?)<\/span>/i)
 
       if (spanBadgeMatch) {
         const badge = stripInnerTags(spanBadgeMatch[1])
         const rest = html.slice(spanBadgeMatch.index + spanBadgeMatch[0].length)
         const children = [textNode(`${badge} `, 1), ...parseInlineNodes(rest)]
-        return { blockType: 'banner', style: 'info', content: root([paragraph(children)]) }
+        return { blockType: 'banner', style, content: root([paragraph(children)]) }
       }
 
       const titleMatch = html.match(/<strong[^>]*>([\s\S]*?)<\/strong>/i)
@@ -462,7 +485,7 @@ function mapBlock(b, ctx) {
       const titlePara = titleMatch ? paragraph([textNode(stripInnerTags(titleMatch[1]), 1)]) : null
       return {
         blockType: 'banner',
-        style: 'info',
+        style,
         content: root([...(titlePara ? [titlePara] : []), ...bodyNodes]),
       }
     }
