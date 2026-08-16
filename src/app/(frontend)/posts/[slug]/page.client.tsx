@@ -3,11 +3,11 @@ import { useHeaderTheme } from '@/providers/HeaderTheme'
 import React, { useEffect } from 'react'
 
 const PageClient: React.FC = () => {
-  /* Force the header to be dark mode while we have an image behind it */
+  /* Guides render on a light background in the design, so the header stays light. */
   const { setHeaderTheme } = useHeaderTheme()
 
   useEffect(() => {
-    setHeaderTheme('dark')
+    setHeaderTheme('light')
   }, [setHeaderTheme])
   return <React.Fragment />
 }
