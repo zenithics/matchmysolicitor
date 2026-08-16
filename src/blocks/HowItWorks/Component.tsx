@@ -24,7 +24,11 @@ export const HowItWorksBlock: React.FC<HowItWorksBlockProps> = ({
   const visibleSubheading = isTimeline ? undefined : subheading
 
   return (
-    <section className="sp-80 bg-card border-t border-b border-[#E4E7EC]">
+    <section
+      className={`sp-80 border-t border-b border-[#E4E7EC] ${
+        isTimeline ? 'bg-(--mms-surface)' : 'bg-card'
+      }`}
+    >
       <div className={isTimeline ? 'container-inner max-w-[900px]' : 'container-inner'}>
         {(heading || visibleSubheading) && (
           <div className={isTimeline ? 'mb-12' : 'text-center max-w-2xl mx-auto mb-12'}>
