@@ -108,30 +108,27 @@ export function CookieConsent({ config }: CookieConsentProps) {
     <>
       {/* Banner */}
       {visible && !modalOpen && (
-        <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-[var(--brand-deep-plum)] text-white shadow-2xl p-5 md:p-6">
-          <div className="max-w-[1280px] mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm mb-1">{config.bannerTitle}</p>
-              <p className="text-xs text-white/70 leading-relaxed">{config.bannerText}</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+        <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-white border-t border-[#E4E7EC] shadow-[0_-4px_24px_rgba(26,31,38,0.08)]">
+          <div className="max-w-[1180px] mx-auto px-6 py-5 flex flex-col gap-3.5">
+            <p className="m-0 text-sm leading-relaxed text-(--mms-body)">{config.bannerText}</p>
+            <div className="flex flex-col sm:flex-row gap-2.5">
               <button
-                onClick={() => setModalOpen(true)}
-                className="px-5 py-2.5 rounded-full border border-white/30 text-xs font-semibold hover:bg-white/10 transition-colors whitespace-nowrap"
+                onClick={acceptAll}
+                className="flex-1 min-w-[130px] px-[18px] py-[13px] rounded-md bg-primary text-white text-[15px] font-bold hover:bg-(--mms-primary-hover) transition-colors"
               >
-                {config.managePrefsLabel}
+                {config.acceptAllLabel}
               </button>
               <button
                 onClick={rejectAll}
-                className="px-5 py-2.5 rounded-full border border-white/30 text-xs font-semibold hover:bg-white/10 transition-colors whitespace-nowrap"
+                className="flex-1 min-w-[130px] px-[18px] py-[13px] rounded-md bg-primary text-white text-[15px] font-bold hover:bg-(--mms-primary-hover) transition-colors"
               >
                 {config.rejectAllLabel}
               </button>
               <button
-                onClick={acceptAll}
-                className="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors whitespace-nowrap"
+                onClick={() => setModalOpen(true)}
+                className="flex-1 min-w-[130px] px-[18px] py-[13px] rounded-md border border-[#D3D8DF] bg-white text-[15px] font-bold text-[#1A1F26] hover:bg-(--mms-surface) transition-colors"
               >
-                {config.acceptAllLabel}
+                {config.managePrefsLabel}
               </button>
             </div>
           </div>
@@ -141,9 +138,9 @@ export function CookieConsent({ config }: CookieConsentProps) {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="w-full max-w-lg bg-white rounded-[10px] shadow-2xl overflow-hidden">
             <div className="p-6 border-b border-[var(--border-subtle)]">
-              <h2 className="font-serif text-xl">{config.modalTitle}</h2>
+              <h2 className="text-xl font-bold">{config.modalTitle}</h2>
               <p className="text-sm text-muted-foreground mt-1">{config.modalSubtext}</p>
             </div>
 
@@ -159,7 +156,7 @@ export function CookieConsent({ config }: CookieConsentProps) {
                     )}
                   </div>
                   {cat.required ? (
-                    <span className="text-xs text-muted-foreground shrink-0 mt-0.5 bg-[var(--brand-blush)] px-2 py-1 rounded-full">
+                    <span className="text-xs text-muted-foreground shrink-0 mt-0.5 bg-(--mms-surface) px-2 py-1 rounded-full">
                       Always on
                     </span>
                   ) : (
@@ -187,13 +184,13 @@ export function CookieConsent({ config }: CookieConsentProps) {
             <div className="p-6 border-t border-[var(--border-subtle)] flex flex-col sm:flex-row gap-3">
               <button
                 onClick={savePrefs}
-                className="flex-1 py-3 rounded-full border border-[var(--border-subtle)] text-sm font-semibold hover:bg-[var(--brand-blush)] transition-colors"
+                className="flex-1 py-3 rounded-md border border-[#D3D8DF] text-sm font-semibold hover:bg-(--mms-surface) transition-colors"
               >
                 {config.savePrefsLabel}
               </button>
               <button
                 onClick={acceptAll}
-                className="flex-1 py-3 rounded-full bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
+                className="flex-1 py-3 rounded-md bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"
               >
                 {config.acceptAllLabel}
               </button>
