@@ -515,7 +515,20 @@ function mapBlock(b, ctx) {
           // can't be filtered out of the body the normal way, and importing it
           // as-is duplicates the whole card into its own CTA label. Detect that
           // case and use the tile's own last line as the real label instead.
-          const wholeCardLink = Boolean(link) && rest.length > 1 && link.label !== rest[rest.length - 1]?.text
+          // Careful: "link.label doesn't match the last line" is NOT enough on
+          // its own. index.dc.html's two-up tiles have a real button ("Employer
+          // services →") that matches no text part either, and the old test
+          // mistook it for a whole-tile link — stealing the tile's last bullet
+          // ("Urgent interim relief hearings") as the button label and dropping
+          // it from the list. A genuine whole-tile <a> flattens the ENTIRE tile
+          // into its label, so it contains the card title; a real button never
+          // does.
+          const wholeCardLink =
+            Boolean(link?.label) &&
+            rest.length > 1 &&
+            link.label !== rest[rest.length - 1]?.text &&
+            title.length > 0 &&
+            link.label.includes(title)
           const linkLabel = wholeCardLink ? rest[rest.length - 1]?.text : link?.label
           const bodyParts = wholeCardLink ? rest.slice(0, -1) : rest.filter((p) => p.text !== link?.label)
           return {

@@ -109,7 +109,10 @@ export default async function Page({ params: paramsPromise }: Args) {
   }
 
   return (
-    <article className="pb-24">
+    // No trailing padding: the last block on most pages is the dark CTA band,
+    // and the design has it sitting flush against the footer. pb-24 here was
+    // rendering as a white strip between the two on every page.
+    <article>
       {faqJsonLd && (
         <script
           type="application/ld+json"
