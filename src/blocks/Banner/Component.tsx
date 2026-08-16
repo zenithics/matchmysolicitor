@@ -33,6 +33,28 @@ function isBandLayout(content: unknown): boolean {
 }
 
 export const BannerBlock: React.FC<Props> = ({ className, content, style }) => {
+  /*
+   * "note" is the design's white bordered panel (location pages, "Your local
+   * tribunal"). The first bold run is a small blue uppercase eyebrow and the
+   * second is the panel heading, matching the design markup.
+   */
+  if ((style as string) === 'note') {
+    return (
+      <section className={cn('sp-32-24', className)}>
+        <div className="container-inner">
+          <div className="flex flex-col gap-2.5 rounded-[10px] border border-[#E4E7EC] bg-white p-7">
+            <RichText
+              className="text-[15px] leading-[1.6] text-[var(--mms-body,#3A414C)] [&_p]:mb-0 [&_p:first-child>strong:first-child]:block [&_p:first-child>strong:first-child]:text-xs [&_p:first-child>strong:first-child]:font-bold [&_p:first-child>strong:first-child]:uppercase [&_p:first-child>strong:first-child]:tracking-[0.08em] [&_p:first-child>strong:first-child]:text-[var(--mms-primary,#1E4FD8)] [&_p:nth-child(2)>strong:first-child]:block [&_p:nth-child(2)>strong:first-child]:text-xl [&_p:nth-child(2)>strong:first-child]:text-[var(--mms-ink,#1A1F26)] [&_p:last-child]:text-sm [&_p:last-child]:text-[#5B6472]"
+              data={content}
+              enableGutter={false}
+              enableProse={false}
+            />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   if (style === 'info') {
     if (isBandLayout(content)) {
       return (

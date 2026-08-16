@@ -15,6 +15,9 @@ export const Banner: Block = {
       defaultValue: 'info',
       options: [
         { label: 'Info', value: 'info' },
+        // White bordered card with a blue eyebrow — the design's "Your local
+        // tribunal" panel on the location pages.
+        { label: 'Note card', value: 'note' },
         { label: 'Warning', value: 'warning' },
         { label: 'Error', value: 'error' },
         { label: 'Success', value: 'success' },

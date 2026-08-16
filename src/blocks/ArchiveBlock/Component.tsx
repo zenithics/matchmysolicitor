@@ -17,6 +17,11 @@ export const ArchiveBlock: React.FC<
   const limit = limitFromProps || 3
 
   let posts: Post[] = []
+  // The design puts a row of category filter pills above the guides list on
+  // /guides and every /guides-category-* page. Only the collection-driven
+  // archives are real listings; selectedDocs archives are "Related guides".
+  let filterPills: { title: string; slug: string }[] = []
+  let activeCategorySlug: string | null = null
 
   if (populateBy === 'collection') {
     const payload = await getPayload({ config: configPromise })
@@ -42,6 +47,21 @@ export const ArchiveBlock: React.FC<
     })
 
     posts = fetchedPosts.docs
+
+    const allCategories = await payload.find({
+      collection: 'categories',
+      depth: 0,
+      limit: 50,
+      sort: 'title',
+    })
+    filterPills = allCategories.docs
+      .filter((c: any) => c.slug)
+      .map((c: any) => ({ title: c.title as string, slug: c.slug as string }))
+    const firstCategory = categories?.[0]
+    activeCategorySlug =
+      typeof firstCategory === 'object' && firstCategory
+        ? ((firstCategory as any).slug ?? null)
+        : null
   } else {
     if (selectedDocs?.length) {
       const filteredSelectedPosts = selectedDocs.map((post) => {
@@ -60,6 +80,28 @@ export const ArchiveBlock: React.FC<
             <RichText className="ms-0 mb-0 max-w-3xl" data={introContent} enableGutter={false} />
           </div>
         )}
+        {filterPills.length > 0 && (
+          <div className="mb-6 flex flex-wrap gap-2.5">
+            {[{ title: 'All guides', slug: null }, ...filterPills].map((pill) => {
+              const isActive = pill.slug === activeCategorySlug
+              return (
+                <a
+                  key={pill.slug ?? 'all'}
+                  href={pill.slug ? `/guides-category-${pill.slug}` : '/guides'}
+                  className={
+                    'rounded-full border-[1.5px] px-[18px] py-[9px] text-sm font-bold ' +
+                    (isActive
+                      ? 'border-[var(--mms-ink,#1A1F26)] bg-[var(--mms-ink,#1A1F26)] text-white'
+                      : 'border-[#D3D8DF] bg-white text-[var(--mms-body,#3A414C)] hover:border-[var(--mms-ink,#1A1F26)]')
+                  }
+                >
+                  {pill.title}
+                </a>
+              )
+            })}
+          </div>
+        )}
+
         <CollectionArchive posts={posts} />
       </div>
     </section>

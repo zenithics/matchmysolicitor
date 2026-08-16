@@ -13,7 +13,6 @@ import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'
 
-import { PostHero } from '@/heros/PostHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
@@ -71,6 +70,34 @@ export default async function Post({ params: paramsPromise }: Args) {
     articleJsonLd['@type'] = articleType
   }
 
+  const firstCategory =
+    typeof post.categories?.[0] === 'object' && post.categories?.[0]
+      ? (post.categories[0] as any)
+      : null
+  const categoryTitle: string | null = firstCategory?.title ?? null
+
+  // The design shows "Last reviewed <Month Year>", taken from the publish date.
+  const lastReviewed = post.publishedAt
+    ? new Date(post.publishedAt).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+    : null
+
+  // Three other guides from the same category.
+  const relatedGuides = firstCategory
+    ? (
+        await payload.find({
+          collection: 'posts',
+          where: {
+            and: [
+              { 'categories.id': { equals: firstCategory.id } },
+              { id: { not_equals: post.id } },
+            ],
+          },
+          limit: 3,
+          depth: 1,
+        })
+      ).docs
+    : []
+
   const postUrl = getServerSideURL() + url
   const ogImage =
     post.meta?.image && typeof post.meta.image === 'object'
@@ -118,16 +145,93 @@ export default async function Post({ params: paramsPromise }: Args) {
         <LivePreviewPost initialData={post as Post} postUrl={postUrl} />
       ) : (
         <>
-          <PostHero post={post} />
+          <div className="flex flex-col items-center gap-4 pt-2">
+            <div className="mms-guide container">
+              <div className="flex flex-col-reverse gap-10 lg:flex-row lg:gap-10 items-start">
+                {/* Sticky contents panel. The design puts it on the left of the
+                    article, in a bordered white card, not in the right gutter. */}
+                <aside className="w-full shrink-0 self-start empty:hidden lg:sticky lg:top-24 lg:w-[260px]">
+                  <TableOfContents content={post.content} title="On this page" />
+                </aside>
 
-          <div className="flex flex-col items-center gap-4 pt-8">
-            <div className="container">
-              <div className="flex gap-10 xl:gap-16 items-start">
-                {/* Main content */}
-                <div className="min-w-0 flex-1">
-                  <RichText className="max-w-[48rem]" data={post.content} enableGutter={false} />
+                <div className="min-w-0 flex-1 max-w-[680px] flex flex-col gap-7">
+                  {/* Article header — the design has no dark hero on guides. */}
+                  <header className="flex flex-col gap-3.5">
+                    {categoryTitle && (
+                      <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--mms-primary,#1E4FD8)]">
+                        {categoryTitle}
+                      </span>
+                    )}
+                    <h1 className="m-0 text-[clamp(25px,4.5vw,36px)] font-bold leading-[1.18] tracking-[-0.015em] text-[var(--mms-ink,#1A1F26)]">
+                      {post.title}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-[#5B6472]">
+                      {lastReviewed && (
+                        <span className="rounded bg-[#E9F6F4] px-3 py-[5px] text-[13px] font-bold text-[#0A4740]">
+                          Last reviewed {lastReviewed}
+                        </span>
+                      )}
+                      <span>By the MatchMySolicitor editorial team</span>
+                    </div>
+                  </header>
 
-                  <div className="max-w-[48rem] mt-8 pt-8 border-t border-border">
+                  <RichText data={post.content} enableGutter={false} />
+
+                  {/* In-article CTA card */}
+                  <div className="flex flex-col items-start gap-3 rounded-[10px] bg-[var(--mms-ink,#1A1F26)] p-7">
+                    <h2 className="m-0 text-xl font-bold text-white">Dealing with this right now?</h2>
+                    <p className="m-0 text-[15px] leading-relaxed text-[#B9C1CC]">
+                      We can match you with a specialist employment solicitor within 24 hours. Free,
+                      confidential, no obligation.
+                    </p>
+                    <a
+                      href="/enquiry"
+                      className="rounded-md bg-[var(--mms-primary,#1E4FD8)] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#1740B8]"
+                    >
+                      Start a free enquiry →
+                    </a>
+                  </div>
+
+                  {/* Regulatory note — required on every guide. */}
+                  <div className="rounded-[10px] border border-[#C6E7E2] bg-[#E9F6F4] px-6 py-5 text-sm leading-[1.7] text-[#0F5D55]">
+                    This guide is general information, not legal advice. For advice on your
+                    situation,{' '}
+                    <a href="/enquiry" className="font-bold text-[#0B7268]">
+                      start a free enquiry
+                    </a>
+                    .
+                  </div>
+
+                  {relatedGuides.length > 0 && (
+                    <div className="flex flex-col gap-4">
+                      <h2 className="m-0 text-[22px] font-bold text-[var(--mms-ink,#1A1F26)]">
+                        Related guides
+                      </h2>
+                      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(200px,1fr))]">
+                        {relatedGuides.map((g: any) => (
+                          <a
+                            key={g.id}
+                            href={`/guides/${g.slug}`}
+                            className="flex flex-col gap-2.5 rounded-[10px] border border-[#E4E7EC] bg-white p-6 text-inherit transition-shadow hover:shadow-md"
+                          >
+                            {typeof g.categories?.[0] === 'object' && (
+                              <span className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--mms-primary,#1E4FD8)]">
+                                {g.categories[0].title}
+                              </span>
+                            )}
+                            <span className="text-lg font-bold leading-[1.35] text-[var(--mms-ink,#1A1F26)]">
+                              {g.title}
+                            </span>
+                            <span className="text-sm leading-relaxed text-[#5B6472]">
+                              {g.meta?.description}
+                            </span>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="border-t border-border pt-7">
                     <SocialShare
                       url={postUrl}
                       title={post.title}
@@ -136,33 +240,35 @@ export default async function Post({ params: paramsPromise }: Args) {
                     />
                   </div>
 
-                  {/* Author cards */}
                   {post.populatedAuthors && post.populatedAuthors.length > 0 && (
-                    <div className="max-w-[48rem] mt-8">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                        {post.populatedAuthors.length === 1 ? 'About the Author' : 'About the Authors'}
-                      </p>
-                      <div className="flex flex-col gap-4">
-                        {post.populatedAuthors.map((author) => (
-                          <AuthorCard key={author.id} author={author as any} />
-                        ))}
-                      </div>
+                    <div className="flex flex-col gap-4">
+                      {post.populatedAuthors.map((author) => (
+                        <AuthorCard key={author.id} author={author as any} />
+                      ))}
                     </div>
                   )}
                 </div>
-
-                {/* Sticky TOC sidebar — desktop only */}
-                <aside className="hidden xl:block w-64 shrink-0 sticky top-24 self-start">
-                  <TableOfContents content={post.content} />
-                </aside>
               </div>
+            </div>
+          </div>
 
-              {post.relatedPosts && post.relatedPosts.length > 0 && (
-                <RelatedPosts
-                  className="mt-12 max-w-[52rem] lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[2fr]"
-                  docs={post.relatedPosts.filter((post) => typeof post === 'object')}
-                />
-              )}
+          {/* Closing CTA band, as on every other page of the design. */}
+          <div className="mt-16 bg-[var(--mms-ink,#1A1F26)]">
+            <div className="container flex flex-wrap items-center justify-between gap-6 py-12">
+              <div>
+                <h2 className="m-0 text-[26px] font-bold text-white">
+                  Speak to a specialist, not a call centre
+                </h2>
+                <p className="m-0 mt-1 text-[15px] text-[#B9C1CC]">
+                  Free enquiry, matched with a vetted specialist within 24 hours.
+                </p>
+              </div>
+              <a
+                href="/enquiry"
+                className="rounded-md bg-[var(--mms-primary,#1E4FD8)] px-6 py-3.5 text-[15px] font-bold text-white hover:bg-[#1740B8]"
+              >
+                Start your enquiry →
+              </a>
             </div>
           </div>
         </>
