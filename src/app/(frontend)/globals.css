@@ -301,6 +301,8 @@ html[data-theme='light'] {
   --mms-muted-light: #6B7482;      /* --muted-light: labels, meta */
   --mms-on-dark-muted: #B9C1CC;    /* --on-dark-muted: copy on ink */
   --mms-primary-hover: #1740B8;
+  --mms-surface: #F7F8FA;          /* --surface: alternating section band */
+  --mms-accent: #2CC5B6;           /* --accent: teal eyebrows, badges */
   --mms-rule: #EEF1F4;             /* hairlines, progress track */
   --mms-container: 1180px;
   --mms-gutter: 24px;              /* desktop section side padding */
