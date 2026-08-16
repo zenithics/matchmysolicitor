@@ -297,6 +297,7 @@ html[data-theme='light'] {
   --radius: 10px;
 
   /* Design tokens with no shadcn equivalent, exposed for block components. */
+  --mms-ink: #1A1F26;              /* --ink: headings, dark panels */
   --mms-body: #3A414C;             /* --body: body copy */
   --mms-muted-light: #6B7482;      /* --muted-light: labels, meta */
   --mms-on-dark-muted: #B9C1CC;    /* --on-dark-muted: copy on ink */
