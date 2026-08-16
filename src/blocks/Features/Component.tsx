@@ -19,6 +19,10 @@ function splitTitleBadge(title?: string | null): { title: string; badge: string 
 // Card lists in the design are `list-style:none` with a literal "·" glyph in
 // the copy, so the browser's own disc marker has to be suppressed or every
 // bullet reads "• · Tribunal claim defence".
+// The two-up split panels prefix each list item with a literal middot, as in
+// the design. Only that variant uses it; the four trust cards do not.
+const BULLET_DOT = "[&_li]:before:content-['\u00b7'] [&_li]:before:mr-2 [&_li]:before:opacity-70"
+
 const CARD_RICHTEXT = '[&_ul]:list-none [&_ul]:pl-0 [&_ul]:m-0 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-2.5 [&_li]:m-0'
 
 export const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
@@ -69,7 +73,7 @@ export const FeaturesBlock: React.FC<FeaturesBlockProps> = ({
                   </div>
                   {feature.description && (
                     <RichText
-                      className={`mb-0 ${CARD_RICHTEXT} [&_h3]:text-[clamp(21px,3.2vw,26px)] [&_h3]:font-bold [&_h3]:m-0 ${
+                      className={`mb-0 ${CARD_RICHTEXT} ${BULLET_DOT} [&_h3]:text-[clamp(21px,3.2vw,26px)] [&_h3]:font-bold [&_h3]:m-0 ${
                         dark
                           ? '[&_h3]:text-white [&_li]:text-[#B9C1CC]'
                           : '[&_h3]:text-[#1A1F26] [&_li]:text-muted-foreground'
