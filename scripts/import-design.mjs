@@ -409,8 +409,20 @@ function mapBlock(b, ctx) {
       }
     }
 
-    case 'cta':
-      return { blockType: 'cta', richText: toRichText(b.text), links: toLinkGroup(b.links) }
+    case 'cta': {
+      // The design uses three CTA presentations and nothing but the wrapper's
+      // inline style distinguishes them: a full-width #1A1F26 band that closes
+      // the page, a boxed #1A1F26 card mid-page, and a boxed #F7F8FA panel.
+      const wrapper = (b.rawHtml || '').slice(0, 400)
+      const tone = /#1A1F26/i.test(wrapper)
+        ? /border-radius/i.test(wrapper)
+          ? 'darkCard'
+          : 'dark'
+        : /#F7F8FA/i.test(wrapper)
+          ? 'light'
+          : 'dark'
+      return { blockType: 'cta', tone, richText: toRichText(b.text), links: toLinkGroup(b.links) }
+    }
 
     case 'banner': {
       // "info" covers two visually distinct designs, both with style="info":
