@@ -34,7 +34,7 @@ export async function organizationSchema() {
   const schemaLogoUrl =
     seo.schemaLogo && typeof seo.schemaLogo === 'object' && seo.schemaLogo.url
       ? seo.schemaLogo.url.startsWith('http') ? seo.schemaLogo.url : `${siteUrl}${seo.schemaLogo.url}`
-      : `${siteUrl}/favicon.svg`
+      : `${siteUrl}/logo-schema.png`
 
   return {
     '@context': 'https://schema.org',
@@ -61,7 +61,7 @@ export async function websiteSchema() {
       '@type': 'SearchAction',
       target: {
         '@type': 'EntryPoint',
-        urlTemplate: `${siteUrl}/shop?search={search_term_string}`,
+        urlTemplate: `${siteUrl}${seo.searchPathTemplate || '/search?q={search_term_string}'}`,
       },
       'query-input': 'required name=search_term_string',
     },
@@ -132,39 +132,74 @@ export async function articleSchema(post: any) {
   const authorName =
     post.authors?.[0] && typeof post.authors[0] === 'object'
       ? post.authors[0].name || post.authors[0].email
-      : 'Your Brand'
+      : null
+
+  const ogFallback =
+    seo.defaultOgImage && typeof seo.defaultOgImage === 'object' && seo.defaultOgImage.url
+      ? seo.defaultOgImage.url
+      : null
+
+  const image = imageUrl || ogFallback
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: post.title,
-    ...(imageUrl && { image: [`${siteUrl}${imageUrl}`] }),
-    author: {
-      '@type': 'Person',
-      name: authorName,
-    },
+    ...(image && { image: [image.startsWith('http') ? image : `${siteUrl}${image}`] }),
+    author: authorName
+      ? { '@type': 'Person', name: authorName }
+      : { '@type': 'Organization', name: seo.siteTitle || 'Your Brand', url: siteUrl },
     datePublished: post.createdAt,
     dateModified: post.updatedAt,
     publisher: {
       '@type': 'Organization',
       name: seo.siteTitle || 'Your Brand',
-      logo: { '@type': 'ImageObject', url: `${siteUrl}/favicon.svg` },
+      logo: { '@type': 'ImageObject', url: `${siteUrl}/logo-schema.png` },
     },
   }
 }
 
-export function faqSchema(items: { question: string; answer: string }[]) {
+/**
+ * Answers authored in Payload's rich text editor arrive as a Lexical node tree,
+ * not a string. JSON.stringify-ing that object into `acceptedAnswer.text`
+ * produced structurally valid JSON that Google silently discarded, so FAQ
+ * markup never registered. Flatten any node tree (or React-ish object) to text.
+ */
+export function richTextToPlainText(value: unknown): string {
+  if (value == null) return ''
+  if (typeof value === 'string') return value.trim()
+  if (Array.isArray(value)) return value.map(richTextToPlainText).filter(Boolean).join(' ').trim()
+  if (typeof value === 'object') {
+    const node = value as Record<string, any>
+    if (node.root) return richTextToPlainText(node.root)
+    const parts: string[] = []
+    if (typeof node.text === 'string') parts.push(node.text)
+    if (Array.isArray(node.children)) parts.push(richTextToPlainText(node.children))
+    const joined = parts.join(' ').replace(/\s+/g, ' ').trim()
+    // block-level nodes should not run into the next block
+    return node.type === 'paragraph' || node.type === 'root' ? joined : joined
+  }
+  return String(value)
+}
+
+export function faqSchema(items: { question: unknown; answer: unknown }[]) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: items.map((item) => ({
-      '@type': 'Question',
-      name: item.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: item.answer,
-      },
-    })),
+    mainEntity: items
+      .map((item) => ({
+        question: richTextToPlainText(item.question),
+        answer: richTextToPlainText(item.answer),
+      }))
+      .filter((item) => item.question && item.answer)
+      .map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
   }
 }
 
