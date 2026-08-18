@@ -30,9 +30,18 @@ export default function AdminLogo() {
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logo.svg"
+      alt={branding.siteName || 'MatchMySolicitor'}
+      style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+    />
+  )
+
+  return (
     <span
       style={{
-        fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+        fontFamily: 'Plus Jakarta Sans, Inter, system-ui, -apple-system, sans-serif',
         fontWeight: 700,
         fontSize: '18px',
         letterSpacing: '-0.02em',

@@ -30,6 +30,12 @@ export default function AdminIcon() {
     )
   }
 
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/favicon.svg" alt="MatchMySolicitor" style={{ height: '24px', width: '24px', display: 'block' }} />
+  )
+
+  // eslint-disable-next-line no-unreachable
   const initials = (branding.siteName || 'Ze').slice(0, 2)
   const accent = branding.accentColor || '#0066FF'
 

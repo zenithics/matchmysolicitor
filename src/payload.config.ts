@@ -49,7 +49,7 @@ export default buildConfig({
       providers: ['@/components/HelpPanel'],
     },
     meta: {
-      titleSuffix: ' | Site Admin',
+      titleSuffix: ' | MatchMySolicitor',
     },
     importMap: {
       baseDir: path.resolve(dirname),

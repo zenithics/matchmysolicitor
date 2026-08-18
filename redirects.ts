@@ -38,5 +38,12 @@ export const redirects: NextConfig['redirects'] = async () => {
     permanent: true,
   }))
 
-  return [internetExplorerRedirect, ...legalRedirects, ...guideCategoryRedirects]
+  // Guides live at /guides/:slug. The starter's /posts routes serve identical
+  // content, which is duplicate content in Google's eyes, so fold them in.
+  const postRedirects = [
+    { source: '/posts', destination: '/guides', permanent: true },
+    { source: '/posts/:slug', destination: '/guides/:slug', permanent: true },
+  ]
+
+  return [internetExplorerRedirect, ...legalRedirects, ...guideCategoryRedirects, ...postRedirects]
 }

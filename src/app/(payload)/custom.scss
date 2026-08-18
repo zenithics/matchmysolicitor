@@ -12,3 +12,45 @@
   min-height: 40px;
   align-items: center;
 }
+
+// MatchMySolicitor admin branding. Brand blue #1E4FD8, ink #1A1F26, teal accent #0D9488.
+:root {
+  --brand-blue: #1E4FD8;
+  --brand-ink: #1A1F26;
+  --brand-teal: #0D9488;
+  --theme-success-500: var(--brand-teal);
+}
+
+html[data-theme='light'] {
+  --theme-elevation-800: var(--brand-ink);
+  --theme-elevation-900: var(--brand-ink);
+}
+
+.btn--style-primary:not(.btn--disabled) {
+  background-color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
+  color: #fff !important;
+
+  &:hover {
+    background-color: #1A45BC !important;
+    border-color: #1A45BC !important;
+  }
+}
+
+.btn--style-secondary:not(.btn--disabled) {
+  border-color: var(--brand-blue) !important;
+  color: var(--brand-blue) !important;
+}
+
+a:not(.btn):not(.nav__link) {
+  color: var(--brand-blue);
+}
+
+.nav__link--active,
+.nav .nav__link:hover {
+  color: var(--brand-blue);
+}
+
+.pill--style-success {
+  background-color: var(--brand-teal) !important;
+}
