@@ -170,7 +170,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
             {/* Logo — left aligned, matching the design's logo-left / nav-right header */}
             <Link
               href="/"
-              className="order-first"
+              className="order-first shrink min-w-0"
               aria-label="Home"
             >
               {logo?.url ? (
@@ -179,7 +179,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={logo.alt || 'Logo'}
                   width={logo.width ?? 160}
                   height={logo.height ?? 40}
-                  className="h-[38px] w-auto object-contain"
+                  className="h-[30px] min-[480px]:h-[38px] w-auto object-contain"
                   priority
                 />
               ) : (
@@ -191,7 +191,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={brandName}
                   width={200}
                   height={37}
-                  className="h-[38px] w-auto object-contain"
+                  className="h-[30px] min-[480px]:h-[38px] w-auto object-contain"
                   priority
                 />
               )}
