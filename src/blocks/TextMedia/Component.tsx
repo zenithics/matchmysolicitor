@@ -32,8 +32,16 @@ export const TextMediaBlock: React.FC<TextMediaBlockProps> = ({
       }
       data-theme={isDark ? 'dark' : undefined}
     >
-      <div className="container-inner grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-        <div className={isImageLeft ? 'md:order-2' : undefined}>
+      <div
+        className={
+          image
+            ? 'container-inner grid grid-cols-1 md:grid-cols-2 gap-16 items-center'
+            : // Without an image the two-column grid leaves half the band empty,
+              // so fall back to a single readable column.
+              'container-inner max-w-[820px]'
+        }
+      >
+        <div className={image && isImageLeft ? 'md:order-2' : undefined}>
           {heading && (
             <h2 className={isDark ? 'mb-5 text-primary-foreground' : 'mb-5'}>{heading}</h2>
           )}

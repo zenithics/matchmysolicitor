@@ -537,7 +537,7 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
                 </ul>
               )}
             </div>
-            <div className="lg:justify-self-end w-full lg:max-w-md">{starter}</div>
+            <div className="lg:justify-self-end w-full lg:max-w-[560px]">{starter}</div>
           </div>
         </section>
         {modal}
