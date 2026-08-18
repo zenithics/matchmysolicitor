@@ -21,6 +21,7 @@ import { SocialShare } from '@/components/SocialShare'
 import { getServerSideURL } from '@/utilities/getURL'
 import { TableOfContents, HeadingIdInjector } from '@/components/TableOfContents'
 import { AuthorCard } from '@/components/AuthorCard'
+import { Media } from '@/components/Media'
 import { articleSchema } from '@/utilities/generateJsonLd'
 import { applyAdvancedSeo } from '@/utilities/buildSeoMeta'
 
@@ -98,6 +99,15 @@ export default async function Post({ params: paramsPromise }: Args) {
       ).docs
     : []
 
+  // Featured image for the top of the guide: the post's own hero image, or the
+  // SEO/social image if the editor only set that one.
+  const featuredImage =
+    post.heroImage && typeof post.heroImage === 'object'
+      ? (post.heroImage as any)
+      : post.meta?.image && typeof post.meta.image === 'object'
+        ? (post.meta.image as any)
+        : null
+
   const postUrl = getServerSideURL() + url
   const ogImage =
     post.meta?.image && typeof post.meta.image === 'object'
@@ -174,6 +184,25 @@ export default async function Post({ params: paramsPromise }: Args) {
                       <span>By the MatchMySolicitor editorial team</span>
                     </div>
                   </header>
+
+                  {/* Featured image. Sits between the header and the body so it
+                      reads as the article's lead image, and gives Article schema
+                      a real image. Falls back to the SEO/social image. */}
+                  {featuredImage && (
+                    <figure className="m-0">
+                      <Media
+                        resource={featuredImage}
+                        priority
+                        imgClassName="w-full h-auto rounded-[10px] border border-[#E4E8EE] object-cover"
+                        htmlElement={null}
+                      />
+                      {featuredImage.caption ? (
+                        <figcaption className="mt-2 text-[13px] leading-normal text-[#5B6472]">
+                          <RichText data={featuredImage.caption} enableGutter={false} />
+                        </figcaption>
+                      ) : null}
+                    </figure>
+                  )}
 
                   <RichText data={post.content} enableGutter={false} />
 

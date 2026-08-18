@@ -124,10 +124,14 @@ export async function articleSchema(post: any) {
   const { seo } = await getSEOGlobals()
   const siteUrl = getServerSideURL()
 
+  // Same precedence the guide template renders with: hero image, then the
+  // SEO/social image, then the site-wide default OG image.
   const imageUrl =
     post.heroImage && typeof post.heroImage === 'object'
       ? post.heroImage.url
-      : null
+      : post.meta?.image && typeof post.meta.image === 'object'
+        ? post.meta.image.url
+        : null
 
   const authorName =
     post.authors?.[0] && typeof post.authors[0] === 'object'
