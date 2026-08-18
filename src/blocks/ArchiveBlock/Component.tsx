@@ -77,7 +77,7 @@ export const ArchiveBlock: React.FC<
       <div className="container-inner">
         {introContent && (
           <div className="mb-6">
-            <RichText className="ms-0 mb-0 max-w-3xl" data={introContent} enableGutter={false} />
+            <RichText className="ms-0 mb-0 max-w-3xl [&_h2]:!text-[#1A1F26] [&_h3]:!text-[#1A1F26]" data={introContent} enableGutter={false} />
           </div>
         )}
         {filterPills.length > 0 && (
