@@ -23,6 +23,13 @@ export const Categories: CollectionConfig = {
       type: 'text',
       required: true,
     },
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Intro paragraph shown at the top of the category archive page.',
+      },
+    },
     slugField({
       position: undefined,
     }),

@@ -15,8 +15,7 @@ export const redirects: NextConfig['redirects'] = async () => {
   }
 
   // Footer/nav link paths do not match the CMS page slugs. These pages exist as
-  // /privacy-policy, /terms-of-use, /cookie-policy, /complaints and
-  // /guides-category-*, so map the linked paths onto them instead of 404ing.
+  // /privacy-policy, /terms-of-use, /cookie-policy, /complaints so map the linked paths onto them instead of 404ing.
   const legalRedirects = [
     'privacy-policy',
     'terms-of-use',
@@ -34,8 +33,8 @@ export const redirects: NextConfig['redirects'] = async () => {
     'tribunal-process',
     'discrimination',
   ].map((slug) => ({
-    source: `/guides/category/${slug}`,
-    destination: `/guides-category-${slug}`,
+    source: `/guides-category-${slug}`,
+    destination: `/guides/category/${slug}`,
     permanent: true,
   }))
 

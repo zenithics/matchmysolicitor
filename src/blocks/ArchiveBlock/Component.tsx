@@ -87,7 +87,7 @@ export const ArchiveBlock: React.FC<
               return (
                 <a
                   key={pill.slug ?? 'all'}
-                  href={pill.slug ? `/guides-category-${pill.slug}` : '/guides'}
+                  href={pill.slug ? `/guides/category/${pill.slug}` : '/guides'}
                   className={
                     'rounded-full border-[1.5px] px-[18px] py-[9px] text-sm font-bold ' +
                     (isActive
