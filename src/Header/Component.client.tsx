@@ -179,7 +179,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={logo.alt || 'Logo'}
                   width={logo.width ?? 160}
                   height={logo.height ?? 40}
-                  className="h-[30px] min-[480px]:h-[38px] w-auto object-contain"
+                  className="h-[26px] min-[400px]:h-[30px] min-[480px]:h-[38px] w-auto object-contain"
                   priority
                 />
               ) : (
@@ -191,14 +191,14 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   alt={brandName}
                   width={200}
                   height={37}
-                  className="h-[30px] min-[480px]:h-[38px] w-auto object-contain"
+                  className="h-[26px] min-[400px]:h-[30px] min-[480px]:h-[38px] w-auto object-contain"
                   priority
                 />
               )}
             </Link>
 
             {/* Right nav — desktop */}
-            <div className="flex items-center gap-4 min-[919px]:gap-[26px] order-3">
+            <div className="flex items-center gap-2 min-[400px]:gap-3 min-[919px]:gap-[26px] order-3">
               <nav className="hidden min-[919px]:flex items-center gap-[26px]" aria-label="Primary navigation right">
                 {navRight.map(({ href, label, newTab }) => (
                   <Link
@@ -224,7 +224,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   risk tonight. */}
               <Link
                 href="/enquiry"
-                className="group inline-flex items-center justify-center gap-2 shrink-0 min-h-[40px] min-[480px]:min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[12px] py-[9px] text-[13px] min-[480px]:px-[18px] min-[480px]:py-[11px] min-[480px]:text-[15px] font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover)"
+                className="group inline-flex items-center justify-center gap-2 shrink-0 min-h-[40px] min-[480px]:min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[10px] py-[8px] text-[12px] min-[400px]:px-[12px] min-[400px]:py-[9px] min-[400px]:text-[13px] min-[480px]:px-[18px] min-[480px]:py-[11px] min-[480px]:text-[15px] font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover)"
               >
                 Free consultation
                 <span className="hidden min-[480px]:inline-flex">
