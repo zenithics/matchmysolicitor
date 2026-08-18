@@ -56,12 +56,35 @@ const blockComponents = {
   enquiryWizard: EnquiryWizardBlock,
 }
 
+/*
+ * On the service pages the design wraps the whole article — content, CTA
+ * bands, warning banners, stat rows, FAQ and the guides archive — in a single
+ * 820px column (see `<article style="max-width:820px">` in design-export).
+ * Only the hero, the top stat strip and the closing dark CTA run full width.
+ * Hub and guides pages keep everything full width, so the narrowing is scoped
+ * to layouts that pair an enquiry wizard with article content.
+ */
+const ARTICLE_BLOCKS = new Set(['content', 'cta', 'banner', 'stats', 'faq', 'archive'])
+
+const getArticleRange = (blocks: Page['layout'][0][]): [number, number] | null => {
+  const types = blocks.map((b) => b.blockType)
+  if (!types.includes('content') || !types.includes('enquiryWizard')) return null
+
+  const start = types.indexOf('content')
+  let end = blocks.length - 1
+  while (end > start && !ARTICLE_BLOCKS.has(types[end] as string)) end--
+  // the closing dark CTA is full width in the design
+  if (types[end] === 'cta') end--
+  return end > start ? [start, end] : null
+}
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
 }> = (props) => {
   const { blocks } = props
 
   const hasBlocks = blocks && Array.isArray(blocks) && blocks.length > 0
+  const articleRange = hasBlocks ? getArticleRange(blocks) : null
 
   if (hasBlocks) {
     return (
@@ -73,9 +96,23 @@ export const RenderBlocks: React.FC<{
             const Block = blockComponents[blockType]
 
             if (Block) {
-              return (
+              const inArticle =
+                articleRange && index >= articleRange[0] && index <= articleRange[1]
+
+              const rendered = (
                 // @ts-expect-error there may be some mismatch between the expected types here
                 <Block {...block} disableInnerContainer key={index} />
+              )
+
+              return inArticle ? (
+                <div
+                  className="[&_.container-inner]:max-w-[820px] [&_.container]:max-w-[820px]"
+                  key={index}
+                >
+                  {rendered}
+                </div>
+              ) : (
+                rendered
               )
             }
           }

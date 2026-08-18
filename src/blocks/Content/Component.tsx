@@ -43,6 +43,9 @@ function splitPanels(children: LexNode[]): { panel: boolean; nodes: LexNode[] }[
   return segments.filter((s) => s.nodes.length > 0)
 }
 
+// Design headings are #1A1F26, not the global body colour.
+const HEADING_CLASSES = '[&_h2]:text-[#1A1F26] [&_h3]:text-[#1A1F26] [&_h4]:text-[#1A1F26]'
+
 const PANEL_CLASSES =
   'rounded-[10px] border border-[#E4E7EC] bg-white p-8 ' +
   '[&_h2]:text-2xl [&_h2]:mt-0 [&_h2]:mb-4 [&_h3]:mt-0 [&_h3]:mb-4 ' +
@@ -57,7 +60,7 @@ const ContentRichText: React.FC<{ richText: any }> = ({ richText }) => {
   const segments = splitPanels(children)
 
   if (segments.length === 1 && !segments[0].panel) {
-    return <RichText data={richText} enableGutter={false} />
+    return <RichText className={HEADING_CLASSES} data={richText} enableGutter={false} />
   }
 
   return (
@@ -65,11 +68,11 @@ const ContentRichText: React.FC<{ richText: any }> = ({ richText }) => {
       {segments.map((segment, i) => {
         const data = { ...richText, root: { ...richText.root, children: segment.nodes } }
         return segment.panel ? (
-          <div className={PANEL_CLASSES} key={i}>
+          <div className={cn(PANEL_CLASSES, HEADING_CLASSES)} key={i}>
             <RichText data={data} enableGutter={false} enableProse={false} />
           </div>
         ) : (
-          <RichText data={data} enableGutter={false} key={i} />
+          <RichText className={HEADING_CLASSES} data={data} enableGutter={false} key={i} />
         )
       })}
     </div>
