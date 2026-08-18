@@ -44,7 +44,8 @@ function splitPanels(children: LexNode[]): { panel: boolean; nodes: LexNode[] }[
 }
 
 // Design headings are #1A1F26, not the global body colour.
-const HEADING_CLASSES = '[&_h2]:text-[#1A1F26] [&_h3]:text-[#1A1F26] [&_h4]:text-[#1A1F26]'
+const HEADING_CLASSES =
+  'prose-headings:text-[#1A1F26] [&_h2]:!text-[#1A1F26] [&_h3]:!text-[#1A1F26] [&_h4]:!text-[#1A1F26]'
 
 const PANEL_CLASSES =
   'rounded-[10px] border border-[#E4E7EC] bg-white p-8 ' +
