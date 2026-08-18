@@ -61,7 +61,29 @@ export async function Header() {
     ],
   }
 
-  const dropdowns: Record<string, { href: string; label: string }[]> = {}
+
+  // The design's dropdowns use short labels, not the full page titles, and lead
+  // with a bold "overview" link to the parent page.
+  const DROPDOWN_LABELS: Record<string, string> = {
+    'for-employers-tribunal-defence': 'Tribunal defence',
+    'for-employers-settlement-agreements': 'Settlement agreements',
+    'for-employers-constructive-dismissal-defence': 'Constructive dismissal defence',
+    'for-employers-interim-relief-hearings': 'Interim relief hearings',
+    'for-employers-redundancy-restructuring': 'Redundancy and restructuring',
+    'for-employers-disciplinary-grievance': 'Disciplinary and grievance',
+    'for-employees-unfair-dismissal': 'Unfair dismissal',
+    'for-employees-constructive-dismissal': 'Constructive dismissal',
+    'for-employees-discrimination': 'Workplace discrimination',
+    'for-employees-settlement-agreements': 'Settlement agreements',
+    'for-employees-employment-tribunal-claims': 'Employment tribunal claims',
+    'for-employees-senior-exits': 'Senior exits',
+  }
+  const OVERVIEW_LABELS: Record<string, string> = {
+    'for-employers': 'Employer services overview',
+    'for-employees': 'Employee services overview',
+  }
+
+  const dropdowns: Record<string, { href: string; label: string; overview?: boolean }[]> = {}
   try {
     const payload = await getPayload({ config: configPromise })
     for (const parent of ['for-employers', 'for-employees']) {
@@ -83,7 +105,9 @@ export async function Header() {
         .filter((d: { slug?: string | null }) => typeof d.slug === 'string')
         .map((d: { slug?: string | null; title?: string | null }) => ({
           href: `/${d.slug}`,
-          label: (d.title ?? '').replace(/^For (employers|employees):?\s*/i, ''),
+          label:
+            DROPDOWN_LABELS[d.slug as string] ??
+            (d.title ?? '').replace(/^For (employers|employees):?\s*/i, ''),
           slug: d.slug as string,
         }))
         .sort((a, b) => {
@@ -95,7 +119,12 @@ export async function Header() {
           return ai - bi
         })
         .map(({ href, label }) => ({ href, label }))
-      if (items.length) dropdowns[`/${parent}`] = items
+      if (items.length) {
+        dropdowns[`/${parent}`] = [
+          { href: `/${parent}`, label: OVERVIEW_LABELS[parent] ?? 'Overview', overview: true },
+          ...items,
+        ]
+      }
     }
   } catch {
     // No DB at build time — header renders as flat links.

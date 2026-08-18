@@ -14,7 +14,7 @@ interface HeaderClientProps {
   logo?: Media | null
   brandName?: string
   /** Service pages grouped under a parent nav href, e.g. '/for-employers'. */
-  dropdowns?: Record<string, { href: string; label: string }[]>
+  dropdowns?: Record<string, { href: string; label: string; overview?: boolean }[]>
 }
 
 function resolveLinkHref(link: any): string {
@@ -155,7 +155,11 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                             key={child.href}
                             href={child.href}
                             role="menuitem"
-                            className="block rounded-md px-3 py-2.5 text-sm text-foreground/90 transition-colors hover:bg-muted hover:text-primary"
+                            className={`block rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-muted hover:text-primary ${
+                              child.overview
+                                ? 'font-semibold text-card-foreground'
+                                : 'text-foreground/90'
+                            }`}
                           >
                             {child.label}
                           </Link>
