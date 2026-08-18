@@ -50,6 +50,13 @@ export const Stats: Block = {
         },
       ],
     },
+    {
+      name: 'footnote',
+      type: 'textarea',
+      admin: {
+        description: 'Small print under the figures, e.g. a caveat that these are statutory limits.',
+      },
+    },
   ],
   labels: {
     plural: 'Stats Blocks',

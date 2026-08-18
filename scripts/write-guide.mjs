@@ -66,11 +66,14 @@ async function main() {
   const firstCta = children.findIndex(
     (n) => n.type === 'heading' && CTA_HEADINGS.includes((n.children?.[0]?.text ?? '').trim()),
   )
-  if (firstCta < 0) throw new Error('could not find the CTA heading, aborting rather than guessing')
+  // Cleaned shells have no children at all; anything else must keep its trailing chrome.
+  if (firstCta < 0 && children.length) {
+    throw new Error('content is not empty and has no CTA heading, aborting rather than guessing')
+  }
+  const at = firstCta < 0 ? children.length : firstCta
+  content.root.children = [...children.slice(0, at), ...body, ...children.slice(at)]
 
-  content.root.children = [...children.slice(0, firstCta), ...body, ...children.slice(firstCta)]
-
-  console.log(`post ${id}: ${body.length} nodes inserted at index ${firstCta}`)
+  console.log(`post ${id}: ${body.length} nodes inserted at index ${at}`)
   if (apply === '--apply') {
     await client.query('update posts set content=$1, updated_at=now() where id=$2', [content, id])
     await client.query('update posts set published_at=published_at where id=$1', [id])

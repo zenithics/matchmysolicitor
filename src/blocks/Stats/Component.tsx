@@ -2,7 +2,7 @@ import React from 'react'
 
 import type { StatsBlock as StatsBlockProps } from '@/payload-types'
 
-export const StatsBlock: React.FC<StatsBlockProps> = ({ heading, stats }) => {
+export const StatsBlock: React.FC<StatsBlockProps> = ({ heading, stats, footnote }) => {
   return (
     <section className="sp-32-24 bg-card border-b border-[#E4E7EC]">
       <div className="container-inner">
@@ -38,6 +38,9 @@ export const StatsBlock: React.FC<StatsBlockProps> = ({ heading, stats }) => {
             </div>
           ))}
         </div>
+        {footnote && (
+          <p className="text-sm text-muted-foreground leading-[1.6] mt-4 mb-0">{footnote}</p>
+        )}
       </div>
     </section>
   )

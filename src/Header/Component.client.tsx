@@ -224,10 +224,12 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({
                   risk tonight. */}
               <Link
                 href="/enquiry"
-                className="group inline-flex items-center justify-center gap-2 shrink-0 min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[18px] py-[11px] text-[15px] font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover) max-[480px]:px-[14px] max-[480px]:text-[14px]"
+                className="group inline-flex items-center justify-center gap-2 shrink-0 min-h-[40px] min-[480px]:min-h-[44px] whitespace-nowrap rounded-md bg-primary px-[12px] py-[9px] text-[13px] min-[480px]:px-[18px] min-[480px]:py-[11px] min-[480px]:text-[15px] font-bold text-primary-foreground transition-colors hover:bg-(--mms-primary-hover)"
               >
-                Check your claim
-                <ArrowRight />
+                Free consultation
+                <span className="hidden min-[480px]:inline-flex">
+                  <ArrowRight />
+                </span>
               </Link>
 
               {/* Mobile hamburger */}
