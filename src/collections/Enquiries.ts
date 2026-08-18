@@ -4,6 +4,7 @@ import { anyone } from '@/access/anyone'
 import { authenticated } from '@/access/authenticated'
 import { isAdmin } from '@/access/isAdmin'
 import { notifyEnquiry } from '@/hooks/notifyEnquiry'
+import { webhookEnquiry } from '@/hooks/webhookEnquiry'
 
 /**
  * Pay-per-lead enquiries captured by the EnquiryWizard block.
@@ -29,7 +30,7 @@ export const Enquiries: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
-    afterChange: [notifyEnquiry],
+    afterChange: [notifyEnquiry, webhookEnquiry],
   },
   fields: [
     {
