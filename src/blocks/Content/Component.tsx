@@ -49,7 +49,7 @@ const PANEL_CLASSES =
   '[&_p]:text-[15px] [&_p]:text-[#5B6472] [&_p]:mb-4 ' +
   '[&_ul]:list-none [&_ul]:pl-0 [&_ul]:my-0 [&_ul]:flex [&_ul]:flex-col [&_ul]:gap-3 ' +
   "[&_li]:pl-5 [&_li]:my-0 [&_li]:relative [&_li]:text-base [&_li]:leading-[1.6] " +
-  "[&_li]:before:content-['\\00B7'] [&_li]:before:absolute [&_li]:before:left-0 " +
+  "[&_li]:before:content-['·'] [&_li]:before:absolute [&_li]:before:left-0 " +
   '[&_li]:before:font-bold [&_li]:before:text-[#0D9488]'
 
 const ContentRichText: React.FC<{ richText: any }> = ({ richText }) => {
