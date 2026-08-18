@@ -33,8 +33,9 @@ async function getSEOSettings(): Promise<{
 
 export const generateMeta = async (args: {
   doc: Partial<Page> | Partial<Post> | null
+  collection?: 'pages' | 'posts'
 }): Promise<Metadata> => {
-  const { doc } = args
+  const { doc, collection = 'pages' } = args
   const { siteTitle, titleSeparator, defaultOgImage } = await getSEOSettings()
 
   const ogImage = getImageURL(doc?.meta?.image) || getImageURL(defaultOgImage)
@@ -55,19 +56,26 @@ export const generateMeta = async (args: {
   const pageSlug = Array.isArray(doc?.slug) ? doc?.slug.join('/') : (doc?.slug || '/')
   const serverUrl = getServerSideURL()
 
+  // Every page needs a self-referencing canonical unless one is set in the CMS.
+  const path =
+    pageSlug === 'home' || pageSlug === '/' || !pageSlug
+      ? ''
+      : collection === 'posts'
+        ? `/guides/${pageSlug}`
+        : `/${pageSlug}`
+  const canonical = canonicalUrl || `${serverUrl}${path}` || `${serverUrl}/`
+
   return {
     title,
     description: doc?.meta?.description,
-    ...(canonicalUrl && {
-      alternates: { canonical: canonicalUrl },
-    }),
+    alternates: { canonical },
     robots: robotsValue,
     openGraph: mergeOpenGraph({
       description: doc?.meta?.description || '',
       images: ogImage ? [{ url: ogImage }] : undefined,
       siteName: siteTitle,
       title,
-      url: canonicalUrl || `${serverUrl}/${pageSlug}`,
+      url: canonical,
       type: ogType === 'article' ? 'article' : ogType === 'product' ? 'website' : 'website',
     }),
     twitter: {

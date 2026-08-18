@@ -294,7 +294,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const decodedSlug = decodeURIComponent(slug)
   const post = await queryPostBySlug({ slug: decodedSlug })
 
-  const metadata = await generateMeta({ doc: post })
+  const metadata = await generateMeta({ doc: post, collection: 'posts' })
   return applyAdvancedSeo(metadata, (post as any)?.advancedSeo)
 }
 
