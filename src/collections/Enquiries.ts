@@ -92,7 +92,17 @@ export const Enquiries: CollectionConfig = {
         { label: 'Sent to firm', value: 'sent' },
         { label: 'Accepted', value: 'accepted' },
         { label: 'Rejected', value: 'rejected' },
+        { label: 'Converted', value: 'converted' },
       ],
+    },
+    {
+      name: 'rejectionReason',
+      type: 'textarea',
+      label: 'Rejection / feedback note',
+      admin: {
+        description: 'Why the firm rejected this lead, or any feedback on quality. Used for PPL billing disputes.',
+        condition: (data) => data?.status === 'rejected' || data?.status === 'converted',
+      },
     },
     { name: 'assignedFirm', type: 'text', label: 'Matched Firm', admin: { position: 'sidebar' } },
     {

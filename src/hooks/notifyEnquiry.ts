@@ -23,6 +23,31 @@ const ROWS: [string, string][] = [
   ['Campaign', 'campaign'],
 ]
 
+
+const ACK_HTML = (name: string) => `<div style="font-family:system-ui,-apple-system,sans-serif;max-width:600px;color:#3A414C;font-size:16px;line-height:1.6">
+  <p>Hi ${name},</p>
+  <p>Thank you for your enquiry. We have received it and a member of the team is reviewing the details now.</p>
+  <p><strong>What happens next</strong><br>
+  We will match you with a specialist employment solicitor from our panel and put you in touch, normally within one working day. There is no charge for this and no obligation to go ahead.</p>
+  <p>If your situation is urgent, or you have a tribunal deadline coming up, reply to this email and tell us the date so we can prioritise it.</p>
+  <p>A note on what we do: MatchMySolicitor is a matching service, not a firm of solicitors. We do not give legal advice ourselves. Any advice will come from the regulated firm we introduce you to.</p>
+  <p>Kind regards,<br>The MatchMySolicitor team</p>
+</div>`
+
+const ACK_TEXT = (name: string) => `Hi ${name},
+
+Thank you for your enquiry. We have received it and a member of the team is reviewing the details now.
+
+What happens next
+We will match you with a specialist employment solicitor from our panel and put you in touch, normally within one working day. There is no charge for this and no obligation to go ahead.
+
+If your situation is urgent, or you have a tribunal deadline coming up, reply to this email and tell us the date so we can prioritise it.
+
+A note on what we do: MatchMySolicitor is a matching service, not a firm of solicitors. We do not give legal advice ourselves. Any advice will come from the regulated firm we introduce you to.
+
+Kind regards,
+The MatchMySolicitor team`
+
 /**
  * Emails a new enquiry the moment it is created.
  *
@@ -74,6 +99,22 @@ export const notifyEnquiry: CollectionAfterChangeHook = async ({ doc, operation,
     )
   } catch (error) {
     payload.logger.error(`notifyEnquiry failed for enquiry ${doc.id}: ${error}`)
+  }
+
+  // Confirmation to the person who enquired. Separate try/catch so a failure
+  // here can never affect the internal notification above.
+  try {
+    if (doc.email) {
+      const first = String(doc.fullName || '').trim().split(/\s+/)[0] || 'there'
+      await sendEmail({
+        to: doc.email,
+        subject: 'We have received your enquiry | MatchMySolicitor',
+        html: ACK_HTML(esc(first)),
+        text: ACK_TEXT(first),
+      })
+    }
+  } catch (error) {
+    payload.logger.error(`Enquiry acknowledgement failed for enquiry ${doc.id}: ${error}`)
   }
 
   return doc
