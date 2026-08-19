@@ -141,7 +141,7 @@ export default async function Post({ params: paramsPromise }: Args) {
               ? [
                   {
                     name: (post.categories[0] as any).title as string,
-                    url: `/guides-category-${(post.categories[0] as any).slug}`,
+                    url: `/guides/category/${(post.categories[0] as any).slug}`,
                   },
                 ]
               : []),
