@@ -269,9 +269,17 @@ export async function middleware(request: NextRequest) {
     for (const [canonical, custom] of Object.entries(prefixMap)) {
       if (canonical === custom) continue
 
-      // Rewrite custom prefix → canonical file-system route
+      // Rewrite custom prefix → canonical file-system route.
+      // Some sub-routes live under the *custom* prefix in the file system
+      // (e.g. /guides/category/[slug]); rewriting those to /posts/category/*
+      // would 404, so they are passed through untouched.
+      const passthroughSegments = ['category']
       if (pathname === `/${custom}` || pathname.startsWith(`/${custom}/`)) {
         const rest = pathname.slice(`/${custom}`.length)
+        const firstSegment = rest.split('/')[1]
+        if (firstSegment && passthroughSegments.includes(firstSegment)) {
+          return NextResponse.next()
+        }
         const url = request.nextUrl.clone()
         url.pathname = `/${canonical}${rest}`
         return NextResponse.rewrite(url)
