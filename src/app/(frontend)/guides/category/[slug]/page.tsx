@@ -8,7 +8,10 @@ import React, { cache } from 'react'
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
 
-export const dynamic = 'force-dynamic'
+// Incrementally statically rendered. Published CMS changes are pushed out
+// immediately by the revalidatePath hooks on the collections; the interval is
+// just a backstop. Draft-mode requests (CMS preview) still render dynamically.
+export const revalidate = 600
 
 const queryCategory = cache(async ({ slug }: { slug: string }) => {
   const payload = await getPayload({ config: configPromise })

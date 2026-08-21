@@ -9,10 +9,10 @@ import React from 'react'
 import PageClient from './page.client'
 import { notFound } from 'next/navigation'
 
-// Force dynamic rendering — the root layout reads cookies() (Analytics/consent),
-// which flips any statically-generated route to dynamic at runtime and 500s in
-// production. Same guard as (frontend)/[slug] and posts/[slug].
-export const dynamic = 'force-dynamic'
+// Incrementally statically rendered. Published CMS changes are pushed out
+// immediately by the revalidatePath hooks on the collections; the interval is
+// just a backstop. Draft-mode requests (CMS preview) still render dynamically.
+export const revalidate = 600
 
 type Args = {
   params: Promise<{

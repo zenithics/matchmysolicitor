@@ -20,10 +20,6 @@ export async function GET(req: NextRequest): Promise<Response> {
   const path = searchParams.get('path')
   const previewSecret = searchParams.get('previewSecret')
 
-  if (previewSecret !== process.env.PREVIEW_SECRET) {
-    return new Response('You are not allowed to preview this page', { status: 403 })
-  }
-
   if (!path) {
     return new Response('Insufficient search params', { status: 404 })
   }
@@ -32,13 +28,19 @@ export async function GET(req: NextRequest): Promise<Response> {
     return new Response('This endpoint can only be used for relative previews', { status: 500 })
   }
 
-  let user
+  // Authentication is the real gate: the logged-in Payload user's cookie is sent
+  // with the preview request. PREVIEW_SECRET cannot be relied on here because the
+  // admin UI builds the preview URL in the browser (see generatePreviewPath), where
+  // a non-public env var is always undefined — comparing it server-side rejected
+  // every legitimate preview click with a 403.
+  let user: unknown = null
 
   try {
-    user = await payload.auth({
+    const authResult = await payload.auth({
       req: req as unknown as PayloadRequest,
       headers: req.headers,
     })
+    user = authResult?.user ?? null
   } catch (error) {
     payload.logger.error({ err: error }, 'Error verifying token for live preview')
     return new Response('You are not allowed to preview this page', { status: 403 })
@@ -46,7 +48,11 @@ export async function GET(req: NextRequest): Promise<Response> {
 
   const draft = await draftMode()
 
-  if (!user) {
+  // Fallback for non-browser/integration callers that pass the shared secret.
+  const secretMatches = Boolean(process.env.PREVIEW_SECRET) &&
+    previewSecret === process.env.PREVIEW_SECRET
+
+  if (!user && !secretMatches) {
     draft.disable()
     return new Response('You are not allowed to preview this page', { status: 403 })
   }
