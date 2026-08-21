@@ -2,7 +2,8 @@ import React from 'react'
 import Script from 'next/script'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import { cookies } from 'next/headers'
+
+import { ConsentedScripts } from './ConsentedScripts'
 
 async function getSEOSettings() {
   try {
@@ -13,23 +14,14 @@ async function getSEOSettings() {
   }
 }
 
-function hasConsent(consentCookie: string | undefined, category: 'analytics' | 'advertising') {
-  if (!consentCookie) return false
-  try {
-    const consent = JSON.parse(consentCookie)
-    return consent[category] === true
-  } catch {
-    return false
-  }
-}
-
 export async function Analytics() {
-  const [seo, cookieStore] = await Promise.all([getSEOSettings(), cookies()])
+  // Deliberately does NOT read cookies: reading them opts every page into
+  // per-request rendering and makes the HTML uncacheable at the CDN. GTM is
+  // consent-mode aware, and the remaining non-aware tools are gated in the
+  // browser by ConsentedScripts instead.
+  const seo = await getSEOSettings()
 
   if (!seo) return null
-
-  const consentCookie = cookieStore.get('cookie_consent')?.value
-  const analyticsConsented = hasConsent(consentCookie, 'analytics')
 
   const {
     gtmId,
@@ -121,39 +113,7 @@ export async function Analytics() {
         </>
       )}
 
-      {/* Not consent-mode aware — only load once analytics consent is granted */}
-      {analyticsConsented && (
-        <>
-          {/* Microsoft Clarity */}
-          {clarityProjectId && (
-            <Script id="clarity" strategy="afterInteractive" data-category="analytics">
-              {`
-                (function(c,l,a,r,i,t,y){
-                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-                })(window, document, "clarity", "script", "${clarityProjectId}");
-              `}
-            </Script>
-          )}
-
-          {/* Hotjar */}
-          {hotjarSiteId && (
-            <Script id="hotjar" strategy="afterInteractive" data-category="analytics">
-              {`
-                (function(h,o,t,j,a,r){
-                  h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                  h._hjSettings={hjid:${hotjarSiteId},hjsv:6};
-                  a=o.getElementsByTagName('head')[0];
-                  r=o.createElement('script');r.async=1;
-                  r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                  a.appendChild(r);
-                })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-              `}
-            </Script>
-          )}
-        </>
-      )}
+      <ConsentedScripts clarityProjectId={clarityProjectId} hotjarSiteId={hotjarSiteId} />
     </>
   )
 }
