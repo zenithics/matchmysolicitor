@@ -1,6 +1,8 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+
+import { pushDataLayer } from '@/utilities/dataLayer'
 
 import type { EnquiryWizardBlock as EnquiryWizardBlockProps } from '@/payload-types'
 
@@ -85,6 +87,24 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
 
   const set = useCallback((patch: Partial<Answers>) => setAnswers((a) => ({ ...a, ...patch })), [])
 
+  // Analytics: one enquiry_start per visit, and one event per step completed.
+  const startedRef = useRef(false)
+  const stepsSentRef = useRef<Set<number>>(new Set())
+
+  const trackStepComplete = useCallback(
+    (completedStep: number, extra: Record<string, unknown> = {}) => {
+      if (stepsSentRef.current.has(completedStep)) return
+      stepsSentRef.current.add(completedStep)
+      pushDataLayer({
+        event: 'enquiry_step_complete',
+        step_number: completedStep,
+        step_name: STEP_LABELS[completedStep - 1],
+        ...extra,
+      })
+    },
+    [],
+  )
+
   // Deep links such as /enquiry?type=employer pre-fill step 1. On the non-page
   // variants the modal is opened too, so an ad click lands mid-flow rather than
   // on a hero the visitor has to re-answer.
@@ -129,6 +149,18 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
       presetSituation && (SITUATIONS[partyType] || []).includes(presetSituation)
         ? presetSituation
         : undefined
+    if (!startedRef.current) {
+      startedRef.current = true
+      pushDataLayer({
+        event: 'enquiry_start',
+        party_type: partyType,
+        matter_type: preset || undefined,
+        form_variant: variant,
+        landing_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+      })
+    }
+    trackStepComplete(1, { party_type: partyType, matter_type: preset || undefined })
+    if (preset) trackStepComplete(2, { party_type: partyType, matter_type: preset })
     set(preset ? { partyType, situation: preset } : { partyType })
     setOpen(true)
     setStep(2)
@@ -139,7 +171,8 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
     setSubmitting(true)
     setError(null)
     try {
-      const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+      const params =
+        typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
       const res = await fetch('/api/enquiries', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -151,8 +184,39 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
         }),
       })
       if (!res.ok) throw new Error(`Submission failed (${res.status})`)
+      let enquiryId: string | undefined
+      try {
+        const json = await res.clone().json()
+        enquiryId = json?.doc?.id ?? json?.id
+      } catch {
+        // Response body is not required for tracking.
+      }
+      trackStepComplete(4, {
+        party_type: answers.partyType,
+        matter_type: answers.situation,
+      })
+      pushDataLayer({
+        event: 'enquiry_submit',
+        party_type: answers.partyType,
+        matter_type: answers.situation,
+        region: answers.region,
+        tenure: answers.tenure,
+        salary_band: answers.salary,
+        legal_expenses_insurance: answers.legalExpensesInsurance,
+        form_variant: variant,
+        landing_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
+        utm_source: params?.get('utm_source') || undefined,
+        utm_campaign: params?.get('utm_campaign') || undefined,
+        enquiry_id: enquiryId,
+      })
       setSubmitted(true)
     } catch (err) {
+      pushDataLayer({
+        event: 'enquiry_error',
+        party_type: answers.partyType,
+        matter_type: answers.situation,
+        error_message: err instanceof Error ? err.message : 'unknown',
+      })
       setError('Sorry, something went wrong sending your enquiry. Please call us or try again.')
       console.error(err)
     } finally {
@@ -172,10 +236,14 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
       onClick={onClick}
       aria-pressed={selected}
       className={`text-left rounded-[10px] border-2 bg-card flex flex-col transition-colors focus-visible:outline-2 focus-visible:outline-(--accent) focus-visible:outline-offset-2 ${
-        size === 'lg' ? 'p-6 gap-1.5 hover:border-card-foreground' : 'px-5 py-[18px] gap-1.5 hover:border-accent'
+        size === 'lg'
+          ? 'p-6 gap-1.5 hover:border-card-foreground'
+          : 'px-5 py-[18px] gap-1.5 hover:border-accent'
       } ${selected ? 'border-primary' : 'border-border'}`}
     >
-      <span className={`font-bold text-card-foreground ${size === 'lg' ? 'text-lg' : 'text-[17px]'}`}>
+      <span
+        className={`font-bold text-card-foreground ${size === 'lg' ? 'text-lg' : 'text-[17px]'}`}
+      >
         {title}
       </span>
       <span className="text-sm leading-snug text-muted-foreground">{subtitle}</span>
@@ -299,7 +367,8 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
               ))}
             </div>
             <span className="text-[13px] leading-snug text-(--mms-muted-light)">
-              Often included with home or car insurance, &quot;not sure&quot; is a perfectly good answer.
+              Often included with home or car insurance, &quot;not sure&quot; is a perfectly good
+              answer.
             </span>
           </div>
         </div>
@@ -402,7 +471,14 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
           <button
             type="button"
             disabled={!stepValid}
-            onClick={() => setStep((s) => s + 1)}
+            onClick={() => {
+              trackStepComplete(step, {
+                party_type: answers.partyType,
+                matter_type: answers.situation,
+                region: answers.region,
+              })
+              setStep((s) => s + 1)
+            }}
             className="ml-auto px-7 py-[14px] rounded-lg bg-primary text-primary-foreground font-bold text-base transition-colors hover:bg-(--mms-primary-hover) disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2"
           >
             Continue →
@@ -428,7 +504,9 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
           <div className="max-w-[720px] mx-auto">
             <div className="text-center flex flex-col gap-3 mb-9">
               {heading && (
-                <h2 className="text-[clamp(24px,4.4vw,34px)] font-bold tracking-tight">{heading}</h2>
+                <h2 className="text-[clamp(24px,4.4vw,34px)] font-bold tracking-tight">
+                  {heading}
+                </h2>
               )}
               {subheading && <p className="text-lg text-muted-foreground">{subheading}</p>}
             </div>
@@ -528,7 +606,10 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
                 <ul className="mt-7 grid gap-3">
                   {bullets.map((b, i) => (
                     <li key={b?.id || i} className="flex gap-3 items-start text-[15px]">
-                      <span aria-hidden="true" className="mt-0.5 shrink-0 font-bold text-(--accent)">
+                      <span
+                        aria-hidden="true"
+                        className="mt-0.5 shrink-0 font-bold text-(--accent)"
+                      >
                         ✓
                       </span>
                       <span>{b?.text}</span>
