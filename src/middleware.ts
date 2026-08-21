@@ -38,7 +38,7 @@ if (typeof globalThis !== 'undefined') {
 
 // ───────────────────────────────────────────────────────────────────────
 
-const PERMALINK_CACHE_SECONDS = 60
+const PERMALINK_CACHE_SECONDS = 300
 let permalinkCache: { data: any; fetchedAt: number } | null = null
 
 async function getPermalinkSettings(baseUrl: string) {
@@ -61,7 +61,7 @@ async function getPermalinkSettings(baseUrl: string) {
   }
 }
 
-const MAINTENANCE_CACHE_SECONDS = 60
+const MAINTENANCE_CACHE_SECONDS = 300
 let maintenanceCache: { data: any; fetchedAt: number } | null = null
 
 async function getMaintenanceSettings(baseUrl: string): Promise<any> {
@@ -88,9 +88,8 @@ async function getMaintenanceSettings(baseUrl: string): Promise<any> {
 
 function buildMaintenancePage(settings: any, baseUrl: string): string {
   const heading = settings.heading || "We'll be back soon"
-  const countdownTarget = settings.showCountdown && settings.countdownTarget
-    ? settings.countdownTarget
-    : null
+  const countdownTarget =
+    settings.showCountdown && settings.countdownTarget ? settings.countdownTarget : null
   const contactEmail = settings.contactEmail || ''
   const hasPassword = !!settings.password
   const bgImage = settings.backgroundImage?.url || ''
@@ -128,7 +127,9 @@ function buildMaintenancePage(settings: any, baseUrl: string): string {
     <div class="logo">🌸</div>
     <h1>${heading}</h1>
     <p>We're making some improvements. Check back shortly.</p>
-    ${countdownTarget ? `
+    ${
+      countdownTarget
+        ? `
     <div class="countdown" id="countdown"></div>
     <script>
       function update(){
@@ -147,9 +148,13 @@ function buildMaintenancePage(settings: any, baseUrl: string): string {
         if(diff>0)setTimeout(update,1000);
       }
       update();
-    </script>` : ''}
+    </script>`
+        : ''
+    }
     ${contactEmail ? `<p class="contact">Questions? <a href="mailto:${contactEmail}">${contactEmail}</a></p>` : ''}
-    ${hasPassword ? `
+    ${
+      hasPassword
+        ? `
     <form class="password-form" id="bypassForm" onsubmit="tryBypass(event)">
       <input type="password" id="bypassPw" placeholder="Password to preview site" />
       <button type="submit">Enter</button>
@@ -164,7 +169,9 @@ function buildMaintenancePage(settings: any, baseUrl: string): string {
         if(data.ok){document.cookie='maintenance_bypass=1;path=/;max-age=86400';window.location.reload()}
         else{document.getElementById('bypassErr').textContent='Incorrect password'}
       }
-    </script>` : ''}
+    </script>`
+        : ''
+    }
   </div>
 </body>
 </html>`
@@ -228,10 +235,7 @@ export async function middleware(request: NextRequest) {
 
     if (pathname === '/api/validate-discount') {
       if (isRateLimited(`discount:${clientIpForRateLimit}`, 10, 60)) {
-        return NextResponse.json(
-          { error: 'Too many requests. Please slow down.' },
-          { status: 429 },
-        )
+        return NextResponse.json({ error: 'Too many requests. Please slow down.' }, { status: 429 })
       }
     }
   }
@@ -257,7 +261,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // ── Permalink Rewriting ──────────────────────────────────────────────
-  const permalinks = await getPermalinkSettings(baseUrl)
+  // Both globals are needed on nearly every request, so warm them together:
+  // sequential fetches added a full extra round trip to the site's own API
+  // (and a lambda + DB hit) on top of every uncached page view.
+  const [permalinks] = await Promise.all([
+    getPermalinkSettings(baseUrl),
+    getMaintenanceSettings(baseUrl),
+  ])
   if (permalinks) {
     const prefixMap: Record<string, string> = {
       posts: permalinks.postsPrefix || 'posts',
