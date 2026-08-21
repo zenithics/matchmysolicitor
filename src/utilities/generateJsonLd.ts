@@ -1,3 +1,4 @@
+import { guideFallbackImagePath } from '@/utilities/guideFallbackImages'
 import { getServerSideURL } from './getURL'
 
 async function getSEOGlobals() {
@@ -143,7 +144,9 @@ export async function articleSchema(post: any) {
       ? seo.defaultOgImage.url
       : null
 
-  const image = imageUrl || ogFallback
+  // Bundled guide illustration sits between the CMS images and the generic
+  // site-wide OG image, matching what the template actually renders.
+  const image = imageUrl || guideFallbackImagePath(post.slug) || ogFallback
 
   return {
     '@context': 'https://schema.org',

@@ -23,6 +23,7 @@ import { TableOfContents, HeadingIdInjector } from '@/components/TableOfContents
 import { AuthorCard } from '@/components/AuthorCard'
 import { Media } from '@/components/Media'
 import { articleSchema } from '@/utilities/generateJsonLd'
+import { guideFallbackImagePath } from '@/utilities/guideFallbackImages'
 import { applyAdvancedSeo } from '@/utilities/buildSeoMeta'
 
 export async function generateStaticParams() {
@@ -108,6 +109,9 @@ export default async function Post({ params: paramsPromise }: Args) {
         ? (post.meta.image as any)
         : null
 
+  // Guides without their own image fall back to the bundled illustration.
+  const fallbackImagePath = featuredImage ? null : guideFallbackImagePath(post.slug)
+
   const postUrl = getServerSideURL() + url
   const ogImage =
     post.meta?.image && typeof post.meta.image === 'object'
@@ -188,6 +192,19 @@ export default async function Post({ params: paramsPromise }: Args) {
                   {/* Featured image. Sits between the header and the body so it
                       reads as the article's lead image, and gives Article schema
                       a real image. Falls back to the SEO/social image. */}
+                  {!featuredImage && fallbackImagePath && (
+                    <figure className="m-0">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={fallbackImagePath}
+                        alt={post.title || 'Guide illustration'}
+                        width={1200}
+                        height={800}
+                        className="w-full h-auto rounded-[10px] border border-[#E4E8EE] object-cover"
+                      />
+                    </figure>
+                  )}
+
                   {featuredImage && (
                     <figure className="m-0">
                       <Media
