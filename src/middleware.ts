@@ -284,10 +284,13 @@ export async function middleware(request: NextRequest) {
       // (e.g. /guides/category/[slug]); rewriting those to /posts/category/*
       // would 404, so they are passed through untouched.
       const passthroughSegments = ['category']
+      // Static files served from /public under the same prefix (e.g. the guide
+      // illustrations at /guides/<slug>.webp) must never be rewritten either.
+      const isStaticFile = /\.[a-z0-9]+$/i.test(pathname)
       if (pathname === `/${custom}` || pathname.startsWith(`/${custom}/`)) {
         const rest = pathname.slice(`/${custom}`.length)
         const firstSegment = rest.split('/')[1]
-        if (firstSegment && passthroughSegments.includes(firstSegment)) {
+        if (isStaticFile || (firstSegment && passthroughSegments.includes(firstSegment))) {
           return NextResponse.next()
         }
         const url = request.nextUrl.clone()
