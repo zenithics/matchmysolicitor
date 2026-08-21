@@ -6,10 +6,10 @@ import React from 'react'
 import RichText from '@/components/RichText'
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 
-// Force dynamic rendering — the root layout reads cookies() (Analytics/consent),
-// which flips any statically-generated route to dynamic at runtime and 500s in
-// production. Same guard as (frontend)/[slug] and posts/[slug].
-export const dynamic = 'force-dynamic'
+// Incrementally statically rendered. Published CMS changes are pushed out
+// immediately by the revalidatePath hooks on the collections; the interval is
+// just a backstop. Draft-mode requests (CMS preview) still render dynamically.
+export const revalidate = 3600
 
 interface PolicyPageProps {
   params: Promise<{ slug: string }>

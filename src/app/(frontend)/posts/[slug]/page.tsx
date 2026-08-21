@@ -8,7 +8,10 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 
-export const dynamic = 'force-dynamic'
+// Incrementally statically rendered. Published CMS changes are pushed out
+// immediately by the revalidatePath hooks on the collections; the interval is
+// just a backstop. Draft-mode requests (CMS preview) still render dynamically.
+export const revalidate = 600
 import RichText from '@/components/RichText'
 
 import type { Post } from '@/payload-types'

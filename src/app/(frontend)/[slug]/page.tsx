@@ -8,9 +8,10 @@ import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import { homeStatic } from '@/endpoints/seed/home-static'
 
-// Force dynamic rendering — draftMode() and other dynamic APIs
-// are not compatible with Next.js 16 static/ISR rendering.
-export const dynamic = 'force-dynamic'
+// Incrementally statically rendered. Published CMS changes are pushed out
+// immediately by the revalidatePath hooks on the collections; the interval is
+// just a backstop. Draft-mode requests (CMS preview) still render dynamically.
+export const revalidate = 600
 
 import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
