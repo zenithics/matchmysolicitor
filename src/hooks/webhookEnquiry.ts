@@ -23,10 +23,32 @@ export const webhookEnquiry: CollectionAfterChangeHook = async ({
   operation,
   req: { payload },
 }) => {
-  const urls = (process.env.ENQUIRY_WEBHOOK_URLS || '')
-    .split(',')
-    .map((u) => u.trim())
-    .filter(Boolean)
+  // CMS-configured endpoints (Lead Delivery global) win; env vars are the fallback.
+  let urls: string[] = []
+  let secret = process.env.ENQUIRY_WEBHOOK_SECRET
+  try {
+    const settings = (await payload.findGlobal({ slug: 'lead-delivery', depth: 0 })) as {
+      webhooksEnabled?: boolean
+      webhooks?: { url?: string; enabled?: boolean }[]
+      webhookSecret?: string
+    } | null
+
+    if (settings?.webhooksEnabled === false) return doc
+    urls = (settings?.webhooks || [])
+      .filter((w) => w?.url && w.enabled !== false)
+      .map((w) => String(w.url).trim())
+      .filter(Boolean)
+    if (settings?.webhookSecret) secret = settings.webhookSecret
+  } catch (err) {
+    payload.logger.warn(`Lead Delivery settings unavailable, using env vars: ${(err as Error).message}`)
+  }
+
+  if (urls.length === 0) {
+    urls = (process.env.ENQUIRY_WEBHOOK_URLS || '')
+      .split(',')
+      .map((u) => u.trim())
+      .filter(Boolean)
+  }
 
   if (urls.length === 0) return doc
 
@@ -69,7 +91,6 @@ export const webhookEnquiry: CollectionAfterChangeHook = async ({
     'X-MMS-Event': event,
   }
 
-  const secret = process.env.ENQUIRY_WEBHOOK_SECRET
   if (secret) {
     headers['X-MMS-Signature'] =
       'sha256=' + crypto.createHmac('sha256', secret).update(payloadBody).digest('hex')

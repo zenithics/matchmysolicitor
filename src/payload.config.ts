@@ -26,6 +26,7 @@ import { NotFoundPage } from './globals/NotFoundPage'
 import { CMSBranding } from './globals/CMSBranding'
 import { PrivacySettings } from './globals/PrivacySettings'
 import { PermalinkSettings } from './globals/PermalinkSettings'
+import { LeadDelivery } from './globals/LeadDelivery'
 import { Popups } from './collections/Popups'
 import { ActivityLog } from './collections/ActivityLog'
 import { PageTemplates } from './collections/PageTemplates'
@@ -134,6 +135,7 @@ export default buildConfig({
     CodeInjection,
     MaintenanceMode,
     MailSettings,
+    LeadDelivery,
     // System
     CMSBranding,
   ],
