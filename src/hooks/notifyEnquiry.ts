@@ -59,10 +59,25 @@ export const notifyEnquiry: CollectionAfterChangeHook = async ({ doc, operation,
   if (operation !== 'create') return doc
 
   try {
-    let recipients = (process.env.ENQUIRY_NOTIFY_EMAILS || '')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean)
+    let recipients: string[] = []
+    try {
+      const delivery = (await payload.findGlobal({ slug: 'lead-delivery', depth: 0 })) as {
+        notifyEmails?: string
+      } | null
+      recipients = (delivery?.notifyEmails || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    } catch {
+      // fall through to env vars
+    }
+
+    if (recipients.length === 0) {
+      recipients = (process.env.ENQUIRY_NOTIFY_EMAILS || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    }
 
     if (recipients.length === 0) {
       const company = await payload.findGlobal({ slug: 'company-details', depth: 0 })
