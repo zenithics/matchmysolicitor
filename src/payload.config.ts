@@ -31,6 +31,8 @@ import { Popups } from './collections/Popups'
 import { ActivityLog } from './collections/ActivityLog'
 import { PageTemplates } from './collections/PageTemplates'
 import { Enquiries } from './collections/Enquiries'
+import { EnquiryForms } from './collections/EnquiryForms'
+import { DEFAULT_ENQUIRY_FORM } from './blocks/EnquiryWizard/formSchema'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -100,11 +102,29 @@ export default buildConfig({
     Popups,
     // Leads
     Enquiries,
+    EnquiryForms,
     // System
     Users,
     ActivityLog,
   ],
   cors: [getServerSideURL()].filter(Boolean),
+  /**
+   * Seeds the default enquiry form once, so the wizard an editor opens in admin
+   * matches exactly what the site already renders. Never overwrites edits.
+   */
+  onInit: async (payload) => {
+    try {
+      const existing = await payload.count({ collection: 'enquiry-forms' })
+      if (existing.totalDocs > 0) return
+      await payload.create({
+        collection: 'enquiry-forms',
+        data: DEFAULT_ENQUIRY_FORM as never,
+      })
+      payload.logger.info('Seeded default enquiry form')
+    } catch (err) {
+      payload.logger.warn(`Could not seed default enquiry form: ${err}`)
+    }
+  },
   plugins: [
     ...plugins,
     vercelBlobStorage({

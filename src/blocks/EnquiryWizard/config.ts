@@ -6,6 +6,16 @@ export const EnquiryWizard: Block = {
   labels: { singular: 'Enquiry Wizard', plural: 'Enquiry Wizards' },
   fields: [
     {
+      name: 'form',
+      type: 'relationship',
+      relationTo: 'enquiry-forms',
+      label: 'Form definition',
+      admin: {
+        description:
+          'The steps and questions to render (Content → Enquiry Forms). Leave blank to use the site default form.',
+      },
+    },
+    {
       name: 'variant',
       type: 'select',
       defaultValue: 'page',
