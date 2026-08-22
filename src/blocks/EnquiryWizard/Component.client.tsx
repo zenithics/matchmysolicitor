@@ -1,74 +1,61 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { pushDataLayer } from '@/utilities/dataLayer'
 
+import {
+  DEFAULT_ENQUIRY_FORM,
+  type EnquiryFormDefinition,
+  type EnquiryOption,
+  type EnquiryQuestion,
+} from './formSchema'
+
 import type { EnquiryWizardBlock as EnquiryWizardBlockProps } from '@/payload-types'
 
-type Answers = {
-  partyType?: 'employee' | 'employer'
-  situation?: string
-  tenure?: string
-  salary?: string
-  legalExpensesInsurance?: string
-  region?: string
-  details?: string
-  fullName?: string
-  email?: string
-  phone?: string
-  consent?: boolean
-}
+type AnswerValue = string | boolean | undefined
+type Answers = Record<string, AnswerValue>
 
-const SITUATIONS: Record<string, string[]> = {
-  employee: [
-    'Unfair dismissal',
-    'Constructive dismissal',
-    'Discrimination',
-    'Settlement agreement',
-    'Redundancy',
-    'Employment tribunal claim',
-    'Something else',
-  ],
-  employer: [
-    'Tribunal defence',
-    'Settlement agreement',
-    'Dismissal process',
-    'Redundancy programme',
-    'Grievance or disciplinary',
-    'Something else',
-  ],
-}
-
-const TENURE = ['Less than 2 years', '2–5 years', '5–10 years', 'More than 10 years']
-const SALARY = ['Under £30,000', '£30,000–£60,000', '£60,000–£100,000', 'Over £100,000']
-const REGIONS = [
-  'London & South East',
-  'South West',
-  'Midlands',
-  'North West',
-  'North East & Yorkshire',
-  'Wales',
-  'Scotland',
-  'Northern Ireland',
-]
-
-const INSURANCE_OPTIONS: { value: string; label: string }[] = [
-  { value: 'yes', label: 'Yes' },
-  { value: 'no', label: 'No' },
-  { value: 'unsure', label: 'Not sure' },
-]
-
-const STEP_LABELS = ['Who you are', 'Your situation', 'A little more detail', 'Your details']
-
-const TOTAL_STEPS = 4
+type Props = EnquiryWizardBlockProps & { formDefinition?: EnquiryFormDefinition }
 
 const fieldClass =
   'w-full px-[14px] py-[13px] rounded-lg border-[1.5px] border-border text-base text-foreground bg-card focus:outline-none focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2'
 
 const fieldLabelClass = 'flex flex-col gap-2 text-[15px] font-semibold text-card-foreground'
 
-export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
+const optionValue = (o: EnquiryOption) => (o.value || o.label || '').toString()
+
+const splitList = (raw?: string | null): string[] =>
+  (raw || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+
+/** Questions can be gated on an earlier answer (e.g. employee-only questions). */
+const isQuestionVisible = (q: EnquiryQuestion, answers: Answers): boolean => {
+  const allowed = splitList(q.showWhenValues)
+  if (!q.dependsOn || allowed.length === 0) return true
+  return allowed.includes(String(answers[q.dependsOn] ?? ''))
+}
+
+/** Options can be gated the same way (e.g. employer vs employee matter types). */
+const visibleOptions = (q: EnquiryQuestion, answers: Answers): EnquiryOption[] => {
+  const options = Array.isArray(q.options) ? q.options : []
+  return options.filter((o) => {
+    const allowed = splitList(o.showWhen)
+    if (allowed.length === 0) return true
+    if (!q.dependsOn) return true
+    return allowed.includes(String(answers[q.dependsOn] ?? ''))
+  })
+}
+
+const isAnswered = (q: EnquiryQuestion, answers: Answers): boolean => {
+  const v = answers[q.name]
+  if (q.type === 'checkbox') return v === true
+  return typeof v === 'string' && v.trim().length > 0
+}
+
+export const EnquiryWizardClient: React.FC<Props> = ({
   variant = 'page',
   heading,
   subheading,
@@ -77,7 +64,12 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
   consentText,
   successMessage,
   presetSituation,
+  formDefinition,
 }) => {
+  const form = formDefinition || DEFAULT_ENQUIRY_FORM
+  const steps = form.steps
+  const totalSteps = steps.length
+
   const [step, setStep] = useState(1)
   const [open, setOpen] = useState(variant === 'page')
   const [answers, setAnswers] = useState<Answers>({})
@@ -85,38 +77,69 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const set = useCallback((patch: Partial<Answers>) => setAnswers((a) => ({ ...a, ...patch })), [])
+  const set = useCallback((patch: Answers) => setAnswers((a) => ({ ...a, ...patch })), [])
+
+  // The block-level copy fields stay as per-placement overrides of the shared
+  // form definition, so a landing page can vary the consent line or thank-you.
+  const consentCopy = consentText || form.consentText || ''
+  const successCopy = successMessage || form.successMessage || ''
+
+  const allQuestions = useMemo(
+    () => steps.flatMap((s) => (Array.isArray(s.questions) ? s.questions : [])),
+    [steps],
+  )
+
+  const questionByMapTo = useCallback(
+    (mapTo: string) => allQuestions.find((q) => q.mapTo === mapTo),
+    [allQuestions],
+  )
+
+  /** Canonical answers keyed by Enquiry field, for the API and for tracking. */
+  const mapped = useMemo(() => {
+    const out: Record<string, AnswerValue> = {}
+    const extra: Record<string, AnswerValue> = {}
+    allQuestions.forEach((q) => {
+      const v = answers[q.name]
+      if (v === undefined || v === '') return
+      if (!isQuestionVisible(q, answers)) return
+      if (!q.mapTo || q.mapTo === 'extra') extra[q.label || q.name] = v
+      else out[q.mapTo] = v
+    })
+    return { out, extra }
+  }, [allQuestions, answers])
 
   // Analytics: one enquiry_start per visit, and one event per step completed.
   const startedRef = useRef(false)
   const stepsSentRef = useRef<Set<number>>(new Set())
 
   const trackStepComplete = useCallback(
-    (completedStep: number, extra: Record<string, unknown> = {}) => {
+    (completedStep: number, extraProps: Record<string, unknown> = {}) => {
       if (stepsSentRef.current.has(completedStep)) return
       stepsSentRef.current.add(completedStep)
       pushDataLayer({
         event: 'enquiry_step_complete',
         step_number: completedStep,
-        step_name: STEP_LABELS[completedStep - 1],
-        ...extra,
+        step_name: steps[completedStep - 1]?.label,
+        ...extraProps,
       })
     },
-    [],
+    [steps],
   )
 
-  // Deep links such as /enquiry?type=employer pre-fill step 1. On the non-page
-  // variants the modal is opened too, so an ad click lands mid-flow rather than
-  // on a hero the visitor has to re-answer.
+  // Deep links such as /enquiry?type=employer pre-fill the party question. On
+  // the non-page variants the modal is opened too, so an ad click lands
+  // mid-flow rather than on a hero the visitor has to re-answer.
   useEffect(() => {
     if (typeof window === 'undefined') return
     const params = new URLSearchParams(window.location.search)
     const type = params.get('type')
     if (type !== 'employer' && type !== 'employee') return
-    set({ partyType: type })
+    const q = questionByMapTo('partyType')
+    if (!q) return
+    set({ [q.name]: type })
     setStep((s) => (s === 1 ? 2 : s))
     if (variant !== 'page') setOpen(true)
-  }, [set, variant])
+  }, [questionByMapTo, set, variant])
 
   // Lock body scroll while the overlay is open on mobile.
   useEffect(() => {
@@ -127,41 +150,58 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
     }
   }, [open, variant])
 
-  const stepValid = (() => {
-    switch (step) {
-      case 1:
-        return Boolean(answers.partyType)
-      case 2:
-        return Boolean(answers.situation)
-      case 3:
-        return Boolean(answers.region)
-      case 4:
-        return Boolean(answers.fullName && answers.email && answers.phone && answers.consent)
-      default:
-        return false
-    }
-  })()
+  const currentQuestions = useMemo(() => {
+    const qs = steps[step - 1]?.questions
+    return (Array.isArray(qs) ? qs : []).filter((q) => isQuestionVisible(q, answers))
+  }, [answers, step, steps])
 
-  const chooseParty = (partyType: 'employee' | 'employer') => {
+  const stepValid = currentQuestions
+    .filter((q) => q.required)
+    .every((q) => isAnswered(q, answers))
+
+  const trackingProps = useCallback(
+    () => ({
+      party_type: mapped.out.partyType,
+      matter_type: mapped.out.situation,
+      region: mapped.out.region,
+    }),
+    [mapped],
+  )
+
+  /** First "cards" question of step 1 — the hero starter card. */
+  const starterQuestion = useMemo(() => {
+    const qs = steps[0]?.questions
+    return (Array.isArray(qs) ? qs : []).find((q) => q.type === 'cards')
+  }, [steps])
+
+  const chooseStarter = (q: EnquiryQuestion, value: string) => {
     // On a service landing page the situation is already implied by the page
     // itself, so skip the question rather than asking what we already know.
-    const preset =
-      presetSituation && (SITUATIONS[partyType] || []).includes(presetSituation)
-        ? presetSituation
-        : undefined
+    const situationQ = questionByMapTo('situation')
+    const patch: Answers = { [q.name]: value }
+    let preset: string | undefined
+    if (presetSituation && situationQ) {
+      const allowed = visibleOptions(situationQ, { ...answers, [q.name]: value }).map(optionValue)
+      if (allowed.includes(presetSituation)) {
+        preset = presetSituation
+        patch[situationQ.name] = presetSituation
+      }
+    }
     if (!startedRef.current) {
       startedRef.current = true
       pushDataLayer({
         event: 'enquiry_start',
-        party_type: partyType,
-        matter_type: preset || undefined,
+        party_type: q.mapTo === 'partyType' ? value : undefined,
+        matter_type: preset,
         form_variant: variant,
         landing_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
       })
     }
-    trackStepComplete(1, { party_type: partyType, matter_type: preset || undefined })
-    if (preset) trackStepComplete(2, { party_type: partyType, matter_type: preset })
-    set(preset ? { partyType, situation: preset } : { partyType })
+    trackStepComplete(1, {
+      party_type: q.mapTo === 'partyType' ? value : undefined,
+      matter_type: preset,
+    })
+    set(patch)
     setOpen(true)
     setStep(2)
   }
@@ -177,7 +217,8 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...answers,
+          ...mapped.out,
+          extraAnswers: Object.keys(mapped.extra).length ? mapped.extra : undefined,
           source: params?.get('utm_source') || undefined,
           campaign: params?.get('utm_campaign') || undefined,
           landingPath: typeof window !== 'undefined' ? window.location.pathname : undefined,
@@ -191,18 +232,13 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
       } catch {
         // Response body is not required for tracking.
       }
-      trackStepComplete(4, {
-        party_type: answers.partyType,
-        matter_type: answers.situation,
-      })
+      trackStepComplete(totalSteps, trackingProps())
       pushDataLayer({
         event: 'enquiry_submit',
-        party_type: answers.partyType,
-        matter_type: answers.situation,
-        region: answers.region,
-        tenure: answers.tenure,
-        salary_band: answers.salary,
-        legal_expenses_insurance: answers.legalExpensesInsurance,
+        ...trackingProps(),
+        tenure: mapped.out.tenure,
+        salary_band: mapped.out.salary,
+        legal_expenses_insurance: mapped.out.legalExpensesInsurance,
         form_variant: variant,
         landing_path: typeof window !== 'undefined' ? window.location.pathname : undefined,
         utm_source: params?.get('utm_source') || undefined,
@@ -213,11 +249,10 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
     } catch (err) {
       pushDataLayer({
         event: 'enquiry_error',
-        party_type: answers.partyType,
-        matter_type: answers.situation,
+        ...trackingProps(),
         error_message: err instanceof Error ? err.message : 'unknown',
       })
-      setError('Sorry, something went wrong sending your enquiry. Please call us or try again.')
+      setError(form.errorMessage || DEFAULT_ENQUIRY_FORM.errorMessage || 'Something went wrong.')
       console.error(err)
     } finally {
       setSubmitting(false)
@@ -226,7 +261,7 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
 
   const PartyOption: React.FC<{
     title: string
-    subtitle: string
+    subtitle?: string | null
     selected: boolean
     onClick: () => void
     size?: 'sm' | 'lg'
@@ -246,214 +281,193 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
       >
         {title}
       </span>
-      <span className="text-sm leading-snug text-muted-foreground">{subtitle}</span>
+      {subtitle && (
+        <span className="text-sm leading-snug text-muted-foreground">{subtitle}</span>
+      )}
     </button>
   )
+
+  const renderQuestion = (q: EnquiryQuestion) => {
+    const value = answers[q.name]
+    const options = visibleOptions(q, answers)
+
+    switch (q.type) {
+      case 'cards':
+        return (
+          <div key={q.name} className="flex flex-col gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {options.map((o) => (
+                <PartyOption
+                  key={optionValue(o)}
+                  size="lg"
+                  title={o.label}
+                  subtitle={o.description}
+                  selected={value === optionValue(o)}
+                  onClick={() =>
+                    q.advanceOnSelect
+                      ? chooseStarter(q, optionValue(o))
+                      : set({ [q.name]: optionValue(o) })
+                  }
+                />
+              ))}
+            </div>
+            {q.helpText && (
+              <span className="text-[13px] leading-snug text-(--mms-muted-light)">
+                {q.helpText}
+              </span>
+            )}
+          </div>
+        )
+
+      case 'buttons':
+        return (
+          <div key={q.name} className="flex flex-col gap-2.5">
+            <span className="text-[15px] font-semibold text-card-foreground">{q.label}</span>
+            <div className="flex gap-2.5 flex-wrap">
+              {options.map((o) => (
+                <button
+                  key={optionValue(o)}
+                  type="button"
+                  aria-pressed={value === optionValue(o)}
+                  onClick={() => set({ [q.name]: optionValue(o) })}
+                  className={`px-[22px] py-[11px] rounded-lg text-[15px] font-semibold border-[1.5px] transition-colors focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2 ${
+                    value === optionValue(o)
+                      ? 'border-primary bg-primary text-primary-foreground'
+                      : 'border-border bg-card text-card-foreground hover:border-primary/50'
+                  }`}
+                >
+                  {o.label}
+                </button>
+              ))}
+            </div>
+            {q.helpText && (
+              <span className="text-[13px] leading-snug text-(--mms-muted-light)">
+                {q.helpText}
+              </span>
+            )}
+          </div>
+        )
+
+      case 'select':
+        return (
+          <label key={q.name} className={fieldLabelClass}>
+            {q.label}
+            <select
+              className={fieldClass}
+              value={typeof value === 'string' ? value : ''}
+              onChange={(e) => set({ [q.name]: e.target.value })}
+            >
+              <option value="">Please select…</option>
+              {options.map((o) => (
+                <option key={optionValue(o)} value={optionValue(o)}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+            {q.helpText && (
+              <span className="text-[13px] font-normal leading-snug text-(--mms-muted-light)">
+                {q.helpText}
+              </span>
+            )}
+          </label>
+        )
+
+      case 'textarea':
+        return (
+          <div key={q.name} className="flex flex-col gap-2">
+            <label className={fieldLabelClass}>
+              {q.label}
+              <textarea
+                className={`${fieldClass} resize-y`}
+                rows={5}
+                maxLength={q.maxLength || undefined}
+                placeholder={q.placeholder || undefined}
+                value={typeof value === 'string' ? value : ''}
+                onChange={(e) => set({ [q.name]: e.target.value })}
+              />
+            </label>
+            <div className="flex justify-between gap-4 text-[13px] text-(--mms-muted-light)">
+              <span>{q.helpText}</span>
+              {q.maxLength ? (
+                <span className="shrink-0">
+                  {(typeof value === 'string' ? value : '').length}/{q.maxLength}
+                </span>
+              ) : null}
+            </div>
+          </div>
+        )
+
+      case 'checkbox':
+        return (
+          <label
+            key={q.name}
+            className="flex gap-3 items-start rounded-lg border-[1.5px] border-border bg-muted p-[18px] text-sm leading-relaxed text-card-foreground cursor-pointer transition-colors hover:border-primary"
+          >
+            <input
+              type="checkbox"
+              className="mt-1 h-5 w-5 shrink-0 accent-primary"
+              checked={value === true}
+              onChange={(e) => set({ [q.name]: e.target.checked })}
+            />
+            <span>{q.label || consentCopy}</span>
+          </label>
+        )
+
+      default:
+        return (
+          <label key={q.name} className={fieldLabelClass}>
+            {q.label}
+            <input
+              className={fieldClass}
+              type={q.type === 'text' ? 'text' : q.type}
+              placeholder={q.placeholder || undefined}
+              value={typeof value === 'string' ? value : ''}
+              onChange={(e) => set({ [q.name]: e.target.value })}
+            />
+            {q.helpText && (
+              <span className="text-[13px] font-normal leading-snug text-(--mms-muted-light)">
+                {q.helpText}
+              </span>
+            )}
+          </label>
+        )
+    }
+  }
+
+  const currentStep = steps[step - 1]
 
   const body = submitted ? (
     <div className="text-center py-10 flex flex-col items-center gap-4">
       <div className="w-14 h-14 rounded-full bg-(--mms-rule) text-(--accent) flex items-center justify-center text-2xl">
         ✓
       </div>
-      <h3 className="text-2xl font-bold">Enquiry received</h3>
-      <p className="text-muted-foreground max-w-md mx-auto">{successMessage}</p>
+      <h3 className="text-2xl font-bold">{form.successHeading || 'Enquiry received'}</h3>
+      <p className="text-muted-foreground max-w-md mx-auto">{successCopy}</p>
     </div>
   ) : (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-2" aria-label={`Step ${step} of ${TOTAL_STEPS}`}>
+      <div className="flex flex-col gap-2" aria-label={`Step ${step} of ${totalSteps}`}>
         <div className="flex justify-between text-[13px] font-semibold text-muted-foreground">
-          <span>{STEP_LABELS[step - 1]}</span>
+          <span>{currentStep?.label}</span>
           <span>
-            Step {step} of {TOTAL_STEPS}
+            Step {step} of {totalSteps}
           </span>
         </div>
         <div className="h-[6px] rounded-full bg-border overflow-hidden">
           <div
             className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
-            style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
+            style={{ width: `${(step / totalSteps) * 100}%` }}
           />
         </div>
       </div>
 
-      {step === 1 && (
-        <div className="flex flex-col gap-5">
-          <h3 className="text-2xl font-bold">First things first, which side are you on?</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <PartyOption
-              size="lg"
-              title="I'm an employer"
-              subtitle="Facing a claim, negotiating a settlement, or need urgent representation"
-              selected={answers.partyType === 'employer'}
-              onClick={() => chooseParty('employer')}
-            />
-            <PartyOption
-              size="lg"
-              title="I'm an employee"
-              subtitle="Dismissed, discriminated against, or negotiating an exit or settlement"
-              selected={answers.partyType === 'employee'}
-              onClick={() => chooseParty('employee')}
-            />
-          </div>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="flex flex-col gap-5">
-          <h3 className="text-2xl font-bold">What is your situation?</h3>
-          <label className={fieldLabelClass}>
-            What&apos;s your situation?
-            <select
-              className={fieldClass}
-              value={answers.situation || ''}
-              onChange={(e) => set({ situation: e.target.value })}
-            >
-              <option value="">Please select…</option>
-              {(SITUATIONS[answers.partyType || 'employee'] || []).map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-          </label>
-          {answers.partyType === 'employee' && (
-            <label className={fieldLabelClass}>
-              Length of service
-              <select
-                className={fieldClass}
-                value={answers.tenure || ''}
-                onChange={(e) => set({ tenure: e.target.value })}
-              >
-                <option value="">Please select…</option>
-                {TENURE.map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </label>
-          )}
-          {answers.partyType === 'employee' && (
-            <label className={fieldLabelClass}>
-              What is your approximate salary?
-              <select
-                className={fieldClass}
-                value={answers.salary || ''}
-                onChange={(e) => set({ salary: e.target.value })}
-              >
-                <option value="">Please select…</option>
-                {SALARY.map((t) => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-            </label>
-          )}
-          <div className="flex flex-col gap-2.5">
-            <span className="text-[15px] font-semibold text-card-foreground">
-              Do you have legal expenses insurance?
-            </span>
-            <div className="flex gap-2.5 flex-wrap">
-              {INSURANCE_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  aria-pressed={answers.legalExpensesInsurance === opt.value}
-                  onClick={() => set({ legalExpensesInsurance: opt.value })}
-                  className={`px-[22px] py-[11px] rounded-lg text-[15px] font-semibold border-[1.5px] transition-colors focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2 ${
-                    answers.legalExpensesInsurance === opt.value
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-card text-card-foreground hover:border-primary/50'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-            <span className="text-[13px] leading-snug text-(--mms-muted-light)">
-              Often included with home or car insurance, &quot;not sure&quot; is a perfectly good
-              answer.
-            </span>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="flex flex-col gap-5">
-          <h3 className="text-2xl font-bold">Tell us a little more</h3>
-          <div className="flex flex-col gap-2">
-            <label className={fieldLabelClass}>
-              Brief description of your situation
-              <textarea
-                className={`${fieldClass} resize-y`}
-                rows={5}
-                maxLength={500}
-                placeholder="What happened, roughly when, and where things stand now…"
-                value={answers.details || ''}
-                onChange={(e) => set({ details: e.target.value })}
-              />
-            </label>
-            <div className="flex justify-between gap-4 text-[13px] text-(--mms-muted-light)">
-              <span>Please describe in your own words. Two paragraphs is fine.</span>
-              <span className="shrink-0">{(answers.details || '').length}/500</span>
-            </div>
-          </div>
-          <label className={fieldLabelClass}>
-            Where are you based?
-            <select
-              className={fieldClass}
-              value={answers.region || ''}
-              onChange={(e) => set({ region: e.target.value })}
-            >
-              <option value="">Please select…</option>
-              {REGIONS.map((r) => (
-                <option key={r}>{r}</option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
-
-      {step === 4 && (
-        <div className="flex flex-col gap-5">
-          <h3 className="text-2xl font-bold">Where should the solicitor reach you?</h3>
-          <label className={fieldLabelClass}>
-            Your name
-            <input
-              className={fieldClass}
-              placeholder="Full name"
-              value={answers.fullName || ''}
-              onChange={(e) => set({ fullName: e.target.value })}
-            />
-          </label>
-          <label className={fieldLabelClass}>
-            Phone number
-            <input
-              className={fieldClass}
-              type="tel"
-              placeholder="Best number to call"
-              value={answers.phone || ''}
-              onChange={(e) => set({ phone: e.target.value })}
-            />
-          </label>
-          <label className={fieldLabelClass}>
-            Email address
-            <input
-              className={fieldClass}
-              type="email"
-              placeholder="you@example.com"
-              value={answers.email || ''}
-              onChange={(e) => set({ email: e.target.value })}
-            />
-          </label>
-          <label className="flex gap-3 items-start rounded-lg border-[1.5px] border-border bg-muted p-[18px] text-sm leading-relaxed text-card-foreground cursor-pointer transition-colors hover:border-primary">
-            <input
-              type="checkbox"
-              className="mt-1 h-5 w-5 shrink-0 accent-primary"
-              checked={Boolean(answers.consent)}
-              onChange={(e) => set({ consent: e.target.checked })}
-            />
-            <span>{consentText}</span>
-          </label>
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </div>
-      )}
+      <div className="flex flex-col gap-5">
+        {currentStep?.heading && (
+          <h3 className="text-2xl font-bold">{currentStep.heading}</h3>
+        )}
+        {currentQuestions.map(renderQuestion)}
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </div>
 
       <div className="flex items-center justify-between gap-4 border-t border-(--mms-rule) pt-5">
         {step > 1 ? (
@@ -467,21 +481,17 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
         ) : (
           <span />
         )}
-        {step < TOTAL_STEPS ? (
+        {step < totalSteps ? (
           <button
             type="button"
             disabled={!stepValid}
             onClick={() => {
-              trackStepComplete(step, {
-                party_type: answers.partyType,
-                matter_type: answers.situation,
-                region: answers.region,
-              })
+              trackStepComplete(step, trackingProps())
               setStep((s) => s + 1)
             }}
             className="ml-auto px-7 py-[14px] rounded-lg bg-primary text-primary-foreground font-bold text-base transition-colors hover:bg-(--mms-primary-hover) disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2"
           >
-            Continue →
+            {form.continueLabel || 'Continue →'}
           </button>
         ) : (
           <button
@@ -490,7 +500,7 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
             onClick={submit}
             className="ml-auto px-7 py-[14px] rounded-lg bg-primary text-primary-foreground font-bold text-base transition-colors hover:bg-(--mms-primary-hover) disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-2 focus-visible:outline-(--primary) focus-visible:outline-offset-2"
           >
-            {submitting ? 'Sending…' : 'Submit my enquiry'}
+            {submitting ? 'Sending…' : form.submitLabel || 'Submit my enquiry'}
           </button>
         )}
       </div>
@@ -525,27 +535,28 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
     <div id="enquiry-form" className="bg-card rounded-[12px] p-7 flex flex-col gap-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <span className="text-xs font-bold uppercase tracking-wider text-(--mms-muted-light)">
-          Step 1 of 4
+          Step 1 of {totalSteps}
         </span>
         <span className="text-[13px] text-(--mms-muted-light)">Takes about 2 minutes</span>
       </div>
       <div className="h-1 rounded-full bg-(--mms-rule) overflow-hidden">
-        <div className="h-full w-1/4 rounded-full bg-primary" />
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${(1 / totalSteps) * 100}%` }}
+        />
       </div>
-      <h2 className="text-[21px] font-bold">Are you an employee or an employer?</h2>
+      <h2 className="text-[21px] font-bold">{starterQuestion?.label || steps[0]?.heading}</h2>
       <div className="flex flex-col gap-3">
-        <PartyOption
-          title="I'm an employee"
-          subtitle="Dismissed, facing an exit, or treated unfairly at work"
-          selected={answers.partyType === 'employee'}
-          onClick={() => chooseParty('employee')}
-        />
-        <PartyOption
-          title="I'm an employer"
-          subtitle="Defending a claim or planning a departure"
-          selected={answers.partyType === 'employer'}
-          onClick={() => chooseParty('employer')}
-        />
+        {starterQuestion &&
+          visibleOptions(starterQuestion, answers).map((o) => (
+            <PartyOption
+              key={optionValue(o)}
+              title={o.label}
+              subtitle={o.description}
+              selected={answers[starterQuestion.name] === optionValue(o)}
+              onClick={() => chooseStarter(starterQuestion, optionValue(o))}
+            />
+          ))}
       </div>
       <p className="text-[13px] leading-relaxed text-(--mms-muted-light)">
         <span aria-hidden="true">🔒</span> Secure · Your details are only shared with the firm we
@@ -606,10 +617,7 @@ export const EnquiryWizardClient: React.FC<EnquiryWizardBlockProps> = ({
                 <ul className="mt-7 grid gap-3">
                   {bullets.map((b, i) => (
                     <li key={b?.id || i} className="flex gap-3 items-start text-[15px]">
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 shrink-0 font-bold text-(--accent)"
-                      >
+                      <span aria-hidden="true" className="mt-0.5 shrink-0 font-bold text-(--accent)">
                         ✓
                       </span>
                       <span>{b?.text}</span>

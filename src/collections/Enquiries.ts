@@ -77,6 +77,16 @@ export const Enquiries: CollectionConfig = {
     },
     { name: 'details', type: 'textarea', label: 'Their Description' },
     {
+      name: 'extraAnswers',
+      type: 'json',
+      label: 'Other answers',
+      admin: {
+        description:
+          'Answers from wizard questions that are not mapped to a field above. Added automatically.',
+        readOnly: true,
+      },
+    },
+    {
       name: 'consent',
       type: 'checkbox',
       required: true,
